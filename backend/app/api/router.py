@@ -1,9 +1,13 @@
 """
 API router aggregator.
-
-TODO:
-- Create APIRouter()
-- Include sub-routers:
-  - auth, goals, stats
-- Add version prefix if you want (e.g., /api/v1)
 """
+
+from fastapi import APIRouter
+
+api_router = APIRouter()
+
+# TODO: include sub-routers:
+# from backend.app.api.routes import auth, goals, stats
+# api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+# api_router.include_router(goals.router, prefix="/goals", tags=["goals"])
+# api_router.include_router(stats.router, prefix="/stats", tags=["stats"])

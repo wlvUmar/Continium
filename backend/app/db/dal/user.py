@@ -1,5 +1,5 @@
 """
-User repository (DB access only).
+User DAL module (DB access only).
 
 TODO:
 - get_by_id(db, user_id)

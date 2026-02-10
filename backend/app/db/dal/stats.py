@@ -1,5 +1,5 @@
 """
-Stat repository (DB access only).
+Stats DAL module (DB access only).
 
 TODO:
 - create_stat(db, stat_data)

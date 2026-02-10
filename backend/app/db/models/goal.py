@@ -1,19 +1,43 @@
-"""
-Goal ORM model.
+from __future__ import annotations
 
-Fields you listed:
-- id
-- title
-- type (enum/string)
-- start_date
-- deadline
-- frequency (enum: daily/weekly/monthly)
-- duration (int minutes? pick a unit)
-- is_complete (bool)
-- user_id (FK users.id)
+import enum
+from datetime import date
+from typing import List
 
-TODO:
-- Define __tablename__ = "goals"
-- Relationship: user = relationship("User", back_populates="goals")
-- Relationship: stats = relationship("Stat", back_populates="goal")
-"""
+from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Integer, String, false
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from backend.app.db.base import Base
+
+
+class GoalFrequency(str, enum.Enum):
+    daily = "daily"
+    weekly = "weekly"
+    monthly = "monthly"
+
+
+class Goal(Base):
+    __tablename__ = "goals"
+    __table_args__ = (
+        CheckConstraint("duration_min >= 0", name="ck_goals_duration_nonneg"))
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    deadline: Mapped[date] = mapped_column(Date, nullable=False)
+    frequency: Mapped[GoalFrequency] = mapped_column(Enum(GoalFrequency), nullable=False)
+    duration_min: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_complete: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=false())
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+
+    user: Mapped["User"] = relationship("User", back_populates="goals")
+    goal_logs: Mapped[List["Stats"]] = relationship(
+        "Stats",
+        back_populates="goal",
+        cascade="all, delete-orphan",
+    )

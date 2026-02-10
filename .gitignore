@@ -42,3 +42,4 @@ coverage/
 tmp/
 temp/
 backend/backend_init.py
+pyrightconfig.json

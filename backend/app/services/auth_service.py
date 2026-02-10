@@ -12,5 +12,5 @@ TODO:
 
 NOTES:
 - Keep JWT/hashing helpers in core.security
-- Use repos.user_repo for DB operations
+- Use db.dal.* modules for DB operations
 """

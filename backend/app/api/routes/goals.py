@@ -12,3 +12,5 @@ RULE:
 - Use get_current_user dependency
 - Call goal_service methods
 """
+
+from backend.app.api import get_db

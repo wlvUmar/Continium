@@ -1,5 +1,5 @@
 """
-Repository package.
+Data access layer (DAL) package.
 
 TODO:
 - Keep DB-only logic here (queries).

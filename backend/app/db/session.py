@@ -1,11 +1,14 @@
-"""
-Database engine + session + FastAPI dependency.
+from __future__ import annotations
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from backend.app.core.config import settings
 
-TODO:
-- Create SQLAlchemy engine from DATABASE_URL
-- Create SessionLocal (sessionmaker)
-- Implement get_db() generator dependency:
-    yield db
-    finally: db.close()
-- If you choose Async SQLAlchemy later, refactor here first.
-"""
+
+engine = create_async_engine(settings.database_url, pool_pre_ping=True)
+
+AsyncSessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
+        yield session

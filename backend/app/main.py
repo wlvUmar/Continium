@@ -1,9 +1,13 @@
 """
 Entry point for FastAPI app.
-
-TODO:
-- Create FastAPI() instance
-- Include API router (app.api.router)
-- Add startup/shutdown events if needed (db checks, logging)
-- Configure CORS if your frontend is separate
 """
+
+from fastapi import FastAPI
+
+from backend.app.api.router import api_router
+from backend.app.core.logging_setup import setup_logging
+
+setup_logging()
+
+app = FastAPI(title="Continium API")
+app.include_router(api_router)

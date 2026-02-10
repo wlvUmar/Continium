@@ -48,19 +48,8 @@
 
 ---
 
-- `app/repos/`  
-  Database access layer.
-  - `user_repo.py`  
-    User-related data access.
-  - `goal_repo.py`  
-    Goal-related data access.
-  - `stat_repo.py`  
-    Statistics-related data access.
-
----
-
 - `app/db/`  
-  Database configuration and models.
+  Database configuration, models, and data access.
   - `session.py`  
     Database engine and session management.
   - `base.py`  
@@ -71,8 +60,18 @@
       User model.
     - `goal.py`  
       Goal model.
-    - `stat.py`  
-      Statistics model.
+    - `goal_log.py`  
+      Goal log model.
+  - `dal/`  
+    Data access layer modules.
+    - `__init__.py`  
+      DAL package.
+    - `user.py`  
+      User data access.
+    - `goal.py`  
+      Goal data access.
+    - `goal_log.py`  
+      Goal log data access.
 
 ---
 

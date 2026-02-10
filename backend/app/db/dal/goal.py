@@ -1,5 +1,5 @@
 """
-Goal repository (DB access only).
+Goal DAL module (DB access only).
 
 TODO:
 - create_goal(db, user_id, goal_data)
@@ -7,5 +7,5 @@ TODO:
 - get_goal(db, goal_id)
 - update_goal(db, goal_id, fields)
 - delete_goal(db, goal_id)
-- IMPORTANT: repo should NOT enforce ownership; service should.
+- IMPORTANT: DAL should NOT enforce ownership; service should.
 """

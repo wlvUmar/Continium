@@ -1,8 +1,5 @@
-"""
-Import models so Alembic can discover them.
+from backend.app.db.models.goal import Goal, GoalFrequency
+from backend.app.db.models.stats import Stats
+from backend.app.db.models.user import User
 
-TODO:
-- from .user import User
-- from .goal import Goal
-- from .stat import Stat
-"""
+__all__ = ["User", "Goal", "Stats", "GoalFrequency"]

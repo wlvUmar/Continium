@@ -15,3 +15,5 @@ RULE:
 - Parse request -> call auth_service -> return schema/HTTP codes
 - Do not write SQL here.
 """
+
+from backend.app.api import get_db
