@@ -41,3 +41,4 @@ coverage/
 # Temporary files
 tmp/
 temp/
+backend/backend_init.py

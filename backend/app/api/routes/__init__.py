@@ -1,5 +1,5 @@
 """
-API package.
+Routes package.
 
 TODO:
 - Usually empty.
