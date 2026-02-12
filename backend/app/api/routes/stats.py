@@ -11,4 +11,4 @@ RULE:
 - Call stat_service methods
 """
 
-from backend.app.api import get_db
+from app.api import get_db

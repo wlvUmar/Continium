@@ -9,7 +9,7 @@ from typing import List, Optional
 from sqlalchemy import Boolean, String, true, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.db.base import Base
+from app.db.base import Base
 
 
 class User(Base):

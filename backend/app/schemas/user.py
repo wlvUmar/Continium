@@ -7,3 +7,4 @@ TODO:
 - UserUpdate: full_name?, image_url?, is_active? (careful)
 - NEVER expose password_hash
 """
+

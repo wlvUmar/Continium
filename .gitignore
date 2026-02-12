@@ -43,3 +43,8 @@ tmp/
 temp/
 backend/backend_init.py
 pyrightconfig.json
+
+
+#Other Side Files
+*/__pycache__/
+*.pyc

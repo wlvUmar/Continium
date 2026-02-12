@@ -7,7 +7,7 @@ from typing import List
 from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Integer, String, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.db.base import Base
+from app.db.base import Base
 
 
 class GoalFrequency(str, enum.Enum):
@@ -19,7 +19,8 @@ class GoalFrequency(str, enum.Enum):
 class Goal(Base):
     __tablename__ = "goals"
     __table_args__ = (
-        CheckConstraint("duration_min >= 0", name="ck_goals_duration_nonneg"))
+        CheckConstraint("duration_min >= 0", name="ck_goals_duration_nonneg"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -36,7 +37,7 @@ class Goal(Base):
     )
 
     user: Mapped["User"] = relationship("User", back_populates="goals")
-    goal_logs: Mapped[List["Stats"]] = relationship(
+    stats: Mapped[List["Stats"]] = relationship(
         "Stats",
         back_populates="goal",
         cascade="all, delete-orphan",

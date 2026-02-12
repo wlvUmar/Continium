@@ -15,5 +15,13 @@ RULE:
 - Parse request -> call auth_service -> return schema/HTTP codes
 - Do not write SQL here.
 """
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.schemas.auth import UserLoginRequest, TokenResponse, RefreshRequest, ChangePasswordRequest, VerifyRequest, UserSignupRequest
+from app.services import auth_service
+from app.api import get_db
 
-from backend.app.api import get_db
+router = APIRouter(tags=["auth"])
+
+@router.post("/login", response_model=TokenResponse)
+async def login(request: UserLoginRequest, db=Depends(get_db)):
+    return await auth_service.login(db, request)

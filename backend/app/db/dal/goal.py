@@ -9,3 +9,34 @@ TODO:
 - delete_goal(db, goal_id)
 - IMPORTANT: DAL should NOT enforce ownership; service should.
 """
+
+from typing import List, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update, delete
+from app.db.models.goal import Goal
+
+async def create_goal(db: AsyncSession, user_id: int, goal_data: dict) -> Goal:
+    new_goal = Goal(user_id=user_id, **goal_data)
+    db.add(new_goal)
+    await db.commit()
+    await db.refresh(new_goal)
+    return new_goal
+
+async def list_goals(db: AsyncSession, user_id: int) -> List[Goal]:
+    result = await db.execute(select(Goal).where(Goal.user_id == user_id))
+    return result.scalars().all()
+
+async def get_goal(db: AsyncSession, goal_id: int) -> Optional[Goal]:
+    result = await db.execute(select(Goal).where(Goal.id == goal_id))
+    return result.scalars().first()
+
+async def update_goal(db: AsyncSession, goal_id: int, fields: dict) -> Optional[Goal]:
+    await db.execute(update(Goal).where(Goal.id == goal_id).values(**fields))
+    await db.commit()
+    return await get_goal(db, goal_id)
+
+async def delete_goal(db: AsyncSession, goal_id: int) -> bool:
+    result = await db.execute(delete(Goal).where(Goal.id == goal_id))
+    await db.commit()
+    return result.rowcount > 0
+

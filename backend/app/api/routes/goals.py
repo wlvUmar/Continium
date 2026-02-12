@@ -13,4 +13,4 @@ RULE:
 - Call goal_service methods
 """
 
-from backend.app.api import get_db
+from app.api import get_db
