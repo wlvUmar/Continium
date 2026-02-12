@@ -48,3 +48,4 @@ pyrightconfig.json
 #Other Side Files
 */__pycache__/
 *.pyc
+backend/app.db
