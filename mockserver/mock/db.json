@@ -1,0 +1,126 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "full_name": "Test User",
+      "email": "test@example.com",
+      "password_hash": "$fake_hash_do_not_use",
+      "image_url": null,
+      "is_active": true,
+      "verified": true
+    },
+    {
+      "id": 2,
+      "full_name": "Demo User",
+      "email": "demo@example.com",
+      "password_hash": "$fake_hash_do_not_use",
+      "image_url": null,
+      "is_active": true,
+      "verified": false
+    }
+  ],
+  "goals": [
+    {
+      "id": 1,
+      "title": "Build frontend MVP",
+      "type": "project",
+      "start_date": "2026-02-01",
+      "deadline": "2026-03-01",
+      "frequency": "daily",
+      "duration_min": 60,
+      "is_complete": false,
+      "user_id": 1
+    },
+    {
+      "id": 2,
+      "title": "Gym training",
+      "type": "habit",
+      "start_date": "2026-02-01",
+      "deadline": "2026-06-01",
+      "frequency": "weekly",
+      "duration_min": 180,
+      "is_complete": false,
+      "user_id": 1
+    },
+    {
+      "id": 3,
+      "title": "Read 12 books",
+      "type": "goal",
+      "start_date": "2026-01-01",
+      "deadline": "2026-12-31",
+      "frequency": "monthly",
+      "duration_min": 300,
+      "is_complete": true,
+      "user_id": 1
+    },
+    {
+      "id": 4,
+      "title": "Learn Japanese N4",
+      "type": "project",
+      "start_date": "2026-02-10",
+      "deadline": "2026-05-30",
+      "frequency": "daily",
+      "duration_min": 45,
+      "is_complete": false,
+      "user_id": 2
+    }
+  ],
+  "stats": [
+    {
+      "id": 1,
+      "goal_id": 1,
+      "user_id": 1,
+      "occurred_at": "2026-02-12T08:30:00+05:00",
+      "duration_minutes": 60
+    },
+    {
+      "id": 2,
+      "goal_id": 1,
+      "user_id": 1,
+      "occurred_at": "2026-02-13T09:10:00+05:00",
+      "duration_minutes": 45
+    },
+    {
+      "id": 3,
+      "goal_id": 2,
+      "user_id": 1,
+      "occurred_at": "2026-02-10T19:00:00+05:00",
+      "duration_minutes": 90
+    },
+    {
+      "id": 4,
+      "goal_id": 2,
+      "user_id": 1,
+      "occurred_at": "2026-02-12T19:10:00+05:00",
+      "duration_minutes": 60
+    },
+    {
+      "id": 5,
+      "goal_id": 3,
+      "user_id": 1,
+      "occurred_at": "2026-02-01T11:00:00+05:00",
+      "duration_minutes": 120
+    },
+    {
+      "id": 6,
+      "goal_id": 4,
+      "user_id": 2,
+      "occurred_at": "2026-02-13T21:00:00+05:00",
+      "duration_minutes": 45
+    },
+    {
+      "goal_id": 1,
+      "user_id": 1,
+      "duration_minutes": 25,
+      "id": 7,
+      "occurred_at": "2026-02-14T02:40:54.795419+05:00"
+    },
+    {
+      "goal_id": 1,
+      "user_id": 1,
+      "duration_minutes": 25,
+      "id": 8,
+      "occurred_at": "2026-02-14T02:41:43.064334+05:00"
+    }
+  ]
+}
