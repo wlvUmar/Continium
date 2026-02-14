@@ -43,3 +43,5 @@ tmp/
 temp/
 backend/backend_init.py
 pyrightconfig.json
+*.db
+*.pyc

@@ -19,7 +19,8 @@ class GoalFrequency(str, enum.Enum):
 class Goal(Base):
     __tablename__ = "goals"
     __table_args__ = (
-        CheckConstraint("duration_min >= 0", name="ck_goals_duration_nonneg"))
+        CheckConstraint("duration_min >= 0", name="ck_goals_duration_nonneg"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
