@@ -36,7 +36,7 @@ class Goal(Base):
     )
 
     user: Mapped["User"] = relationship("User", back_populates="goals")
-    goal_logs: Mapped[List["Stats"]] = relationship(
+    stats: Mapped[List["Stats"]] = relationship(
         "Stats",
         back_populates="goal",
         cascade="all, delete-orphan",
