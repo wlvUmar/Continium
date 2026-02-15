@@ -20,7 +20,7 @@ from fastapi import APIRouter, Depends
 from app.schemas.auth import UserLoginRequest, TokenResponse
 from app.services import auth_service
 from app.api import get_db
-from app.schemas.user import UserOut
+from app.schemas.user import UserCreate, UserOut
 from app.db.models.user import User
 from app.core.security import get_current_user
 
@@ -35,3 +35,6 @@ async def login(request: UserLoginRequest, db=Depends(get_db)):
 async def get_me(user: Annotated[User, Depends(get_current_user)]) -> UserOut:
     return UserOut.model_validate(user)
 
+@router.post("/register", response_model=UserOut)
+async def register(user_data: UserCreate, db=Depends(get_db)):
+    return await auth_service.register(db, user_data)

@@ -8,16 +8,82 @@ TODO:
   - frequency enum validation
 - Optionally: prevent stats creation if goal is_complete
 """
+from typing_extensions import Annotated
 from app.db.dal import goal
-from app.core.security import current_user
+from app.core.security import current_user, get_current_user
 from app.db.models.goal import Goal
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
+
+from app.schemas.goal import GoalCreate, GoalOut, GoalUpdate
+from app.db.models.user import User
 
 
-async def create_goal(db: AsyncSession, goal_data: dict) -> Goal:
+async def create_goal(db: AsyncSession, goal_data: GoalCreate, user : Annotated[User, Depends(get_current_user)]) -> GoalOut:
     cur_user = current_user()
     if not cur_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     new_goal = await goal.create_goal(db, user_id=cur_user.id, **goal_data)
-    return new_goal
+    return GoalOut.from_orm(new_goal)
+
+async def get_goals(db: AsyncSession, skip: int = 0, limit: int = 100) -> list[GoalOut]:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    goals = await goal.list_goals(db, user_id=cur_user.id, skip=skip, limit=limit)
+    return [GoalOut.from_orm(g) for g in goals]
+
+async def update_goal(db: AsyncSession, goal_id: int, goal_data: GoalUpdate) -> GoalOut:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    existing_goal = await goal.get_goal(db, goal_id)
+    if not existing_goal or existing_goal.user_id != cur_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    updated_goal = await goal.update_goal(db, goal_id, fields=goal_data.dict(exclude_unset=True))
+    return GoalOut.from_orm(updated_goal)
+
+
+async def delete_goal(db: AsyncSession, goal_id: int) -> None:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    existing_goal = await goal.get_goal_by_id(db, goal_id)
+    if not existing_goal or existing_goal.user_id != cur_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    await goal.delete_goal(db, goal_id)
+
+async def update_goal_completion(db: AsyncSession, goal_id: int, is_complete: bool) -> GoalOut:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    existing_goal = await goal.get_goal(db, goal_id)
+    if not existing_goal or existing_goal.user_id != cur_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    updated_goal = await goal.update_goal(db, goal_id, fields={"is_complete": is_complete})
+    return GoalOut.from_orm(updated_goal)
+
+async def get_goal_by_id(db: AsyncSession, goal_id: int) -> GoalOut:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    existing_goal = await goal.get_goal_by_id(db, goal_id)
+    if not existing_goal or existing_goal.user_id != cur_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    return GoalOut.from_orm(existing_goal)
+
+
+async def get_goal_by_date(db: AsyncSession, target_date) -> list[GoalOut]:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    goals = await goal.get_goal_by_date(db, user_id=cur_user.id, target_date=target_date)
+    return [GoalOut.from_orm(g) for g in goals]
+
+
+async def filter_by_completion(db: AsyncSession, is_complete: bool , skip: int = 0, limit: int = 100) -> list[GoalOut]:
+    cur_user = current_user()
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    goals = await goal.filter_incomplete(db, user_id=cur_user.id, is_complete=is_complete, skip=skip, limit=limit)
+    return [GoalOut.from_orm(g) for g in goals]

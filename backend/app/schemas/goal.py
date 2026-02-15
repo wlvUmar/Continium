@@ -8,27 +8,35 @@ TODO:
 """
 
 from datetime import date
+from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
+
+class FrequencyEnum(str, Enum):
+    daily = "daily"
+    weekly = "weekly"
+    monthly = "monthly"
 
 class GoalCreate(BaseModel):
     title: str
     type: str
     start_date: date
     deadline: date
-    frequency: str  # e.g., "daily", "weekly", "monthly"
+    frequency: FrequencyEnum  # e.g., "daily", "weekly", "monthly"
     duration: Optional[int] = None  # e.g., number of days/weeks/months
+
 
 class GoalUpdate(BaseModel):
     title: Optional[str] = None
     type: Optional[str] = None
     start_date: Optional[date] = None
     deadline: Optional[date] = None
-    frequency: Optional[str] = None
+    frequency: Optional[FrequencyEnum] = None
     duration: Optional[int] = None
     is_complete: Optional[bool] = None
+
 
 class GoalOut(BaseModel):
     id: int
@@ -37,9 +45,7 @@ class GoalOut(BaseModel):
     type: str
     start_date: date
     deadline: date
-    frequency: str
+    frequency: FrequencyEnum = FrequencyEnum.daily
     duration: Optional[int] = None
     is_complete: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
