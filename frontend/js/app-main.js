@@ -4,6 +4,7 @@ import './route-protection.js';
 import './ui-utilities.js';
 import './router.js';
 import './auth-pages.js';
+import './layout.js';
 import router from './router.js';
 
 const appContainer = document.getElementById('app');
