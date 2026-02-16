@@ -5,17 +5,14 @@
 
 const API_BASE_URL = 'http://localhost:8000'; // TODO: Move to config
 
-// Helper to build full API URLs
 function buildUrl(endpoint) {
     return `${API_BASE_URL}${endpoint}`;
 }
 
-// Get auth token from storage
 function getAuthToken() {
     return localStorage.getItem('access_token');
 }
 
-// Main API request wrapper
 async function apiRequest(endpoint, options = {}) {
     const token = getAuthToken();
     
@@ -35,13 +32,11 @@ async function apiRequest(endpoint, options = {}) {
     try {
         const response = await fetch(buildUrl(endpoint), config);
         
-        // Handle different response types
         if (!response.ok) {
             const error = await response.json().catch(() => ({ message: 'Request failed' }));
             throw new Error(error.message || `HTTP ${response.status}`);
         }
 
-        // Some endpoints return no content
         if (response.status === 204) {
             return null;
         }
@@ -53,7 +48,6 @@ async function apiRequest(endpoint, options = {}) {
     }
 }
 
-// Convenience methods
 const api = {
     get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
     
@@ -70,5 +64,4 @@ const api = {
     delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' })
 };
 
-// Export for use in other files
 window.api = api;
