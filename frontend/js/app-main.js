@@ -1,7 +1,10 @@
-/**
- * Main Application - Updated with Auth Pages
- * Routes and initialization
- */
+import './api.js';
+import './auth.js';
+import './route-protection.js';
+import './ui-utilities.js';
+import './router.js';
+import './auth-pages.js';
+import router from './router.js';
 
 const appContainer = document.getElementById('app');
 
