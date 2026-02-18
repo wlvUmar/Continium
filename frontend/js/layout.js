@@ -21,27 +21,37 @@ function createSidebar(currentRoute = '/app') {
             
             <nav class="sidebar-nav">
                 <a href="#/app" class="nav-item ${currentRoute === '/app' ? 'active' : ''}" data-route="/app">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon">
+                        <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Dashboard" class="icon">
+                    </span>
                     <span class="nav-text">Dashboard</span>
                 </a>
                 
                 <a href="#/projects" class="nav-item ${currentRoute === '/projects' ? 'active' : ''}" data-route="/projects">
-                    <span class="nav-icon">📋</span>
+                    <span class="nav-icon">
+                        <img src="assets/icons/material-symbols-light_flag.svg" alt="Projects" class="icon">
+                    </span>
                     <span class="nav-text">Projects</span>
                 </a>
                 
                 <a href="#/add-goal" class="nav-item ${currentRoute === '/add-goal' ? 'active' : ''}" data-route="/add-goal">
-                    <span class="nav-icon">➕</span>
+                    <span class="nav-icon">
+                        <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
+                    </span>
                     <span class="nav-text">Add Goal</span>
                 </a>
                 
                 <a href="#/statistics" class="nav-item ${currentRoute === '/statistics' ? 'active' : ''}" data-route="/statistics">
-                    <span class="nav-icon">📈</span>
+                    <span class="nav-icon">
+                        <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
+                    </span>
                     <span class="nav-text">Statistics</span>
                 </a>
                 
                 <a href="#/completed" class="nav-item ${currentRoute === '/completed' ? 'active' : ''}" data-route="/completed">
-                    <span class="nav-icon">✅</span>
+                    <span class="nav-icon">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="Completed" class="icon">
+                    </span>
                     <span class="nav-text">Completed</span>
                 </a>
             </nav>
@@ -57,8 +67,8 @@ function createSidebar(currentRoute = '/app') {
                     </div>
                 </div>
                 <button onclick="handleLogout()" class="btn-logout">
-                    <span class="logout-icon">🚪</span>
-                    Logout
+                    <img src="assets/icons/exit_vector.svg" alt="Logout" class="logout-icon">
+                    <span>Logout</span>
                 </button>
             </div>
         </aside>
@@ -124,7 +134,9 @@ function renderDashboardContent() {
         <div class="dashboard-content">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">📊</div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/material-symbols-light_flag.svg" alt="Projects" class="stat-icon-img">
+                    </div>
                     <div class="stat-info">
                         <h3>Active Projects</h3>
                         <p class="stat-value">0</p>
@@ -132,7 +144,9 @@ function renderDashboardContent() {
                 </div>
                 
                 <div class="stat-card">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="stat-icon-img">
+                    </div>
                     <div class="stat-info">
                         <h3>Completed</h3>
                         <p class="stat-value">0</p>
@@ -140,7 +154,9 @@ function renderDashboardContent() {
                 </div>
                 
                 <div class="stat-card">
-                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/play_vector.svg" alt="Time" class="stat-icon-img">
+                    </div>
                     <div class="stat-info">
                         <h3>Total Time</h3>
                         <p class="stat-value">0h</p>
