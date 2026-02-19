@@ -9,11 +9,11 @@ TODO:
 
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
 from app.db.models.stats import Stats
 
-async def create_stat(db: AsyncSession, stat_data: dict) -> Stats:
-    new_stat = Stats(**stat_data)
+async def create_stat(db: AsyncSession, stat_data: dict, goal_id: int) -> Stats:
+    new_stat = Stats(**stat_data, goal_id=goal_id)
     db.add(new_stat)
     await db.commit()
     await db.refresh(new_stat)
@@ -37,3 +37,33 @@ async def aggregate_overall_for_user(db: AsyncSession, user_id: int, range_type:
     result = await db.execute(query)
     total_stats = result.scalar()
     return {"total_stats": total_stats}
+
+async def get_stat(db: AsyncSession, stat_id: int) -> Optional[Stats]:
+    query = select(Stats).where(Stats.id == stat_id)
+    result = await db.execute(query)
+    return result.scalar()
+
+async def update_stat(db: AsyncSession, stat_id: int, fields: dict) -> Optional[Stats]:
+    await db.execute(update(Stats).where(Stats.id == stat_id).values(**fields))
+    await db.commit()
+    return await get_stat(db, stat_id)
+
+async def get_stats_by_date(db: AsyncSession, user_id: int, target_date: str) -> List[Stats]:
+    query = select(Stats).join(Stats.goal).where(
+        Stats.goal.has(user_id=user_id),
+        func.date(Stats.occurred_at) == target_date
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+
+async def get_stats_by_type(db: AsyncSession, user_id: int, type: str) -> List[Stats]:
+    query = select(Stats).join(Stats.goal).where(
+        Stats.goal.has(user_id=user_id),
+        Stats.type == type
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+

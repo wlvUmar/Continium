@@ -10,7 +10,7 @@ TODO:
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class StatCreate(BaseModel):
@@ -23,9 +23,7 @@ class StatOut(BaseModel):
     goal_id: int
     timestamp: datetime.datetime
     duration: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OverallOut(BaseModel):
     total_stats: int  
