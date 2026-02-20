@@ -29,14 +29,14 @@ router = APIRouter(prefix="/stats", tags=["stats"])
 
 
 
-@router.post("/{goal_id}", response_model=StatOut)
+@router.post("/goal/{goal_id}", response_model=StatOut)
 async def add_stat(goal_id: int, stat_data: StatCreate, db=Depends(get_db), user = Depends(get_current_user)):
     return await stat_service.add_stat(db, goal_id, stat_data, user=user)
 
 
-@router.get("/{goal_id}", response_model=list[StatOut])
-async def get_goal_stats(goal_id: int, type: str, db=Depends(get_db), user = Depends(get_current_user)):
-    return await stat_service.get_goal_stats(db, goal_id, type, user=user)
+@router.get("/goal/{goal_id}", response_model=list[StatOut])
+async def get_goal_stats(goal_id: int, db=Depends(get_db), user = Depends(get_current_user)):
+    return await stat_service.get_goal_stats(db, goal_id=goal_id,  user=user)
 
 @router.get("/overall", response_model=OverallOut)
 async def get_overall_stats(db=Depends(get_db), user = Depends(get_current_user)):
@@ -47,11 +47,11 @@ async def get_stats_by_date_range(goal_id: int, start_date: str, end_date: str, 
     return await stat_service.get_stats_by_date_range(db, goal_id, start_date, end_date, user=user)
 
 
-@router.get("/{goal_id}/by-type", response_model=list[StatOut])
-async def get_stats_by_type(goal_id: int, type: str, db=Depends(get_db), user = Depends(get_current_user)):
-    return await stat_service.get_stats_by_type(db, goal_id, type, user=user)
+# @router.get("/{goal_id}/by-type", response_model=list[StatOut])
+# async def get_stats_by_type(goal_id: int, type: stat_service.Type, db=Depends(get_db), user = Depends(get_current_user)):
+#     return await stat_service.get_stats_by_type(db, goal_id, type, user=user)
 
-@router.get("/overall-by-type", response_model=OverallOut)
-async def get_overall_stats_by_type(type: str, db=Depends(get_db), user = Depends(get_current_user)):
-    return await stat_service.get_overall_stats_by_type(db, type, user=user)
+@router.get("/overall-by-type")
+async def get_overall_stats_by_type(type: stat_service.Type=stat_service.Type.one_time, db=Depends(get_db), user = Depends(get_current_user)):
+    return await stat_service.get_overall_stats_by_type(db, type=type, user=user)
 
