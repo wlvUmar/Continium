@@ -6,36 +6,37 @@ TODO:
 - GoalUpdate: same fields optional + is_complete
 - GoalOut: include id, user_id, is_complete, etc.
 """
-
 from datetime import date
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class FrequencyEnum(str, Enum):
+class GoalFrequency(str, Enum):
     daily = "daily"
     weekly = "weekly"
     monthly = "monthly"
 
+
 class GoalCreate(BaseModel):
-    title: str
-    type: str
+    title: str = Field(..., max_length=200)
+    type: str = Field(..., max_length=50)
     start_date: date
     deadline: date
-    frequency: FrequencyEnum  # e.g., "daily", "weekly", "monthly"
-    duration: Optional[int] = None  # e.g., number of days/weeks/months
+    frequency: GoalFrequency
+    duration_min: int = Field(..., ge=0) 
 
 
 class GoalUpdate(BaseModel):
-    title: Optional[str] = None
-    type: Optional[str] = None
+    title: Optional[str] = Field(None, max_length=200)
+    type: Optional[str] = Field(None, max_length=50)
     start_date: Optional[date] = None
     deadline: Optional[date] = None
-    frequency: Optional[FrequencyEnum] = None
-    duration: Optional[int] = None
+    frequency: Optional[GoalFrequency] = None
+    duration_min: Optional[int] = Field(None, ge=0)
     is_complete: Optional[bool] = None
+
 
 
 class GoalOut(BaseModel):
@@ -45,7 +46,8 @@ class GoalOut(BaseModel):
     type: str
     start_date: date
     deadline: date
-    frequency: FrequencyEnum = FrequencyEnum.daily
-    duration: Optional[int] = None
+    frequency: GoalFrequency
+    duration_min: int
     is_complete: bool
+
     model_config = ConfigDict(from_attributes=True)
