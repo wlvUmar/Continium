@@ -1,44 +1,84 @@
 /**
- * Main Layout Component
+ * Main Layout Component - Updated to match Figma design
  * Issue #56 - Sidebar layout, container system, navigation logic
  */
 
+const appContainer = document.getElementById('app');
+
 // ============================================
-// SIDEBAR COMPONENT - Issue #73
+// SIDEBAR COMPONENT - Figma Design
 // ============================================
 
-function createSidebar(currentRoute = '/app') {
+function createSidebar(currentRoute = '/projects') {
     const user = authService.getUser();
-    const userInitial = user && user.fullName 
-        ? user.fullName.charAt(0).toUpperCase() 
+    const userInitial = user && user.fullName
+        ? user.fullName.charAt(0).toUpperCase()
         : 'U';
-    
+
     return `
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1 class="sidebar-logo">Continuum</h1>
+                <div class="user-profile-header">
+                    <div class="user-avatar-header">
+                        ${userInitial}
+                    </div>
+                    <div class="user-info-header">
+                        <p class="username-header">${user ? user.fullName || 'Username' : 'Username'}</p>
+                    </div>
+                    <button class="notification-btn">
+                        <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">
+                    </button>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#/app" class="nav-item ${currentRoute === '/app' ? 'active' : ''}" data-route="/app">
-                    <span class="nav-icon">
-                        <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Dashboard" class="icon">
-                    </span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                
-                <a href="#/projects" class="nav-item ${currentRoute === '/projects' ? 'active' : ''}" data-route="/projects">
-                    <span class="nav-icon">
-                        <img src="assets/icons/material-symbols-light_flag.svg" alt="Projects" class="icon">
-                    </span>
-                    <span class="nav-text">Projects</span>
-                </a>
+                <div class="nav-section">
+                    <button class="nav-item nav-item-dropdown ${currentRoute === '/projects' || currentRoute.startsWith('/project/') ? 'active' : ''}" onclick="toggleProjectsDropdown()">
+                        <span class="nav-icon">
+                            <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
+                        </span>
+                        <span class="nav-text">Projects</span>
+                        <span class="dropdown-arrow" id="projectsArrow">▼</span>
+                    </button>
+                    <div class="projects-dropdown" id="projectsDropdown">
+                        <div class="project-item" onclick="router.navigate('/project/11')">
+                            <span class="project-name">Project 11</span>
+                            <span class="project-arrow">›</span>
+                            <div class="project-progress">
+                                <span class="project-progress-text">80h 00m 00s / 100h 00m 00s</span>
+                                <div class="project-progress-bar">
+                                    <div class="project-progress-fill" style="width: 80%; background: #4CAF50;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-item" onclick="router.navigate('/project/12')">
+                            <span class="project-name">Project 12</span>
+                            <span class="project-arrow">›</span>
+                            <div class="project-progress">
+                                <span class="project-progress-text">30h 00m 00s / 100h 00m 00s</span>
+                                <div class="project-progress-bar">
+                                    <div class="project-progress-fill" style="width: 30%; background: #9C27B0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-item" onclick="router.navigate('/project/13')">
+                            <span class="project-name">Project 13</span>
+                            <span class="project-arrow">›</span>
+                            <div class="project-progress">
+                                <span class="project-progress-text">60h 00m 00s / 100h 00m 00s</span>
+                                <div class="project-progress-bar">
+                                    <div class="project-progress-fill" style="width: 60%; background: #CDDC39;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <a href="#/add-goal" class="nav-item ${currentRoute === '/add-goal' ? 'active' : ''}" data-route="/add-goal">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
-                    <span class="nav-text">Add Goal</span>
+                    <span class="nav-text">Add goal</span>
                 </a>
                 
                 <a href="#/statistics" class="nav-item ${currentRoute === '/statistics' ? 'active' : ''}" data-route="/statistics">
@@ -50,37 +90,34 @@ function createSidebar(currentRoute = '/app') {
                 
                 <a href="#/completed" class="nav-item ${currentRoute === '/completed' ? 'active' : ''}" data-route="/completed">
                     <span class="nav-icon">
-                        <img src="assets/icons/rivet-icons_check-all.svg" alt="Completed" class="icon">
+                        <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
                     </span>
                     <span class="nav-text">Completed</span>
                 </a>
             </nav>
-            
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        ${userInitial}
-                    </div>
-                    <div class="user-details">
-                        <p class="user-name">${user ? user.fullName || user.email : 'User'}</p>
-                        <p class="user-email">${user ? user.email : ''}</p>
-                    </div>
-                </div>
-                <button onclick="handleLogout()" class="btn-logout">
-                    <img src="assets/icons/exit_vector.svg" alt="Logout" class="logout-icon">
-                    <span>Logout</span>
-                </button>
-            </div>
         </aside>
     `;
 }
 
+// Toggle projects dropdown
+window.toggleProjectsDropdown = function() {
+    const dropdown = document.getElementById('projectsDropdown');
+    const arrow = document.getElementById('projectsArrow');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+        arrow.textContent = '▲';
+    } else {
+        dropdown.style.display = 'none';
+        arrow.textContent = '▼';
+    }
+};
+
 
 // ============================================
-// LAYOUT CONTAINER - Issue #74
+// LAYOUT CONTAINER
 // ============================================
 
-function createLayout(content, currentRoute = '/app') {
+function createLayout(content, currentRoute = '/projects') {
     return `
         <div class="app-layout">
             ${createSidebar(currentRoute)}
@@ -93,25 +130,20 @@ function createLayout(content, currentRoute = '/app') {
 
 
 // ============================================
-// NAVIGATION LOGIC - Issue #75
+// NAVIGATION LOGIC
 // ============================================
 
 function attachNavigationListeners() {
-    // Add click listeners to all nav items
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-item:not(.nav-item-dropdown)').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const route = item.getAttribute('data-route');
-            
-            // Remove active class from all items
+
             document.querySelectorAll('.nav-item').forEach(navItem => {
                 navItem.classList.remove('active');
             });
-            
-            // Add active class to clicked item
+
             item.classList.add('active');
-            
-            // Navigate to route
             router.navigate(route);
         });
     });
@@ -122,48 +154,13 @@ function attachNavigationListeners() {
 // CONTENT RENDERERS
 // ============================================
 
-function renderDashboardContent() {
-    const user = authService.getUser();
-    
+function renderProjectsContent() {
     return `
         <div class="page-header">
-            <h1>Dashboard</h1>
-            <p class="page-subtitle">Welcome back, ${user ? user.fullName || 'User' : 'User'}!</p>
+            <h1>Projects</h1>
         </div>
         
-        <div class="dashboard-content">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <img src="assets/icons/material-symbols-light_flag.svg" alt="Projects" class="stat-icon-img">
-                    </div>
-                    <div class="stat-info">
-                        <h3>Active Projects</h3>
-                        <p class="stat-value">0</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="stat-icon-img">
-                    </div>
-                    <div class="stat-info">
-                        <h3>Completed</h3>
-                        <p class="stat-value">0</p>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <img src="assets/icons/play_vector.svg" alt="Time" class="stat-icon-img">
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Time</h3>
-                        <p class="stat-value">0h</p>
-                    </div>
-                </div>
-            </div>
-            
+        <div class="projects-content">
             <div class="empty-state">
                 <div class="empty-icon">📋</div>
                 <h2>No projects yet</h2>
@@ -171,25 +168,6 @@ function renderDashboardContent() {
                 <button onclick="router.navigate('/add-goal')" class="btn-primary">
                     Create Project
                 </button>
-            </div>
-        </div>
-    `;
-}
-
-function renderProjectsContent() {
-    return `
-        <div class="page-header">
-            <h1>Projects</h1>
-            <button onclick="router.navigate('/add-goal')" class="btn-primary">
-                ➕ New Project
-            </button>
-        </div>
-        
-        <div class="projects-content">
-            <div class="empty-state">
-                <div class="empty-icon">📁</div>
-                <h2>No projects</h2>
-                <p>Create your first project to get started</p>
             </div>
         </div>
     `;
@@ -215,14 +193,59 @@ function renderStatisticsContent() {
     return `
         <div class="page-header">
             <h1>Statistics</h1>
-            <p class="page-subtitle">Track your progress and achievements</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search projects..." class="search-input">
+            </div>
         </div>
         
         <div class="statistics-content">
-            <div class="empty-state">
-                <div class="empty-icon">📈</div>
-                <h2>No data yet</h2>
-                <p>Start tracking projects to see statistics</p>
+            <div class="stats-cards">
+                <div class="stat-card-large">
+                    <h3>Insights</h3>
+                    <div class="insights-tabs">
+                        <button class="tab-btn">Day</button>
+                        <button class="tab-btn active">Week</button>
+                        <button class="tab-btn">Month</button>
+                    </div>
+                    <p class="stat-date">Feb1 - Feb7, 2026</p>
+                    <div class="stat-summary">
+                        <div><span class="stat-label">Total</span><span class="stat-value">38h 20m</span></div>
+                        <div><span class="stat-label">Average</span><span class="stat-value">5h 37m</span></div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <p>Bar chart will be here</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card-large">
+                    <h3>Breakdown</h3>
+                    <div class="insights-tabs">
+                        <button class="tab-btn active">Day</button>
+                        <button class="tab-btn">Week</button>
+                        <button class="tab-btn">Month</button>
+                    </div>
+                    <p class="stat-date">Feb 2, 2026</p>
+                    <div class="circular-chart">
+                        <div class="circle-placeholder">3h 25m</div>
+                    </div>
+                    <div class="project-breakdown">
+                        <div class="breakdown-item">
+                            <span class="breakdown-color" style="background: #4CAF50;"></span>
+                            <span>Project 11</span>
+                            <div class="breakdown-bar" style="width: 80%; background: #4CAF50;"></div>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-color" style="background: #9C27B0;"></span>
+                            <span>Project 12</span>
+                            <div class="breakdown-bar" style="width: 50%; background: #9C27B0;"></div>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-color" style="background: #CDDC39;"></span>
+                            <span>Project 13</span>
+                            <div class="breakdown-bar" style="width: 30%; background: #CDDC39;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -232,14 +255,98 @@ function renderCompletedContent() {
     return `
         <div class="page-header">
             <h1>Completed</h1>
-            <p class="page-subtitle">Your finished projects and achievements</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search completed projects..." class="search-input">
+            </div>
         </div>
         
         <div class="completed-content">
-            <div class="empty-state">
-                <div class="empty-icon">🎉</div>
-                <h2>No completed projects</h2>
-                <p>Complete your first project to see it here</p>
+            <div class="completed-filters">
+                <button class="filter-btn active">All time</button>
+                <button class="filter-btn">Past week</button>
+                <button class="clear-all-btn">Clear all</button>
+            </div>
+            
+            <div class="completed-list">
+                <div class="completed-item">
+                    <div class="completed-icon" style="background: #00BCD4;">✓</div>
+                    <div class="completed-info">
+                        <h4>Project1</h4>
+                        <p>10h 00m / 10h 00m</p>
+                    </div>
+                    <span class="completed-score">10</span>
+                    <div class="completed-progress" style="background: #00BCD4; width: 100%;"></div>
+                    <button class="completed-check">✓</button>
+                </div>
+                
+                <div class="completed-item">
+                    <div class="completed-icon" style="background: #9C27B0;">✓</div>
+                    <div class="completed-info">
+                        <h4>Project2</h4>
+                        <p>40h 00m / 40h 00m</p>
+                    </div>
+                    <span class="completed-score">10</span>
+                    <div class="completed-progress" style="background: #9C27B0; width: 100%;"></div>
+                    <button class="completed-check">✓</button>
+                </div>
+                
+                <div class="completed-item">
+                    <div class="completed-icon" style="background: #CDDC39;">✓</div>
+                    <div class="completed-info">
+                        <h4>Project3</h4>
+                        <p>35h 00m / 35h 00m</p>
+                    </div>
+                    <span class="completed-score">10</span>
+                    <div class="completed-progress" style="background: #CDDC39; width: 100%;"></div>
+                    <button class="completed-check">✓</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderProjectDetailContent(projectId) {
+    return `
+        <div class="page-header">
+            <h1>Project ${projectId}</h1>
+        </div>
+        
+        <div class="project-detail-content">
+            <div class="project-tabs">
+                <button class="project-tab active">Today</button>
+                <button class="project-tab">Total</button>
+            </div>
+            
+            <div class="project-today-stats">
+                <p>0h 45m / 2h 30m</p>
+                <div class="progress-bar-large">
+                    <div class="progress-fill-large" style="width: 30%;"></div>
+                </div>
+                <span class="progress-percentage">30%</span>
+            </div>
+            
+            <div class="project-time-tabs">
+                <button class="time-tab active">Week</button>
+                <button class="time-tab">Month</button>
+                <button class="time-tab">3 Months</button>
+            </div>
+            
+            <div class="project-stats-summary">
+                <div><span>Total</span><span class="stat-large">13h 20m</span></div>
+                <div><span>Average</span><span class="stat-large">1h 54m</span></div>
+            </div>
+            
+            <div class="week-chart">
+                <p>Weekly bar chart will be here</p>
+                <div class="week-labels">
+                    <span>S</span><span>M</span><span>T</span><span>W</span><span>Th</span><span>F</span><span>S</span>
+                </div>
+            </div>
+            
+            <div class="play-button-container">
+                <button class="play-button">
+                    <img src="assets/icons/play_vector.svg" alt="Play">
+                </button>
             </div>
         </div>
     `;
@@ -249,12 +356,6 @@ function renderCompletedContent() {
 // ============================================
 // UPDATED RENDER FUNCTIONS
 // ============================================
-
-function renderDashboard() {
-    const content = renderDashboardContent();
-    appContainer.innerHTML = createLayout(content, '/app');
-    attachNavigationListeners();
-}
 
 function renderProjects() {
     const content = renderProjectsContent();
@@ -280,29 +381,28 @@ function renderCompleted() {
     attachNavigationListeners();
 }
 
-function renderGoal(goalId) {
-    const content = `
-        <div class="page-header">
-            <button onclick="router.navigate('/projects')" class="btn-back">
-                ← Back
-            </button>
-            <h1>Goal #${goalId}</h1>
-        </div>
-        
-        <div class="goal-content">
-            <p>Goal details will be displayed here</p>
-        </div>
-    `;
-    
-    appContainer.innerHTML = createLayout(content, '/projects');
+function renderProjectDetail(projectId) {
+    const content = renderProjectDetailContent(projectId);
+    appContainer.innerHTML = createLayout(content, `/project/${projectId}`);
     attachNavigationListeners();
 }
 
+// Redirect /app to /projects
+function renderDashboard() {
+    router.navigate('/projects');
+}
 
-// Export functions
+function renderGoal(goalId) {
+    renderProjectDetail(goalId);
+}
+
+
 window.renderDashboard = renderDashboard;
 window.renderProjects = renderProjects;
 window.renderAddGoal = renderAddGoal;
 window.renderStatistics = renderStatistics;
 window.renderCompleted = renderCompleted;
 window.renderGoal = renderGoal;
+window.renderProjectDetail = renderProjectDetail;
+window.createLayout = createLayout;
+window.attachNavigationListeners = attachNavigationListeners;

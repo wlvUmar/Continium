@@ -15,7 +15,7 @@ function renderLogin() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continuum</h1>
+                        <h1 class="logo-text">Continium</h1>
                         <p class="auth-subtitle">Login</p>
                     </div>
                     
@@ -99,7 +99,7 @@ function renderRegister() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continuum</h1>
+                        <h1 class="logo-text">Continium</h1>
                         <p class="auth-subtitle">Registration</p>
                     </div>
                     
@@ -220,7 +220,7 @@ function renderVerification() {
             <div class="auth-container">
                 <div class="auth-card verification-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continuum</h1>
+                        <h1 class="logo-text">Continium</h1>
                         <p class="auth-subtitle">Verification</p>
                     </div>
                     
@@ -258,7 +258,7 @@ async function verifyEmail(token, type) {
                 <div class="success-icon">✓</div>
                 <h3>Email Verified!</h3>
                 <p>Your account has been successfully verified.</p>
-                <a href="#/login" class="btn-primary">Continue to Login</a>
+                <a href="#/login" class="btn-primary">ue to Login</a>
             </div>
         `;
         
@@ -287,7 +287,7 @@ function renderForgotPassword() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continuum</h1>
+                        <h1 class="logo-text">Continium</h1>
                         <p class="auth-subtitle">Forgot Password</p>
                     </div>
                     
