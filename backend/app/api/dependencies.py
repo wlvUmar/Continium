@@ -13,4 +13,4 @@ TODO:
 - Optional: require_verified_user(), require_active_user()
 """
 
-from backend.app.db.session import get_db
+from app.db.session import get_db

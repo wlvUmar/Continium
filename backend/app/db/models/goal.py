@@ -7,7 +7,7 @@ from typing import List
 from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Integer, String, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.db.base import Base
+from app.db.base import Base
 
 
 class GoalFrequency(str, enum.Enum):
