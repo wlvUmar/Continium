@@ -45,7 +45,13 @@ backend/backend_init.py
 pyrightconfig.json
 
 
-#Other Side Files
-*/__pycache__/
-*.pyc
+
+
+
+
 backend/app.db
+||||||| 35ceacf
+=======
+*.db
+*.pyc
+>>>>>>> dev
