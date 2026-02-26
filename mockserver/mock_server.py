@@ -12,6 +12,7 @@ PORT = int(os.environ.get("MOCK_PORT", "8000"))
 TZ_TASHKENT = timezone(timedelta(hours=5))
 
 def load_db():
+
     with open(DB_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -108,10 +109,14 @@ class MockHandler(BaseHTTPRequestHandler):
         body = json_body(self)
 
         if path == "/auth/login":
+            user = next((u for u in db.get("users", []) if u.get("id") == 1), None)
+            safe = {k: v for k, v in user.items() if k != "password_hash"}
+
             return self._send(200, {
                 "access_token": "mock-access-token",
                 "refresh_token": "mock-refresh-token",
-                "token_type": "bearer"
+                "token_type": "bearer",
+                "user": safe
             })
 
         m = re.fullmatch(r"/(goals|stats)", path)

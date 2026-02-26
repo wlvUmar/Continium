@@ -7,6 +7,9 @@ import './auth-pages.js';
 import './layout.js';
 import './statistics.js';
 import './goals-list.js';
+import './goal-detail.js';
+import './completed-goals.js';
+import './goal-crud.js';
 
 const appContainer = document.getElementById('app');
 window.appContainer = appContainer;
@@ -42,12 +45,28 @@ router.on('/app', protectedRoute(() => {
     renderDashboard();
 }));
 
-router.on('/projects', () => {
+router.on('/add-goal', protectedRoute(() => {
+    // We use a modal for this now, so we redirect to projects and open modal
+    router.navigate('/projects');
+    setTimeout(() => {
+        if (window.showAddGoalModal) window.showAddGoalModal();
+    }, 100);
+}));
+
+router.on('/projects', protectedRoute(() => {
     renderProjects();
-});
+}));
 
 router.on('/goal/:id', protectedRoute((params) => {
-    renderGoal(params.id);
+    renderGoalDetail(params.id);
+}));
+
+router.on('/completed', protectedRoute(() => {
+    renderCompletedGoalsPage();
+}));
+
+router.on('/profile', protectedRoute(() => {
+    renderProfilePage();
 }));
 
 // Default route
@@ -58,3 +77,4 @@ router.on('/', () => {
         router.navigate('/login');
     }
 });
+router.init();

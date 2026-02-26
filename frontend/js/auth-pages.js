@@ -21,61 +21,70 @@ function renderLogin() {
                     
                     <form id="loginForm" class="auth-form">
                         <div class="form-group">
-                            <label for="loginEmail">Email</label>
-                            <input 
-                                type="email" 
-                                id="loginEmail" 
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">✉</span>
+                                <input 
+                                    type="email" 
+                                    id="loginEmail" 
+                                    class="form-input"
+                                    placeholder="Email"
+                                    required 
+                                />
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="loginPassword">Password</label>
-                            <input 
-                                type="password" 
-                                id="loginPassword" 
-                                class="form-input"
-                                placeholder="Enter your password"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">🔒</span>
+                                <input 
+                                    type="password" 
+                                    id="loginPassword" 
+                                    class="form-input"
+                                    placeholder="Password"
+                                    required 
+                                />
+                                <button type="button" class="input-icon-right" onclick="togglePassword('loginPassword', this)" aria-label="Toggle password">👁‍🗨</button>
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn-primary btn-full">
-                            Sign In
+                            Sign-in
                         </button>
                     </form>
-                    
-                    <div class="auth-footer">
-                        <a href="#/forgot-password" class="link-text">Forgot your password?</a>
+
+                    <div class="auth-divider">
+                        <span>Don't you have an account?</span>
+                    </div>
+                    <div class="auth-divider" style="margin-top:-4px;justify-content:center;">
+                        <span class="divider-arrow">▼</span>
                     </div>
                     
-                    <div class="auth-switch">
-                        <span>Don't have an account? </span>
-                        <a href="#/register" class="link-primary">Sign up</a>
+                    <a href="#/register" class="btn-outlined" style="margin-top:8px;">Sign-up</a>
+                    
+                    <div class="auth-footer">
+                        <a href="#/forgot-password" class="link-text">Forget your password?</a>
                     </div>
                 </div>
             </div>
         </div>
     `;
-    
+
     // Attach event listener
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
 }
 
 async function handleLogin(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-    
+
     // Clear any previous errors
     ErrorMessage.clear(document.querySelector('.auth-card'));
-    
+
     // Show loading
     Spinner.show('Logging in...');
-    
+
     try {
         await authService.login(email, password);
         Toast.success('Welcome back!');
@@ -105,93 +114,104 @@ function renderRegister() {
                     
                     <form id="registerForm" class="auth-form">
                         <div class="form-group">
-                            <label for="registerName">Full Name</label>
-                            <input 
-                                type="text" 
-                                id="registerName" 
-                                class="form-input"
-                                placeholder="Enter your full name"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">👤</span>
+                                <input 
+                                    type="text" 
+                                    id="registerName" 
+                                    class="form-input"
+                                    placeholder="Full name"
+                                    required 
+                                />
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="registerEmail">Email</label>
-                            <input 
-                                type="email" 
-                                id="registerEmail" 
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">✉</span>
+                                <input 
+                                    type="email" 
+                                    id="registerEmail" 
+                                    class="form-input"
+                                    placeholder="Email"
+                                    required 
+                                />
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="registerPassword">Password</label>
-                            <input 
-                                type="password" 
-                                id="registerPassword" 
-                                class="form-input"
-                                placeholder="Create a password"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">🔒</span>
+                                <input 
+                                    type="password" 
+                                    id="registerPassword" 
+                                    class="form-input"
+                                    placeholder="Password"
+                                    required 
+                                />
+                                <button type="button" class="input-icon-right" onclick="togglePassword('registerPassword', this)" aria-label="Toggle password">👁‍🗨</button>
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="registerConfirmPassword">Confirm Password</label>
-                            <input 
-                                type="password" 
-                                id="registerConfirmPassword" 
-                                class="form-input"
-                                placeholder="Confirm your password"
-                                required 
-                            />
+                            <div class="input-icon-wrapper">
+                                <span class="input-icon-left">✓</span>
+                                <input 
+                                    type="password" 
+                                    id="registerConfirmPassword" 
+                                    class="form-input"
+                                    placeholder="Confirm of  password"
+                                    required 
+                                />
+                                <button type="button" class="input-icon-right" onclick="togglePassword('registerConfirmPassword', this)" aria-label="Toggle password">👁</button>
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn-primary btn-full">
-                            Sign Up
+                            Sign-up
                         </button>
                     </form>
                     
-                    <div class="auth-switch">
-                        <span>Already have an account? </span>
-                        <a href="#/login" class="link-primary">Sign in</a>
+                    <div class="auth-divider">
+                        <span>OR</span>
                     </div>
+                    
+                    <a href="#/login" class="btn-outlined">Sign-in</a>
                 </div>
             </div>
         </div>
     `;
-    
+
     document.getElementById('registerForm').addEventListener('submit', handleRegister);
 }
 
 async function handleRegister(e) {
     e.preventDefault();
-    
+
     const name = document.getElementById('registerName').value;
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('registerConfirmPassword').value;
-    
+
     // Clear previous errors
     ErrorMessage.clear(document.querySelector('.auth-card'));
-    
+
     // Validate passwords match
     if (password !== confirmPassword) {
         Toast.error('Passwords do not match');
         ErrorMessage.render('Passwords do not match', document.querySelector('.auth-form'));
         return;
     }
-    
+
     // Validate password strength
     if (password.length < 6) {
         Toast.error('Password must be at least 6 characters');
         ErrorMessage.render('Password must be at least 6 characters', document.querySelector('.auth-form'));
         return;
     }
-    
+
     Spinner.show('Creating account...');
-    
+
     try {
         await authService.register(name, email, password, confirmPassword);
         Toast.success('Account created! Please verify your email.');
@@ -214,7 +234,7 @@ function renderVerification() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('verification-token');
     const type = urlParams.get('type');
-    
+
     appContainer.innerHTML = `
         <div class="auth-page">
             <div class="auth-container">
@@ -232,9 +252,26 @@ function renderVerification() {
                             </div>
                         ` : `
                             <div class="verification-message">
-                                <p>Please check your email for verification link.</p>
-                                <p class="text-muted">We've sent a verification email to your address.</p>
-                                <a href="#/login" class="btn-primary">Back to Login</a>
+                                <p class="text-muted">Please enter the 6-digit code sent to example@email.com</p>
+                                
+                                <div class="verification-code-inputs">
+                                    <input type="text" class="code-input" maxlength="1" />
+                                    <input type="text" class="code-input" maxlength="1" />
+                                    <input type="text" class="code-input" maxlength="1" />
+                                    <input type="text" class="code-input" maxlength="1" />
+                                    <input type="text" class="code-input" maxlength="1" />
+                                    <input type="text" class="code-input" maxlength="1" />
+                                </div>
+                                
+                                <p class="resend-timer">Resend code in <strong>00:59</strong></p>
+                                
+                                <button class="btn-primary btn-full" onclick="handleVerifyCode()">Verify</button>
+                                
+                                <p class="resend-text">Didn't receive the code?</p>
+                                <a href="javascript:void(0)" class="resend-link">Send a new code</a>
+                                
+                                <br/>
+                                <a href="#/login" class="back-to-signin">Back to Sign-in</a>
                             </div>
                         `}
                     </div>
@@ -242,7 +279,7 @@ function renderVerification() {
             </div>
         </div>
     `;
-    
+
     // If token exists, verify automatically
     if (token && type) {
         verifyEmail(token, type);
@@ -252,7 +289,7 @@ function renderVerification() {
 async function verifyEmail(token, type) {
     try {
         await authService.verifyEmail(token, type);
-        
+
         document.getElementById('verificationContent').innerHTML = `
             <div class="verification-success">
                 <div class="success-icon">✓</div>
@@ -261,7 +298,7 @@ async function verifyEmail(token, type) {
                 <a href="#/login" class="btn-primary">ue to Login</a>
             </div>
         `;
-        
+
         Toast.success('Email verified successfully!');
     } catch (err) {
         document.getElementById('verificationContent').innerHTML = `
@@ -272,7 +309,7 @@ async function verifyEmail(token, type) {
                 <a href="#/login" class="btn-primary">Back to Login</a>
             </div>
         `;
-        
+
         Toast.error('Verification failed');
     }
 }
@@ -319,23 +356,23 @@ function renderForgotPassword() {
             </div>
         </div>
     `;
-    
+
     document.getElementById('forgotPasswordForm').addEventListener('submit', handleForgotPassword);
 }
 
 async function handleForgotPassword(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('forgotEmail').value;
-    
+
     ErrorMessage.clear(document.querySelector('.auth-card'));
     Spinner.show('Sending reset link...');
-    
+
     try {
         await authService.changePassword(email);
-        
+
         Toast.success('Reset link sent! Check your email.');
-        
+
         // Show success message
         document.querySelector('.auth-form').innerHTML = `
             <div class="success-message">
@@ -352,6 +389,21 @@ async function handleForgotPassword(e) {
     }
 }
 
+
+// Toggle password visibility utility
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = '👁';
+        } else {
+            input.type = 'password';
+            btn.textContent = '👁‍🗨';
+        }
+    }
+}
+window.togglePassword = togglePassword;
 
 // Export functions
 window.renderLogin = renderLogin;

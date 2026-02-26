@@ -21,48 +21,35 @@
   ],
   "goals": [
     {
+      "title": "in progress",
+      "description": "",
+      "status": "active",
+      "progress": 0,
+      "timeSpent": 93,
       "id": 1,
-      "title": "Build frontend MVP",
-      "type": "project",
-      "start_date": "2026-02-01",
-      "deadline": "2026-03-01",
-      "frequency": "daily",
-      "duration_min": 60,
       "is_complete": false,
-      "user_id": 1
+      "type": null,
+      "start_date": null,
+      "deadline": null,
+      "frequency": null,
+      "duration_min": null,
+      "user_id": null
     },
     {
+      "title": "done",
+      "description": "",
+      "status": "completed",
+      "progress": 0,
+      "timeSpent": 0,
       "id": 2,
-      "title": "Gym training",
-      "type": "habit",
-      "start_date": "2026-02-01",
-      "deadline": "2026-06-01",
-      "frequency": "weekly",
-      "duration_min": 180,
       "is_complete": false,
-      "user_id": 1
-    },
-    {
-      "id": 3,
-      "title": "Read 12 books",
-      "type": "goal",
-      "start_date": "2026-01-01",
-      "deadline": "2026-12-31",
-      "frequency": "monthly",
-      "duration_min": 300,
-      "is_complete": true,
-      "user_id": 1
-    },
-    {
-      "id": 4,
-      "title": "Learn Japanese N4",
-      "type": "project",
-      "start_date": "2026-02-10",
-      "deadline": "2026-05-30",
-      "frequency": "daily",
-      "duration_min": 45,
-      "is_complete": false,
-      "user_id": 2
+      "type": null,
+      "start_date": null,
+      "deadline": null,
+      "frequency": null,
+      "duration_min": null,
+      "user_id": null,
+      "completed": true
     }
   ],
   "stats": [

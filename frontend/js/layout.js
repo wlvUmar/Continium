@@ -18,7 +18,7 @@ function createSidebar(currentRoute = '/projects') {
     return `
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="user-profile-header">
+                <div class="user-profile-header ${currentRoute === '/profile' ? 'active' : ''}" onclick="router.navigate('/profile')">
                     <div class="user-avatar-header">
                         ${userInitial}
                     </div>
@@ -26,48 +26,65 @@ function createSidebar(currentRoute = '/projects') {
                         <p class="username-header">${user ? user.fullName || 'Username' : 'Username'}</p>
                     </div>
                     <button class="notification-btn">
-                        <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">
+                        <span class="notification-bell">🔔</span>
                     </button>
                 </div>
             </div>
             
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <button class="nav-item nav-item-dropdown ${currentRoute === '/projects' || currentRoute.startsWith('/project/') ? 'active' : ''}" onclick="toggleProjectsDropdown()">
-                        <span class="nav-icon">
-                            <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
-                        </span>
-                        <span class="nav-text">Projects</span>
-                        <span class="dropdown-arrow" id="projectsArrow">▼</span>
-                    </button>
+                    <div class="nav-item nav-item-dropdown ${currentRoute === '/projects' || currentRoute.startsWith('/project/') ? 'active' : ''}" style="display: flex; align-items: center; justify-content: space-between; cursor: default;">
+                        <div class="nav-projects-main" onclick="router.navigate('/projects')" style="display: flex; align-items: center; gap: 14px; flex: 1; cursor: pointer;">
+                            <span class="nav-icon">
+                                <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22currentColor%22><path d=%22M3 3h8v8H3zm0 10h8v8H3zm10-10h8v8h-8zm0 10h8v8h-8z%22/></svg>'">
+                            </span>
+                            <span class="nav-text">Projects</span>
+                        </div>
+                        <span class="dropdown-chevron-circle" id="projectsArrow" onclick="toggleProjectsDropdown()" style="cursor: pointer;">▼</span>
+                    </div>
                     <div class="projects-dropdown" id="projectsDropdown">
                         <div class="project-item" onclick="router.navigate('/project/11')">
-                            <span class="project-name">Project 11</span>
-                            <span class="project-arrow">›</span>
-                            <div class="project-progress">
-                                <span class="project-progress-text">80h 00m 00s / 100h 00m 00s</span>
-                                <div class="project-progress-bar">
-                                    <div class="project-progress-fill" style="width: 80%; background: #4CAF50;"></div>
+                            <div class="project-play-icon">▶</div>
+                            <div class="project-item-info">
+                                <div class="project-item-header">
+                                    <span class="project-name">Project 11</span>
+                                    <span class="project-arrow">›</span>
+                                </div>
+                                <div class="project-item-progress">
+                                    <span class="project-time-text">80h 00m / 100h 00m</span>
+                                    <div class="project-mini-progress-bar">
+                                        <div class="project-mini-progress-fill" style="width: 80%; background: #4CAF50;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="project-item" onclick="router.navigate('/project/12')">
-                            <span class="project-name">Project 12</span>
-                            <span class="project-arrow">›</span>
-                            <div class="project-progress">
-                                <span class="project-progress-text">30h 00m 00s / 100h 00m 00s</span>
-                                <div class="project-progress-bar">
-                                    <div class="project-progress-fill" style="width: 30%; background: #9C27B0;"></div>
+                            <div class="project-play-icon">▶</div>
+                            <div class="project-item-info">
+                                <div class="project-item-header">
+                                    <span class="project-name">Project 12</span>
+                                    <span class="project-arrow">›</span>
+                                </div>
+                                <div class="project-item-progress">
+                                    <span class="project-time-text">30h 00m / 100h 00m</span>
+                                    <div class="project-mini-progress-bar">
+                                        <div class="project-mini-progress-fill" style="width: 30%; background: #9C27B0;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="project-item" onclick="router.navigate('/project/13')">
-                            <span class="project-name">Project 13</span>
-                            <span class="project-arrow">›</span>
-                            <div class="project-progress">
-                                <span class="project-progress-text">60h 00m 00s / 100h 00m 00s</span>
-                                <div class="project-progress-bar">
-                                    <div class="project-progress-fill" style="width: 60%; background: #CDDC39;"></div>
+                            <div class="project-play-icon">▶</div>
+                            <div class="project-item-info">
+                                <div class="project-item-header">
+                                    <span class="project-name">Project 13</span>
+                                    <span class="project-arrow">›</span>
+                                </div>
+                                <div class="project-item-progress">
+                                    <span class="project-time-text">60h 00m / 100h 00m</span>
+                                    <div class="project-mini-progress-bar">
+                                        <div class="project-mini-progress-fill" style="width: 60%; background: #CDDC39;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -75,23 +92,17 @@ function createSidebar(currentRoute = '/projects') {
                 </div>
                 
                 <a href="#/add-goal" class="nav-item ${currentRoute === '/add-goal' ? 'active' : ''}" data-route="/add-goal">
-                    <span class="nav-icon">
-                        <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
-                    </span>
+                    <span class="nav-icon">+</span>
                     <span class="nav-text">Add goal</span>
                 </a>
                 
                 <a href="#/statistics" class="nav-item ${currentRoute === '/statistics' ? 'active' : ''}" data-route="/statistics">
-                    <span class="nav-icon">
-                        <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
-                    </span>
+                    <span class="nav-icon">📊</span>
                     <span class="nav-text">Statistics</span>
                 </a>
                 
                 <a href="#/completed" class="nav-item ${currentRoute === '/completed' ? 'active' : ''}" data-route="/completed">
-                    <span class="nav-icon">
-                        <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
-                    </span>
+                    <span class="nav-icon">✓</span>
                     <span class="nav-text">Completed</span>
                 </a>
             </nav>
@@ -100,7 +111,7 @@ function createSidebar(currentRoute = '/projects') {
 }
 
 // Toggle projects dropdown
-window.toggleProjectsDropdown = function() {
+window.toggleProjectsDropdown = function () {
     const dropdown = document.getElementById('projectsDropdown');
     const arrow = document.getElementById('projectsArrow');
     if (dropdown.style.display === 'none' || dropdown.style.display === '') {
@@ -397,6 +408,86 @@ function renderGoal(goalId) {
 }
 
 
+function renderProfilePage() {
+    const user = authService.getUser() || { fullName: 'Username', email: 'example@email.com' };
+    const userInitial = user.fullName.charAt(0).toUpperCase();
+
+    const content = `
+        <div class="profile-page">
+            <div class="profile-card-white">
+                <div class="profile-header-inline">
+                    <h1>Profile</h1>
+                    <button class="profile-save-btn">Save</button>
+                </div>
+
+                <div class="user-summary-card">
+                    <div class="profile-avatar-large">${userInitial}</div>
+                    <div class="user-summary-info">
+                        <h2>${user.fullName}</h2>
+                        <p>${user.email}</p>
+                    </div>
+                </div>
+
+                <div class="profile-section-card">
+                    <div class="section-title-inline">
+                        <img src="assets/icons/user_icon.svg" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2%22/><circle cx=%2212%22 cy=%227%22 r=%224%22/></svg>'">
+                        User information
+                    </div>
+
+                    <div class="profile-field-row">
+                        <span class="field-label">Full Name</span>
+                        <div class="field-input-wrapper">
+                            <input type="text" class="profile-input" value="${user.fullName}">
+                            <span class="edit-icon-profile">✎</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-field-row">
+                        <span class="field-label">Email</span>
+                        <div class="field-input-wrapper">
+                            <input type="email" class="profile-input" value="${user.email}">
+                            <span class="edit-icon-profile">✎</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-group">
+                        <h3>Theme</h3>
+                        <div class="profile-segmented-control">
+                            <button class="profile-segment-btn active">
+                                <span class="theme-icon">☀️</span> Light mode
+                            </button>
+                            <button class="profile-segment-btn">
+                                <span class="theme-icon">🌙</span> Dark mode
+                            </button>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3>Notifications</h3>
+                        <div class="profile-segmented-control">
+                            <button class="profile-segment-btn active">
+                                <span class="notif-icon">🔔</span> Notification on
+                            </button>
+                            <button class="profile-segment-btn">
+                                <span class="notif-icon">🔕</span> Notification off
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="change-password-container">
+                    <button class="btn-change-password">Change password</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    appContainer.innerHTML = createLayout(content, '/profile');
+    attachNavigationListeners();
+}
+
+window.renderProfilePage = renderProfilePage;
 window.renderDashboard = renderDashboard;
 window.renderProjects = renderProjects;
 window.renderAddGoal = renderAddGoal;

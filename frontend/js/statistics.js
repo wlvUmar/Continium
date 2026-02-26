@@ -97,7 +97,7 @@ function renderBarChart(canvasId, data, labels) {
         const y = padding + chartHeight - (chartHeight / 4) * i;
         const value = (maxValue / 4) * i;
         ctx.fillText(formatHours(value), padding - 10, y + 4);
-        
+
         // Grid line
         ctx.strokeStyle = '#F0F0F0';
         ctx.beginPath();
@@ -173,17 +173,27 @@ function formatTime(seconds) {
 
 function createStatisticsPageHTML() {
     return `
-        <div class="page-header">
-            <h1>Statistics</h1>
-            <div class="search-bar">
-                <input type="text" placeholder="Search projects..." class="search-input">
+        <div class="statistics-page">
+            <div class="page-header">
+                <div>
+                    <h1>Statistics</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle">
+                        <span class="sun">☀️</span>
+                        <span class="moon">🌙</span>
+                    </button>
+                    <button class="notification-btn">
+                        <span class="notification-bell">🔔</span>
+                    </button>
+                </div>
             </div>
-        </div>
-        
-        <div id="statisticsContainer" class="statistics-content">
-            <div class="loading-state">
-                <div class="spinner-large"></div>
-                <p>Loading statistics...</p>
+            
+            <div id="statisticsContainer" class="statistics-content">
+                <div class="loading-state">
+                    <div class="spinner-large"></div>
+                    <p>Loading statistics...</p>
+                </div>
             </div>
         </div>
     `;
@@ -191,44 +201,58 @@ function createStatisticsPageHTML() {
 
 function createStatisticsContentHTML(insightsData, breakdownData) {
     return `
-        <div class="stats-cards">
+        <div class="stats-grid">
             <!-- Insights Card -->
-            <div class="stat-card-large">
-                <h3>Insights</h3>
-                <div class="insights-tabs">
-                    <button class="tab-btn" onclick="changeInsightsPeriod('day')">Day</button>
-                    <button class="tab-btn active" onclick="changeInsightsPeriod('week')">Week</button>
-                    <button class="tab-btn" onclick="changeInsightsPeriod('month')">Month</button>
+            <div class="stat-card-white">
+                <h3 class="card-title">Insights</h3>
+                <div class="segmented-control">
+                    <button class="segment-btn ${currentInsightsPeriod === 'week' ? 'active' : ''}" onclick="changeInsightsPeriod('week')">Week</button>
+                    <button class="segment-btn ${currentInsightsPeriod === 'month' ? 'active' : ''}" onclick="changeInsightsPeriod('month')">4 Weeks</button>
+                    <button class="segment-btn" onclick="changeInsightsPeriod('8weeks')">8 Weeks</button>
                 </div>
-                <p class="stat-date" id="insightsDateRange">${insightsData.dateRange || 'Feb1 - Feb7, 2026'}</p>
-                <div class="stat-summary">
-                    <div>
-                        <span class="stat-label">Total</span>
-                        <span class="stat-value" id="insightsTotal">${formatTime(insightsData.total || 0)}</span>
+                
+                <div class="stat-date-nav">
+                    <button class="nav-arrow">‹</button>
+                    <span class="stat-date-text" id="insightsDateRange">${insightsData.dateRange || 'Feb1 - Feb7, 2026'}</span>
+                    <button class="nav-arrow">›</button>
+                </div>
+
+                <div class="stat-summary-inline">
+                    <div class="summary-item">
+                        <span class="summary-label">Total</span>
+                        <span class="summary-value" id="insightsTotal">${formatTime(insightsData.total || 0)}</span>
                     </div>
-                    <div>
-                        <span class="stat-label">Average</span>
-                        <span class="stat-value" id="insightsAverage">${formatTime(insightsData.average || 0)}</span>
+                    <div class="summary-item">
+                        <span class="summary-label">Average</span>
+                        <span class="summary-value" id="insightsAverage">${formatTime(insightsData.average || 0)}</span>
                     </div>
                 </div>
+                
                 <div class="chart-container">
-                    <canvas id="insightsBarChart" style="width: 100%; height: 200px;"></canvas>
+                    <canvas id="insightsBarChart" style="width: 100%; height: 250px;"></canvas>
                 </div>
             </div>
             
             <!-- Breakdown Card -->
-            <div class="stat-card-large">
-                <h3>Breakdown</h3>
-                <div class="insights-tabs">
-                    <button class="tab-btn active" onclick="changeBreakdownPeriod('day')">Day</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('week')">Week</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('month')">Month</button>
+            <div class="stat-card-white">
+                <h3 class="card-title">Breakdown</h3>
+                <div class="segmented-control">
+                    <button class="segment-btn ${currentBreakdownPeriod === 'day' ? 'active' : ''}" onclick="changeBreakdownPeriod('day')">Day</button>
+                    <button class="segment-btn ${currentBreakdownPeriod === 'week' ? 'active' : ''}" onclick="changeBreakdownPeriod('week')">Week</button>
+                    <button class="segment-btn ${currentBreakdownPeriod === 'month' ? 'active' : ''}" onclick="changeBreakdownPeriod('month')">Month</button>
                 </div>
-                <p class="stat-date" id="breakdownDate">${breakdownData.date || 'Feb 2, 2026'}</p>
-                <div class="circular-chart">
-                    <canvas id="breakdownCircularChart" style="width: 200px; height: 200px;"></canvas>
+                
+                <div class="stat-date-nav">
+                    <button class="nav-arrow">‹</button>
+                    <span class="stat-date-text" id="breakdownDate">${breakdownData.date || 'Feb 2, 2026'}</span>
+                    <button class="nav-arrow">›</button>
                 </div>
-                <div class="project-breakdown" id="projectBreakdown">
+
+                <div class="circular-chart-container">
+                    <canvas id="breakdownCircularChart" style="width: 220px; height: 220px;"></canvas>
+                </div>
+                
+                <div class="project-breakdown-list" id="projectBreakdown">
                     ${renderProjectBreakdown(breakdownData.projects || [])}
                 </div>
             </div>
@@ -242,7 +266,7 @@ function renderProjectBreakdown(projects) {
     }
 
     const colors = ['#4CAF50', '#9C27B0', '#CDDC39', '#FF9800', '#2196F3'];
-    
+
     return projects.map((project, index) => {
         const color = colors[index % colors.length];
         return `
@@ -297,7 +321,7 @@ async function loadStatisticsPage() {
         // Render charts after DOM update
         setTimeout(() => {
             renderBarChart('insightsBarChart', insightsData.chartData, insightsData.labels);
-            
+
             const totalTime = breakdownData.total;
             const percentage = 30; // Calculate based on goal
             renderCircularChart('breakdownCircularChart', percentage, formatTime(totalTime));
@@ -318,9 +342,9 @@ async function loadStatisticsPage() {
 }
 
 // Change periods
-window.changeInsightsPeriod = async function(period) {
+window.changeInsightsPeriod = async function (period) {
     currentInsightsPeriod = period;
-    
+
     // Update active tab
     document.querySelectorAll('.stat-card-large:first-child .tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -328,13 +352,13 @@ window.changeInsightsPeriod = async function(period) {
             btn.classList.add('active');
         }
     });
-    
+
     await loadStatisticsPage();
 };
 
-window.changeBreakdownPeriod = async function(period) {
+window.changeBreakdownPeriod = async function (period) {
     currentBreakdownPeriod = period;
-    
+
     // Update active tab
     document.querySelectorAll('.stat-card-large:last-child .tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -342,7 +366,7 @@ window.changeBreakdownPeriod = async function(period) {
             btn.classList.add('active');
         }
     });
-    
+
     await loadStatisticsPage();
 };
 
@@ -355,7 +379,7 @@ function renderStatisticsPage() {
     const content = createStatisticsPageHTML();
     appContainer.innerHTML = createLayout(content, '/statistics');
     attachNavigationListeners();
-    
+
     // Load statistics data
     loadStatisticsPage();
 }

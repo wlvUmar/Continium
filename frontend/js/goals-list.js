@@ -70,40 +70,44 @@ const goalsService = {
 
 function createGoalCard(goal) {
     const progress = goal.progress || 0;
-    const status = goal.status || 'active';
-    
+    const timeSpent = formatTime(goal.timeSpent || 0);
+    const totalTime = formatTime(goal.totalTime || goal.timeSpent || 0);
+    const colors = ['#FFA500', '#CDDC39', '#FF1493', '#00FF00', '#9C27B0', '#FFD700'];
+    const colorIndex = goal.title ? goal.title.charCodeAt(0) % colors.length : 0;
+    const barColor = colors[colorIndex];
+
+    const gid = goal.id || goal._id;
+
     return `
-        <div class="goal-card" onclick="router.navigate('/goal/${goal.id}')">
-            <div class="goal-header">
-                <h3 class="goal-title">${goal.title || 'Untitled Goal'}</h3>
-                <span class="goal-status status-${status}">${status}</span>
+        <div class="goal-card" onclick="router.navigate('/goal/${gid}')">
+            <div class="goal-play-icon">
+                <img src="assets/icons/play_vector.svg" alt="Play" style="width: 24px; height: 24px; filter: brightness(0) invert(1);">
             </div>
-            
-            <p class="goal-description">${goal.description || 'No description'}</p>
-            
-            <div class="goal-progress">
-                <div class="progress-info">
-                    <span>Progress</span>
-                    <span class="progress-percentage">${progress}%</span>
+            <div class="goal-info">
+                <div class="goal-header-row">
+                    <h3 class="goal-title">${goal.title || 'Untitled Goal'}</h3>
+                    <div class="goal-actions-mini">
+                        <button class="btn-icon-mini edit-btn" onclick="event.stopPropagation(); window.showEditGoalModal('${gid}', '${(goal.title || '').replace(/'/g, "\\'")}', '${(goal.description || '').replace(/'/g, "\\'")}')" title="Edit Goal">
+                            <span style="font-size: 18px;">✏️</span>
+                        </button>
+                        <button class="btn-icon-mini complete-btn" onclick="event.stopPropagation(); window.markGoalAsCompleted('${gid}')" title="Complete Goal">
+                            <span style="font-size: 18px; color: #4CAF50;">✅</span>
+                        </button>
+                        <button class="btn-icon-mini delete-btn" onclick="event.stopPropagation(); window.promptDeleteGoal('${gid}')" title="Delete Goal">
+                            <span style="font-size: 18px;">🗑️</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
+                <p class="goal-description">${timeSpent} / ${totalTime}</p>
+                <div class="goal-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%; background: ${barColor};"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="goal-meta">
-                ${goal.deadline ? `
-                    <div class="goal-deadline">
-                        <span class="meta-icon">📅</span>
-                        <span>${new Date(goal.deadline).toLocaleDateString()}</span>
-                    </div>
-                ` : ''}
-                ${goal.timeSpent ? `
-                    <div class="goal-time">
-                        <span class="meta-icon">⏱️</span>
-                        <span>${formatTime(goal.timeSpent)}</span>
-                    </div>
-                ` : ''}
+            <span class="progress-percentage">${progress}%</span>
+            <div class="goal-arrow">
+                <img src="assets/icons/next_vector.svg" alt="Go" style="width: 20px; height: 20px; opacity: 0.5;">
             </div>
         </div>
     `;
@@ -113,7 +117,7 @@ function formatTime(seconds) {
     if (!seconds) return '0h';
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (hours > 0) {
         return `${hours}h ${minutes}m`;
     }
@@ -127,7 +131,7 @@ function createGoalsList(goals) {
                 <div class="empty-icon">📋</div>
                 <h2>No goals yet</h2>
                 <p>Start by creating your first goal to track progress</p>
-                <button onclick="router.navigate('/add-goal')" class="btn-primary">
+                <button onclick="window.showAddGoalModal()" class="btn-primary">
                     ➕ Create Goal
                 </button>
             </div>
@@ -175,7 +179,7 @@ async function renderGoalsListPage() {
                 <h1>Goals</h1>
                 <p class="page-subtitle">Track and manage your goals</p>
             </div>
-            <button onclick="router.navigate('/add-goal')" class="btn-primary">
+            <button onclick="window.showAddGoalModal()" class="btn-primary">
                 ➕ New Goal
             </button>
         </div>
@@ -184,14 +188,14 @@ async function renderGoalsListPage() {
             ${createLoadingState()}
         </div>
     `;
-    
+
     appContainer.innerHTML = createLayout(content, '/projects');
     attachNavigationListeners();
-    
+
     // Fetch goals
     try {
         const goals = await goalsService.fetchGoals();
-        
+
         // Update container with goals
         const goalsContainer = document.getElementById('goalsContainer');
         if (goalsContainer) {
@@ -213,41 +217,67 @@ async function renderGoalsListPage() {
 
 async function renderProjectsPageWithGoals() {
     const content = `
-        <div class="page-header">
-            <div>
-                <h1>Projects</h1>
-                <p class="page-subtitle">All your active projects</p>
+        <div class="projects-page">
+            <div class="page-header">
+                <div>
+                    <h1 style="font-size: 32px; font-weight: 800; color: #101828;">Projects</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="theme-toggle">
+                        <span class="sun active" style="background: #00BCD4; color: white;">☀️</span>
+                        <span class="moon" style="color: #667085;">🌙</span>
+                    </div>
+                    <button onclick="window.showAddGoalModal()" class="btn-primary" style="padding: 10px 20px; border-radius: 12px; font-weight: 700;">
+                        ➕ New Project
+                    </button>
+                </div>
             </div>
-            <button onclick="router.navigate('/add-goal')" class="btn-primary">
-                ➕ New Project
-            </button>
-        </div>
-        
-        <div id="projectsContainer">
-            ${createLoadingState()}
+            
+            <div class="search-container">
+                <input type="text" id="projectSearchInput" placeholder="Search projects..." class="search-input" oninput="window.filterProjects()">
+            </div>
+            
+            <div id="projectsContainer" class="goals-grid-container">
+                ${createLoadingState()}
+            </div>
         </div>
     `;
-    
+
     appContainer.innerHTML = createLayout(content, '/projects');
     attachNavigationListeners();
-    
+
+    let allActiveGoals = [];
+
+    // Helper for filtering
+    window.filterProjects = () => {
+        const query = document.getElementById('projectSearchInput').value.toLowerCase();
+        const filtered = allActiveGoals.filter(g =>
+            g.title.toLowerCase().includes(query) ||
+            (g.description && g.description.toLowerCase().includes(query))
+        );
+        const projectsContainer = document.getElementById('projectsContainer');
+        if (projectsContainer) {
+            projectsContainer.innerHTML = createGoalsList(filtered);
+        }
+    };
+
     // Fetch goals (projects)
     try {
         const goals = await goalsService.fetchGoals();
-        
+
         // Filter active goals
-        const activeGoals = goals.filter(g => g.status !== 'completed');
-        
+        allActiveGoals = goals.filter(g => g.status !== 'completed');
+
         const projectsContainer = document.getElementById('projectsContainer');
         if (projectsContainer) {
-            projectsContainer.innerHTML = createGoalsList(activeGoals);
+            projectsContainer.innerHTML = createGoalsList(allActiveGoals);
         }
     } catch (err) {
         const projectsContainer = document.getElementById('projectsContainer');
         if (projectsContainer) {
             projectsContainer.innerHTML = createErrorState(err.message);
         }
-        Toast.error('Failed to load projects');
+        if (window.Toast) window.Toast.error('Failed to load projects');
     }
 }
 

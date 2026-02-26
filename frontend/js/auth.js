@@ -7,17 +7,17 @@ const authService = {
     // Login user
     async login(email, password) {
         const response = await api.post('/auth/login', { email, password });
-        
+
         if (response.access_token) {
             localStorage.setItem('access_token', response.access_token);
             localStorage.setItem('refresh_token', response.refresh_token);
-            
+
             // Store user data if provided
             if (response.user) {
                 localStorage.setItem('user', JSON.stringify(response.user));
             }
         }
-        
+
         return response;
     },
 
@@ -29,7 +29,7 @@ const authService = {
             password,
             re_password: rePassword
         });
-        
+
         // Auto-login after registration
         if (response.access_token) {
             localStorage.setItem('access_token', response.access_token);
@@ -38,7 +38,7 @@ const authService = {
                 localStorage.setItem('user', JSON.stringify(response.user));
             }
         }
-        
+
         return response;
     },
 
@@ -49,8 +49,10 @@ const authService = {
                 access_token: localStorage.getItem('access_token'),
                 refresh_token: localStorage.getItem('refresh_token')
             });
+        } catch (error) {
+            console.warn('Logout API failed, forcing local logout:', error);
         } finally {
-            // Clear storage even if request fails
+            // Clear storage even if request fails, but only auth-related keys
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('user');

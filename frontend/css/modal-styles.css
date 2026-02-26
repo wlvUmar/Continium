@@ -1,0 +1,335 @@
+/* ============================================
+   MODAL STYLES - Figma Matching (Add Goal)
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-card-figma {
+    background: #F8F9FB;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 28px;
+    padding: 48px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.figma-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.figma-modal-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #344054;
+    margin: 0;
+}
+
+.figma-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #344054;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.figma-close-btn:hover {
+    transform: scale(1.1);
+}
+
+.figma-close-btn img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) saturate(100%) invert(100%);
+}
+
+/* Form Elements */
+.figma-form-group {
+    margin-bottom: 24px;
+}
+
+.figma-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #667085;
+    margin-bottom: 12px;
+}
+
+.figma-input {
+    width: 100%;
+    background: white;
+    border: 1.5px solid #EAECF0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    font-size: 16px;
+    color: #344054;
+    box-sizing: border-box;
+}
+
+.figma-input:focus {
+    border-color: #00BCD4;
+    outline: none;
+}
+
+/* Frequency Toggle */
+.frequency-container {
+    margin-bottom: 32px;
+}
+
+.figma-segmented-control {
+    display: flex;
+    background: white;
+    border: 1.5px solid #00BCD4;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.figma-segment-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    background: white;
+    color: #00BCD4;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.figma-segment-btn.active {
+    background: #00BCD4;
+    color: white;
+}
+
+.segment-icon {
+    font-size: 18px;
+}
+
+/* Card Inset */
+.figma-card-inset {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-bottom: 40px;
+}
+
+.figma-form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.figma-form-row .figma-form-group {
+    flex: 1;
+}
+
+/* Select Styling */
+.figma-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.figma-select {
+    width: 100%;
+    background: white;
+    border: 1.5px solid #00BCD4;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #344054;
+    appearance: none;
+    cursor: pointer;
+}
+
+.figma-select-wrapper::after {
+    content: "▼";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00BCD4;
+    pointer-events: none;
+    font-size: 12px;
+}
+
+/* Actions */
+.figma-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+.figma-btn-outline {
+    min-width: 120px;
+    padding: 14px 32px;
+    border-radius: 16px;
+    border: 1.5px solid #EAECF0;
+    background: white;
+    color: #667085;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.figma-btn-outline:hover {
+    border-color: #344054;
+}
+
+.figma-btn-cyan {
+    min-width: 120px;
+    padding: 14px 32px;
+    border-radius: 16px;
+    border: none;
+    background: #00BCD4;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 188, 212, 0.4);
+    transition: transform 0.2s;
+}
+
+.figma-btn-cyan:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom Delete Modal */
+.modal-card-delete {
+    background: white;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 24px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.delete-icon-large {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.modal-card-delete h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1A1A1A;
+    margin: 0 0 12px 0;
+}
+
+.modal-card-delete p {
+    color: #667085;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 32px 0;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-delete-confirm {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: #FF5252;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 82, 82, 0.3);
+}
+
+.btn-delete-cancel {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1.5px solid #EAECF0;
+    background: white;
+    color: #344054;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Legacy Support for Edit Modal (if not yet converted) */
+.modal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
