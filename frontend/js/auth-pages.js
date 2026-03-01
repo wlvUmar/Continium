@@ -258,7 +258,7 @@ async function verifyEmail(token, type) {
                 <div class="success-icon">✓</div>
                 <h3>Email Verified!</h3>
                 <p>Your account has been successfully verified.</p>
-                <a href="#/login" class="btn-primary">ue to Login</a>
+                <a href="#/login" class="btn-primary">Continue to Login</a>
             </div>
         `;
         

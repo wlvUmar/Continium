@@ -11,8 +11,8 @@ const appContainer = document.getElementById('app');
 
 function createSidebar(currentRoute = '/projects') {
     const user = authService.getUser();
-    const userInitial = user && user.fullName
-        ? user.fullName.charAt(0).toUpperCase()
+    const userInitial = user && (user.full_name || user.fullName)
+        ? (user.full_name || user.fullName).charAt(0).toUpperCase()
         : 'U';
 
     return `
@@ -23,7 +23,7 @@ function createSidebar(currentRoute = '/projects') {
                         ${userInitial}
                     </div>
                     <div class="user-info-header">
-                        <p class="username-header">${user ? user.fullName || 'Username' : 'Username'}</p>
+                        <p class="username-header">${user ? (user.full_name || user.fullName || 'Username') : 'Username'}</p>
                     </div>
                     <button class="notification-btn">
                         <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">

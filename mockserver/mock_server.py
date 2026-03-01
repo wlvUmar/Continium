@@ -99,6 +99,57 @@ class MockHandler(BaseHTTPRequestHandler):
             safe = {k: v for k, v in user.items() if k != "password_hash"}
             return self._send(200, safe)
 
+        # /stats/overall?period=day|week|month
+        if path == "/stats/overall":
+            period = qs.get("period", ["week"])[0]
+            stats = db.get("stats", [])
+            goals = db.get("goals", [])
+            total_minutes = sum(s.get("duration_minutes", 0) for s in stats)
+            total_seconds = total_minutes * 60
+            divisor = {"day": 1, "week": 7, "month": 30}.get(period, 7)
+            average_seconds = (total_seconds // divisor) if divisor else total_seconds
+            if period == "week":
+                labels = ["S", "M", "T", "W", "Th", "F", "S"]
+            elif period == "month":
+                labels = ["W1", "W2", "W3", "W4"]
+            else:
+                labels = ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"]
+            # Distribute time roughly across chart buckets
+            base = total_seconds // len(labels) if labels else 0
+            chart_data = [base] * len(labels)
+            return self._send(200, {
+                "total": total_seconds,
+                "average": average_seconds,
+                "dateRange": "Feb 1 - Feb 7, 2026",
+                "chartData": chart_data,
+                "labels": labels
+            })
+
+        # /stats/breakdown?date=...&period=day|week|month
+        if path == "/stats/breakdown":
+            stats = db.get("stats", [])
+            goals = db.get("goals", [])
+            goal_minutes = {}
+            for s in stats:
+                gid = s.get("goal_id")
+                goal_minutes[gid] = goal_minutes.get(gid, 0) + s.get("duration_minutes", 0)
+            total_minutes = sum(goal_minutes.values()) or 1
+            projects = []
+            for goal in goals:
+                gid = goal.get("id")
+                if gid in goal_minutes:
+                    mins = goal_minutes[gid]
+                    projects.append({
+                        "name": goal.get("title", f"Project {gid}"),
+                        "timeSpent": mins * 60,
+                        "percentage": round(mins / total_minutes * 100)
+                    })
+            return self._send(200, {
+                "date": "Feb 2, 2026",
+                "total": total_minutes * 60,
+                "projects": projects
+            })
+
         return self._send(404, {"detail": "not found"})
 
     def do_POST(self):
@@ -113,6 +164,22 @@ class MockHandler(BaseHTTPRequestHandler):
                 "refresh_token": "mock-refresh-token",
                 "token_type": "bearer"
             })
+
+        if path == "/auth/register":
+            return self._send(201, {
+                "access_token": "mock-access-token",
+                "refresh_token": "mock-refresh-token",
+                "token_type": "bearer"
+            })
+
+        if path == "/auth/logout":
+            return self._send(204, None)
+
+        if path == "/auth/verify-email":
+            return self._send(200, {"message": "Email verified successfully"})
+
+        if path == "/auth/forgot-password":
+            return self._send(200, {"message": "Password reset link sent"})
 
         m = re.fullmatch(r"/(goals|stats)", path)
         if not m:

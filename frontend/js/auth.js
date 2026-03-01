@@ -75,6 +75,18 @@ const authService = {
             localStorage.setItem('user', JSON.stringify(user));
         }
         return user;
+    },
+
+    // Verify email with token
+    async verifyEmail(token, type) {
+        const response = await api.post('/auth/verify-email', { token, type });
+        return response;
+    },
+
+    // Request password reset link
+    async changePassword(email) {
+        const response = await api.post('/auth/forgot-password', { email });
+        return response;
     }
 };
 
