@@ -39,7 +39,7 @@ const statsService = {
 // Bar Chart Renderer
 function renderBarChart(canvasId, data, labels) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    if (!canvas || !data || !labels || data.length === 0) return;
 
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.offsetWidth * 2; // Retina
@@ -110,7 +110,7 @@ function renderBarChart(canvasId, data, labels) {
 // Circular Chart (Pie/Donut)
 function renderCircularChart(canvasId, percentage, label) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    if (!canvas || percentage == null) return;
 
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.offsetWidth * 2;
@@ -291,17 +291,33 @@ async function loadStatisticsPage() {
             }))
         ]);
 
+        // Normalise data so missing fields from a real backend never crash the page
+        const safeInsights = {
+            total: 0,
+            average: 0,
+            dateRange: 'N/A',
+            chartData: [0, 0, 0, 0, 0, 0, 0],
+            labels: ['S', 'M', 'T', 'W', 'Th', 'F', 'S'],
+            ...insightsData
+        };
+        const safeBreakdown = {
+            date: 'N/A',
+            total: 0,
+            projects: [],
+            ...breakdownData
+        };
+
         // Render content
-        container.innerHTML = createStatisticsContentHTML(insightsData, breakdownData);
+        container.innerHTML = createStatisticsContentHTML(safeInsights, safeBreakdown);
 
         // Render charts after DOM update
         setTimeout(() => {
-            renderBarChart('insightsBarChart', insightsData.chartData, insightsData.labels);
-            
-            const totalTime = breakdownData.total;
-            const percentage = 30; // Calculate based on goal
+            renderBarChart('insightsBarChart', safeInsights.chartData, safeInsights.labels);
+
+            const totalTime = safeBreakdown.total;
+            const percentage = totalTime > 0 ? Math.min(Math.round((totalTime / 86400) * 100), 100) : 0;
             renderCircularChart('breakdownCircularChart', percentage, formatTime(totalTime));
-        }, 100);
+        }, 150);
 
     } catch (err) {
         container.innerHTML = `

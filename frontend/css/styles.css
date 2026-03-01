@@ -185,3 +185,137 @@ button {
 button:hover {
     background: #44A3D5;
 }
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+body.dark-mode {
+    background: #0f0f1a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .sidebar {
+    background: #1a1a2e;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .sidebar-header {
+    border-bottom-color: #2a2a4a;
+}
+
+body.dark-mode .sidebar-footer {
+    border-top-color: #2a2a4a;
+}
+
+body.dark-mode .username-header,
+body.dark-mode .nav-text {
+    color: #e0e0e0;
+}
+
+body.dark-mode .nav-item {
+    color: #aaa;
+}
+
+body.dark-mode .nav-item:hover {
+    background: #2a2a4a;
+}
+
+body.dark-mode .projects-dropdown {
+    background: transparent;
+}
+
+body.dark-mode .project-item {
+    background: #1e1e38;
+}
+
+body.dark-mode .project-item:hover {
+    background: #2a2a4a;
+}
+
+body.dark-mode .project-name {
+    color: #ccc;
+}
+
+body.dark-mode .main-container {
+    background: #0f0f1a;
+}
+
+body.dark-mode .goal-card,
+body.dark-mode .stat-card-large,
+body.dark-mode .project-today-stats,
+body.dark-mode .project-stats-summary,
+body.dark-mode .week-chart,
+body.dark-mode .completed-item,
+body.dark-mode .timer-btn,
+body.dark-mode .view-control-btn {
+    background: #1a1a2e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .goal-title,
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .goal-description,
+body.dark-mode .goal-deadline,
+body.dark-mode .goal-time,
+body.dark-mode .text-muted,
+body.dark-mode .page-subtitle {
+    color: #999;
+}
+
+body.dark-mode .progress-bar,
+body.dark-mode .project-progress-bar {
+    background: #2a2a4a;
+}
+
+body.dark-mode .form-input {
+    background: #1a1a2e;
+    border-color: #2a2a4a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-input::placeholder {
+    color: #555;
+}
+
+body.dark-mode .auth-card {
+    background: #1a1a2e;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .auth-card label,
+body.dark-mode .auth-card .auth-switch,
+body.dark-mode .auth-card .text-muted {
+    color: #aaa;
+}
+
+body.dark-mode .search-input {
+    background: #1a1a2e;
+    border-color: #2a2a4a;
+    color: #e0e0e0;
+}
+
+body.dark-mode .tab-btn {
+    background: #2a2a4a;
+    color: #aaa;
+}
+
+body.dark-mode .empty-state {
+    background: #1a1a2e;
+}
+
+body.dark-mode .stat-label {
+    color: #777;
+}
+
+body.dark-mode .stat-value,
+body.dark-mode .stat-large {
+    color: #e0e0e0;
+}
+
+body.dark-mode .goal-card-actions {
+    border-top-color: #2a2a4a;
+}
