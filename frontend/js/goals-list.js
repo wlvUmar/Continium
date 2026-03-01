@@ -70,53 +70,24 @@ const goalsService = {
 
 function createGoalCard(goal) {
     const progress = goal.progress || 0;
-    const status = goal.status || 'active';
-    
+    const color = goal.color || '#00BCD4';
+    const spent = goal.timeSpent ? formatTime(goal.timeSpent) : '0h 00m';
+    const target = goal.daily_target_hours ? `${goal.daily_target_hours}h 00m` : null;
+    const timeDisplay = target ? `${spent} / ${target}` : spent;
     return `
-        <div class="goal-card" onclick="router.navigate('/goal/${goal.id}')">
-            <div class="goal-header">
-                <h3 class="goal-title">${goal.title || 'Untitled Goal'}</h3>
-                <span class="goal-status status-${status}">${status}</span>
-            </div>
-            
-            <p class="goal-description">${goal.description || 'No description'}</p>
-            
-            <div class="goal-progress">
-                <div class="progress-info">
-                    <span>Progress</span>
-                    <span class="progress-percentage">${progress}%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
+        <div class="project-list-card" onclick="router.navigate('/goal/${goal.id}')">
+            <button class="project-play-circle" onclick="event.stopPropagation(); router.navigate('/project/${goal.id}')" title="Start session">
+                <img src="assets/icons/play_vector.svg" alt="Play">
+            </button>
+            <div class="project-list-info">
+                <span class="project-list-name">${goal.title || 'Untitled'}</span>
+                <span class="project-list-time">${timeDisplay}</span>
+                <div class="project-list-bar">
+                    <div class="project-list-bar-fill" style="width:${progress}%; background:${color};"></div>
                 </div>
             </div>
-            
-            <div class="goal-meta">
-                ${goal.deadline ? `
-                    <div class="goal-deadline">
-                        <img src="assets/icons/material-symbols-light_flag.svg" class="meta-icon-img" alt="Deadline">
-                        <span>${new Date(goal.deadline).toLocaleDateString()}</span>
-                    </div>
-                ` : ''}
-                ${goal.frequency ? `
-                    <div class="goal-time">
-                        <img src="assets/icons/material-symbols-light_repeat-rounded.svg" class="meta-icon-img" alt="Frequency">
-                        <span>${goal.frequency}</span>
-                    </div>
-                ` : goal.timeSpent ? `
-                    <div class="goal-time">
-                        <img src="assets/icons/material-symbols-light_repeat-rounded.svg" class="meta-icon-img" alt="Time">
-                        <span>${formatTime(goal.timeSpent)}</span>
-                    </div>
-                ` : ''}
-            </div>
-
-            <div class="goal-card-actions">
-                <button class="goal-edit-btn" onclick="event.stopPropagation()" title="Edit goal">
-                    <img src="assets/icons/line-md_pencil.svg" alt="Edit">
-                    Edit
-                </button>
-            </div>
+            <span class="project-list-percent">${progress}%</span>
+            <img src="assets/icons/next_vector.svg" class="project-list-chevron" alt="">
         </div>
     `;
 }
@@ -147,7 +118,7 @@ function createGoalsList(goals) {
     }
 
     return `
-        <div class="goals-grid">
+        <div class="project-list-outer">
             ${goals.map(goal => createGoalCard(goal)).join('')}
         </div>
     `;
@@ -226,15 +197,13 @@ async function renderGoalsListPage() {
 async function renderProjectsPageWithGoals() {
     const content = `
         <div class="page-header">
-            <div>
-                <h1>Projects</h1>
-                <p class="page-subtitle">All your active projects</p>
-            </div>
-            <button onclick="router.navigate('/add-goal')" class="btn-primary">
-                ➕ New Project
-            </button>
+            <h1>Projects</h1>
         </div>
-        
+
+        <div class="search-bar-full">
+            <input type="text" class="search-input-pill" placeholder="Search projects...">
+        </div>
+
         <div id="projectsContainer">
             ${createLoadingState()}
         </div>

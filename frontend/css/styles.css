@@ -206,6 +206,15 @@ body.dark-mode .sidebar-header {
 
 body.dark-mode .sidebar-footer {
     border-top-color: #2a2a4a;
+    background: #0f0f1a;
+}
+
+body.dark-mode .logout-btn {
+    background: #1a1a2e;
+}
+
+body.dark-mode .logout-btn:hover {
+    background: #2a1a1a;
 }
 
 body.dark-mode .username-header,
@@ -214,11 +223,19 @@ body.dark-mode .nav-text {
 }
 
 body.dark-mode .nav-item {
-    color: #aaa;
+    background: #1a1a2e;
+    color: #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 body.dark-mode .nav-item:hover {
     background: #2a2a4a;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .nav-item.active {
+    background: #00BCD4;
+    color: white;
 }
 
 body.dark-mode .projects-dropdown {
@@ -252,6 +269,16 @@ body.dark-mode .view-control-btn {
     background: #1a1a2e;
     color: #e0e0e0;
 }
+
+body.dark-mode .stat-card-large h3 { color: #e0e0e0; }
+body.dark-mode .insights-tabs { background: #2a2a4a; }
+body.dark-mode .tab-btn.active { background: #0f0f1a; color: #e0e0e0; }
+body.dark-mode .stat-summary > div { background: #0f0f1a; border-color: #2a2a4a; }
+body.dark-mode .stat-value { color: #e0e0e0; }
+body.dark-mode .chart-container { background: #0f0f1a; }
+body.dark-mode .breakdown-name { color: #ccc; }
+body.dark-mode .breakdown-bar-container { background: #2a2a4a; }
+body.dark-mode .breakdown-value { color: #aaa; }
 
 body.dark-mode .goal-title,
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
@@ -319,3 +346,47 @@ body.dark-mode .stat-large {
 body.dark-mode .goal-card-actions {
     border-top-color: #2a2a4a;
 }
+
+/* Dark mode - new elements */
+body.dark-mode .timer-display { color:#e0e0e0; }
+body.dark-mode .timer-sublabel, body.dark-mode .timer-goal-label { color:#777; }
+body.dark-mode .project-stats-summary, body.dark-mode .period-tab { background:#1a1a2e; color:#aaa; }
+body.dark-mode .period-tab.active { background:#00BCD4; color:white; }
+body.dark-mode .project-main-tabs { background:#2a2a4a; }
+body.dark-mode .project-main-tab.active { background:#1a1a2e; color:#e0e0e0; }
+body.dark-mode .add-goal-form, body.dark-mode .profile-form { background:#1a1a2e; }
+body.dark-mode .form-label { color:#bbb; }
+body.dark-mode .form-input { background:#0f0f1a; border-color:#2a2a4a; color:#e0e0e0; }
+body.dark-mode .freq-type-tabs { background:#2a2a4a; }
+body.dark-mode .freq-tab.active { background:#0f0f1a; color:#e0e0e0; }
+body.dark-mode .repeat-btn { background:#0f0f1a; border-color:#2a2a4a; color:#aaa; }
+body.dark-mode .repeat-btn.active { background:#00BCD4; border-color:#00BCD4; color:white; }
+body.dark-mode .btn-secondary { border-color:#2a2a4a; color:#aaa; }
+body.dark-mode .profile-username { color:#e0e0e0; }
+body.dark-mode .profile-section-title { color:#e0e0e0; border-bottom-color:#2a2a4a; }
+body.dark-mode .goal-card { background:#1a1a2e; }
+body.dark-mode .goal-title, body.dark-mode .goal-card-percent { color:#e0e0e0; }
+body.dark-mode .goal-card-progress-bar { background:#2a2a4a; }
+body.dark-mode .goal-card-time { color:#666; }
+
+/* Dark mode - nav/sidebar */
+body.dark-mode .sidebar-nav { background: #0f0f1a; }
+body.dark-mode .sidebar-footer { background: #1a1a2e; }
+
+/* Dark mode - project list cards */
+body.dark-mode .project-list-outer { background: #0d1a1f; }
+body.dark-mode .project-list-card { background: #1a1a2e; box-shadow: 0 1px 6px rgba(0,0,0,0.3); }
+body.dark-mode .project-list-name { color: #e0e0e0; }
+body.dark-mode .project-list-time { color: #666; }
+body.dark-mode .project-list-bar { background: #2a2a4a; }
+body.dark-mode .project-list-percent { background: #2a2a4a; color: #aaa; }
+
+/* Dark mode - theme toggle */
+body.dark-mode .theme-toggle-pill { background: #1a1a2e; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+
+/* Dark mode - search pill */
+body.dark-mode .search-input-pill { background: #1a1a2e; border-color: #2a2a4a; color: #e0e0e0; }
+
+/* Dark mode - completed page */
+body.dark-mode .completed-banner { background: linear-gradient(135deg, #007B8A 0%, #005F6B 100%); }
+body.dark-mode .completed-banner-img { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }

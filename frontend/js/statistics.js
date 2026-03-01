@@ -175,11 +175,12 @@ function createStatisticsPageHTML() {
     return `
         <div class="page-header">
             <h1>Statistics</h1>
-            <div class="search-bar">
-                <input type="text" placeholder="Search projects..." class="search-input">
-            </div>
         </div>
-        
+
+        <div class="search-bar-full">
+            <input type="text" class="search-input-pill" placeholder="Search projects...">
+        </div>
+
         <div id="statisticsContainer" class="statistics-content">
             <div class="loading-state">
                 <div class="spinner-large"></div>

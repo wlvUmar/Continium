@@ -66,6 +66,10 @@ router.on('/goal/:id', protectedRoute((params) => {
     renderGoal(params.id);
 }));
 
+router.on('/profile', protectedRoute(() => {
+    renderProfile();
+}));
+
 // Default route
 router.on('/', () => {
     if (authService && authService.isAuthed()) {
