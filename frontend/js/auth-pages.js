@@ -22,24 +22,33 @@ function renderLogin() {
                     <form id="loginForm" class="auth-form">
                         <div class="form-group">
                             <label for="loginEmail">Email</label>
-                            <input 
-                                type="email" 
-                                id="loginEmail" 
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/ic_baseline-email.svg" class="input-icon" alt="">
+                                <input
+                                    type="email"
+                                    id="loginEmail"
+                                    class="form-input with-icon"
+                                    placeholder="Enter your email"
+                                    required
+                                />
+                            </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="loginPassword">Password</label>
-                            <input 
-                                type="password" 
-                                id="loginPassword" 
-                                class="form-input"
-                                placeholder="Enter your password"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/mdi_password.svg" class="input-icon" alt="">
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    class="form-input with-icon with-toggle"
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                                    <img src="assets/icons/wpf_invisible.svg" alt="Show password">
+                                </button>
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn-primary btn-full">
@@ -106,46 +115,64 @@ function renderRegister() {
                     <form id="registerForm" class="auth-form">
                         <div class="form-group">
                             <label for="registerName">Full Name</label>
-                            <input 
-                                type="text" 
-                                id="registerName" 
-                                class="form-input"
-                                placeholder="Enter your full name"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/mdi_user.svg" class="input-icon" alt="">
+                                <input
+                                    type="text"
+                                    id="registerName"
+                                    class="form-input with-icon"
+                                    placeholder="Enter your full name"
+                                    required
+                                />
+                            </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="registerEmail">Email</label>
-                            <input 
-                                type="email" 
-                                id="registerEmail" 
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/ic_baseline-email.svg" class="input-icon" alt="">
+                                <input
+                                    type="email"
+                                    id="registerEmail"
+                                    class="form-input with-icon"
+                                    placeholder="Enter your email"
+                                    required
+                                />
+                            </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="registerPassword">Password</label>
-                            <input 
-                                type="password" 
-                                id="registerPassword" 
-                                class="form-input"
-                                placeholder="Create a password"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/mdi_password.svg" class="input-icon" alt="">
+                                <input
+                                    type="password"
+                                    id="registerPassword"
+                                    class="form-input with-icon with-toggle"
+                                    placeholder="Create a password"
+                                    required
+                                />
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                                    <img src="assets/icons/wpf_invisible.svg" alt="Show password">
+                                </button>
+                            </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="registerConfirmPassword">Confirm Password</label>
-                            <input 
-                                type="password" 
-                                id="registerConfirmPassword" 
-                                class="form-input"
-                                placeholder="Confirm your password"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/line-md_confirm.svg" class="input-icon" alt="">
+                                <input
+                                    type="password"
+                                    id="registerConfirmPassword"
+                                    class="form-input with-icon with-toggle"
+                                    placeholder="Confirm your password"
+                                    required
+                                />
+                                <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword', this)">
+                                    <img src="assets/icons/wpf_invisible.svg" alt="Show password">
+                                </button>
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn-primary btn-full">
@@ -298,13 +325,16 @@ function renderForgotPassword() {
                     <form id="forgotPasswordForm" class="auth-form">
                         <div class="form-group">
                             <label for="forgotEmail">Email Address</label>
-                            <input 
-                                type="email" 
-                                id="forgotEmail" 
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required 
-                            />
+                            <div class="input-wrapper">
+                                <img src="assets/icons/ic_baseline-email.svg" class="input-icon" alt="">
+                                <input
+                                    type="email"
+                                    id="forgotEmail"
+                                    class="form-input with-icon"
+                                    placeholder="Enter your email"
+                                    required
+                                />
+                            </div>
                         </div>
                         
                         <button type="submit" class="btn-primary btn-full">
@@ -352,6 +382,19 @@ async function handleForgotPassword(e) {
     }
 }
 
+
+// Toggle password visibility
+window.togglePassword = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const img = btn.querySelector('img');
+    if (input.type === 'password') {
+        input.type = 'text';
+        img.src = 'assets/icons/streamline-plump_invisible-2-remix.svg';
+    } else {
+        input.type = 'password';
+        img.src = 'assets/icons/wpf_invisible.svg';
+    }
+};
 
 // Export functions
 window.renderLogin = renderLogin;

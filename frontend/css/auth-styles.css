@@ -257,6 +257,54 @@
     }
 }
 
+/* Input with icon wrapper */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.form-input.with-icon {
+    padding-left: 44px;
+}
+
+.form-input.with-toggle {
+    padding-right: 44px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    z-index: 1;
+}
+
+.password-toggle:hover {
+    opacity: 0.8;
+}
+
+.password-toggle img {
+    width: 18px;
+    height: 18px;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {

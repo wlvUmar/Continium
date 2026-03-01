@@ -20,30 +20,34 @@ function createSidebar(currentRoute = '/projects') {
             <div class="sidebar-header">
                 <div class="user-profile-header">
                     <div class="user-avatar-header">
-                        ${userInitial}
+                        ${userInitial
+                            ? userInitial
+                            : `<img src="assets/icons/si_user-fill.svg" alt="User" style="width:24px;height:24px;filter:brightness(0) invert(1);">`}
                     </div>
                     <div class="user-info-header">
                         <p class="username-header">${user ? (user.full_name || user.fullName || 'Username') : 'Username'}</p>
                     </div>
-                    <button class="notification-btn">
+                    <button class="notification-btn" onclick="toggleNotifications(this)">
                         <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">
                     </button>
                 </div>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <button class="nav-item nav-item-dropdown ${currentRoute === '/projects' || currentRoute.startsWith('/project/') ? 'active' : ''}" onclick="toggleProjectsDropdown()">
+                    <button class="nav-item nav-item-dropdown ${currentRoute === '/projects' || currentRoute.startsWith('/project/') ? 'active' : ''}" onclick="toggleProjectsDropdown(this)">
                         <span class="nav-icon">
                             <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
                         </span>
                         <span class="nav-text">Projects</span>
-                        <span class="dropdown-arrow" id="projectsArrow">▼</span>
+                        <span class="dropdown-arrow" id="projectsArrow">
+                            <img src="assets/icons/ARROW Frame.svg" alt="▼" class="dropdown-icon">
+                        </span>
                     </button>
                     <div class="projects-dropdown" id="projectsDropdown">
                         <div class="project-item" onclick="router.navigate('/project/11')">
                             <span class="project-name">Project 11</span>
-                            <span class="project-arrow">›</span>
+                            <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                             <div class="project-progress">
                                 <span class="project-progress-text">80h 00m 00s / 100h 00m 00s</span>
                                 <div class="project-progress-bar">
@@ -53,7 +57,7 @@ function createSidebar(currentRoute = '/projects') {
                         </div>
                         <div class="project-item" onclick="router.navigate('/project/12')">
                             <span class="project-name">Project 12</span>
-                            <span class="project-arrow">›</span>
+                            <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                             <div class="project-progress">
                                 <span class="project-progress-text">30h 00m 00s / 100h 00m 00s</span>
                                 <div class="project-progress-bar">
@@ -63,7 +67,7 @@ function createSidebar(currentRoute = '/projects') {
                         </div>
                         <div class="project-item" onclick="router.navigate('/project/13')">
                             <span class="project-name">Project 13</span>
-                            <span class="project-arrow">›</span>
+                            <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                             <div class="project-progress">
                                 <span class="project-progress-text">60h 00m 00s / 100h 00m 00s</span>
                                 <div class="project-progress-bar">
@@ -73,21 +77,21 @@ function createSidebar(currentRoute = '/projects') {
                         </div>
                     </div>
                 </div>
-                
+
                 <a href="#/add-goal" class="nav-item ${currentRoute === '/add-goal' ? 'active' : ''}" data-route="/add-goal">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
                     <span class="nav-text">Add goal</span>
                 </a>
-                
+
                 <a href="#/statistics" class="nav-item ${currentRoute === '/statistics' ? 'active' : ''}" data-route="/statistics">
                     <span class="nav-icon">
                         <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
                     </span>
                     <span class="nav-text">Statistics</span>
                 </a>
-                
+
                 <a href="#/completed" class="nav-item ${currentRoute === '/completed' ? 'active' : ''}" data-route="/completed">
                     <span class="nav-icon">
                         <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
@@ -95,20 +99,60 @@ function createSidebar(currentRoute = '/projects') {
                     <span class="nav-text">Completed</span>
                 </a>
             </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-footer-controls">
+                    <button class="theme-btn" onclick="toggleTheme(this)" title="Toggle theme">
+                        <img src="assets/icons/Dark.svg" alt="Toggle theme" id="themeIcon">
+                    </button>
+                </div>
+                <button class="nav-item logout-btn" onclick="handleLogout()">
+                    <span class="nav-icon">
+                        <img src="assets/icons/exit_vector.svg" alt="Logout" class="icon">
+                    </span>
+                    <span class="nav-text">Logout</span>
+                </button>
+            </div>
         </aside>
     `;
 }
 
 // Toggle projects dropdown
-window.toggleProjectsDropdown = function() {
+window.toggleProjectsDropdown = function(btn) {
     const dropdown = document.getElementById('projectsDropdown');
-    const arrow = document.getElementById('projectsArrow');
+    const arrowImg = document.querySelector('#projectsArrow .dropdown-icon');
     if (dropdown.style.display === 'none' || dropdown.style.display === '') {
         dropdown.style.display = 'block';
-        arrow.textContent = '▲';
+        if (arrowImg) arrowImg.style.transform = 'rotate(180deg)';
     } else {
         dropdown.style.display = 'none';
-        arrow.textContent = '▼';
+        if (arrowImg) arrowImg.style.transform = 'rotate(0deg)';
+    }
+};
+
+// Toggle notification icon on/off
+window.toggleNotifications = function(btn) {
+    const img = btn.querySelector('.notification-icon');
+    if (img.src.includes('notification-on')) {
+        img.src = 'assets/icons/basil_notification-off-solid.svg';
+        img.alt = 'Notifications off';
+    } else {
+        img.src = 'assets/icons/basil_notification-on-solid.svg';
+        img.alt = 'Notifications on';
+    }
+};
+
+// Toggle light/dark theme
+window.toggleTheme = function(btn) {
+    const img = btn.querySelector('img');
+    if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        img.src = 'assets/icons/Dark.svg';
+        img.alt = 'Switch to dark mode';
+    } else {
+        document.body.classList.add('dark-mode');
+        img.src = 'assets/icons/Light.svg';
+        img.alt = 'Switch to light mode';
     }
 };
 
@@ -269,36 +313,48 @@ function renderCompletedContent() {
             
             <div class="completed-list">
                 <div class="completed-item">
-                    <div class="completed-icon" style="background: #00BCD4;">✓</div>
+                    <div class="completed-icon" style="background: #00BCD4;">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:24px;height:24px;filter:brightness(0) invert(1);">
+                    </div>
                     <div class="completed-info">
                         <h4>Project1</h4>
                         <p>10h 00m / 10h 00m</p>
                     </div>
                     <span class="completed-score">10</span>
                     <div class="completed-progress" style="background: #00BCD4; width: 100%;"></div>
-                    <button class="completed-check">✓</button>
+                    <button class="completed-check">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:18px;height:18px;filter:brightness(0) invert(1);">
+                    </button>
                 </div>
-                
+
                 <div class="completed-item">
-                    <div class="completed-icon" style="background: #9C27B0;">✓</div>
+                    <div class="completed-icon" style="background: #9C27B0;">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:24px;height:24px;filter:brightness(0) invert(1);">
+                    </div>
                     <div class="completed-info">
                         <h4>Project2</h4>
                         <p>40h 00m / 40h 00m</p>
                     </div>
                     <span class="completed-score">10</span>
                     <div class="completed-progress" style="background: #9C27B0; width: 100%;"></div>
-                    <button class="completed-check">✓</button>
+                    <button class="completed-check">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:18px;height:18px;filter:brightness(0) invert(1);">
+                    </button>
                 </div>
-                
+
                 <div class="completed-item">
-                    <div class="completed-icon" style="background: #CDDC39;">✓</div>
+                    <div class="completed-icon" style="background: #CDDC39;">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:24px;height:24px;filter:brightness(0) invert(1);">
+                    </div>
                     <div class="completed-info">
                         <h4>Project3</h4>
                         <p>35h 00m / 35h 00m</p>
                     </div>
                     <span class="completed-score">10</span>
                     <div class="completed-progress" style="background: #CDDC39; width: 100%;"></div>
-                    <button class="completed-check">✓</button>
+                    <button class="completed-check">
+                        <img src="assets/icons/rivet-icons_check-all.svg" alt="✓" style="width:18px;height:18px;filter:brightness(0) invert(1);">
+                    </button>
                 </div>
             </div>
         </div>
@@ -343,9 +399,27 @@ function renderProjectDetailContent(projectId) {
                 </div>
             </div>
             
-            <div class="play-button-container">
-                <button class="play-button">
+            <div class="view-controls">
+                <button class="view-control-btn" title="Expand">
+                    <img src="assets/icons/Bigger_vector.svg" alt="Expand">
+                </button>
+                <button class="view-control-btn" title="Compress">
+                    <img src="assets/icons/smaller_vector.svg" alt="Compress">
+                </button>
+            </div>
+
+            <div class="timer-controls">
+                <button class="timer-btn" title="Reset">
+                    <img src="assets/icons/reset_vector.svg" alt="Reset">
+                </button>
+                <button class="timer-btn timer-btn-primary" title="Play">
                     <img src="assets/icons/play_vector.svg" alt="Play">
+                </button>
+                <button class="timer-btn" title="Pause" style="display:none;" id="pauseBtn">
+                    <img src="assets/icons/Pause.svg" alt="Pause">
+                </button>
+                <button class="timer-btn" title="Next session">
+                    <img src="assets/icons/Vector.svg" alt="Next">
                 </button>
             </div>
         </div>

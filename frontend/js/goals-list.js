@@ -94,16 +94,28 @@ function createGoalCard(goal) {
             <div class="goal-meta">
                 ${goal.deadline ? `
                     <div class="goal-deadline">
-                        <span class="meta-icon">📅</span>
+                        <img src="assets/icons/material-symbols-light_flag.svg" class="meta-icon-img" alt="Deadline">
                         <span>${new Date(goal.deadline).toLocaleDateString()}</span>
                     </div>
                 ` : ''}
-                ${goal.timeSpent ? `
+                ${goal.frequency ? `
                     <div class="goal-time">
-                        <span class="meta-icon">⏱️</span>
+                        <img src="assets/icons/material-symbols-light_repeat-rounded.svg" class="meta-icon-img" alt="Frequency">
+                        <span>${goal.frequency}</span>
+                    </div>
+                ` : goal.timeSpent ? `
+                    <div class="goal-time">
+                        <img src="assets/icons/material-symbols-light_repeat-rounded.svg" class="meta-icon-img" alt="Time">
                         <span>${formatTime(goal.timeSpent)}</span>
                     </div>
                 ` : ''}
+            </div>
+
+            <div class="goal-card-actions">
+                <button class="goal-edit-btn" onclick="event.stopPropagation()" title="Edit goal">
+                    <img src="assets/icons/line-md_pencil.svg" alt="Edit">
+                    Edit
+                </button>
             </div>
         </div>
     `;
