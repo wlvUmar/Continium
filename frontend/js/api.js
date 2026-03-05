@@ -1,9 +1,4 @@
-/**
- * API Client Wrapper
- * Handles all HTTP requests to the backend
- */
-
-const API_BASE_URL = 'http://localhost:8000'; // TODO: Move to config
+const API_BASE_URL = 'http://127.0.0.1:8000/api/v1'; // TODO: Move to config
 
 function buildUrl(endpoint) {
     return `${API_BASE_URL}${endpoint}`;
@@ -15,7 +10,8 @@ function getAuthToken() {
 
 async function apiRequest(endpoint, options = {}) {
     const token = getAuthToken();
-    
+    console.log(buildUrl(endpoint));
+
     const config = {
         method: options.method || 'GET',
         headers: {
@@ -33,8 +29,13 @@ async function apiRequest(endpoint, options = {}) {
         const response = await fetch(buildUrl(endpoint), config);
         
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: 'Request failed' }));
-            throw new Error(error.message || `HTTP ${response.status}`);
+            const error = await response.json().catch(() => ({}));
+            // FastAPI uses "detail", express-style APIs use "message"
+            const detail = error.detail || error.message;
+            const msg = Array.isArray(detail)
+                ? detail.map(e => e.msg || JSON.stringify(e)).join(', ')
+                : (detail || `HTTP ${response.status}`);
+            throw new Error(msg);
         }
 
         if (response.status === 204) {

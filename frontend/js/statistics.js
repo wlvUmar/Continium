@@ -9,9 +9,9 @@
 
 const statsService = {
     // Fetch overall statistics
-    async fetchOverallStats(period = 'week') {
+    async fetchOverallStats() {
         try {
-            const stats = await api.get(`/stats/overall?period=${period}`);
+            const stats = await api.get('/stats/overall');
             return stats;
         } catch (err) {
             console.error('Failed to fetch overall stats:', err);
@@ -19,10 +19,10 @@ const statsService = {
         }
     },
 
-    // Fetch breakdown statistics
-    async fetchBreakdown(date, period = 'day') {
+    // Fetch breakdown statistics by goal type
+    async fetchBreakdown(type) {
         try {
-            const breakdown = await api.get(`/stats/breakdown?date=${date}&period=${period}`);
+            const breakdown = await api.get(`/stats/overall-by-type?type=${type}`);
             return breakdown;
         } catch (err) {
             console.error('Failed to fetch breakdown:', err);
@@ -267,45 +267,51 @@ function renderProjectBreakdown(projects) {
 let currentInsightsPeriod = 'week';
 let currentBreakdownPeriod = 'day';
 
+/**
+ * Transform OverallOut {total_stats: {goal_name: minutes}} into display-ready shape.
+ * formatTime/formatHours expect seconds, so multiply minutes by 60.
+ */
+function transformOverallOut(apiResponse) {
+    const totalStats = (apiResponse && apiResponse.total_stats) || {};
+    const entries = Object.entries(totalStats); // [[name, minutes], ...]
+    const totalMinutes = entries.reduce((sum, [, m]) => sum + m, 0);
+    const totalSeconds = totalMinutes * 60;
+    const averageSeconds = entries.length > 0 ? Math.round(totalSeconds / 7) : 0;
+
+    const projects = entries.map(([name, minutes]) => ({
+        name,
+        timeSpent: minutes * 60,
+        percentage: totalMinutes > 0 ? Math.round((minutes / totalMinutes) * 100) : 0,
+    }));
+
+    return { totalSeconds, averageSeconds, projects };
+}
+
 async function loadStatisticsPage() {
     const container = document.getElementById('statisticsContainer');
     if (!container) return;
 
     try {
         // Fetch data
-        const [insightsData, breakdownData] = await Promise.all([
-            statsService.fetchOverallStats(currentInsightsPeriod).catch(() => ({
-                total: 138000, // 38h 20m in seconds
-                average: 20220, // 5h 37m
-                dateRange: 'Feb1 - Feb7, 2026',
-                chartData: [12600, 7200, 16200, 14400, 5400, 10800, 18000], // S-S in seconds
-                labels: ['S', 'M', 'T', 'W', 'Th', 'F', 'S']
-            })),
-            statsService.fetchBreakdown(new Date().toISOString(), currentBreakdownPeriod).catch(() => ({
-                date: 'Feb 2, 2026',
-                total: 12300, // 3h 25m
-                projects: [
-                    { name: 'Project 11', timeSpent: 7200, percentage: 80 },
-                    { name: 'Project 12', timeSpent: 3600, percentage: 50 },
-                    { name: 'Project 13', timeSpent: 1500, percentage: 30 }
-                ]
-            }))
+        const [overallRaw, breakdownRaw] = await Promise.all([
+            statsService.fetchOverallStats().catch(() => null),
+            statsService.fetchBreakdown(currentBreakdownPeriod).catch(() => null),
         ]);
 
-        // Normalise data so missing fields from a real backend never crash the page
+        const overall = transformOverallOut(overallRaw);
+        const breakdown = transformOverallOut(breakdownRaw);
+
         const safeInsights = {
-            total: 0,
-            average: 0,
-            dateRange: 'N/A',
+            total: overall.totalSeconds,
+            average: overall.averageSeconds,
+            dateRange: 'All time',
             chartData: [0, 0, 0, 0, 0, 0, 0],
             labels: ['S', 'M', 'T', 'W', 'Th', 'F', 'S'],
-            ...insightsData
         };
         const safeBreakdown = {
-            date: 'N/A',
-            total: 0,
-            projects: [],
-            ...breakdownData
+            date: currentBreakdownPeriod,
+            total: breakdown.totalSeconds,
+            projects: breakdown.projects,
         };
 
         // Render content
