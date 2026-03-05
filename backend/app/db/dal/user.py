@@ -35,5 +35,5 @@ async def update(db: AsyncSession, user_id: int, fields: dict) -> Optional[User]
 
 
 async def set_verified(db: AsyncSession, user_id: int, verified: bool = True) -> Optional[User]:
-    return await update(db, user_id, {"is_verified": verified})
+    return await update(db, user_id, {"verified": verified})
 

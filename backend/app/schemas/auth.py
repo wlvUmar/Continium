@@ -37,3 +37,13 @@ class UserSignupRequest(BaseModel):
     password: str
     full_name: str
     image_url: Optional[str] = None
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+

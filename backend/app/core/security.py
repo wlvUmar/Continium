@@ -202,6 +202,15 @@ async def get_current_user(
 current_user = get_current_user
 
 
+def create_one_time_token(user_id: int, token_type: str, ttl_seconds: int) -> str:
+    payload = {
+        "sub": str(user_id),
+        "type": token_type,
+        "exp": datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds),
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_alg)
+
+
 
 async def authenticate_user(db: AsyncSession, email: str, password: str) -> User | None:
     result = await db.execute(select(User).where(User.email == email))

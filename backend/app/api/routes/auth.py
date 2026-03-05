@@ -17,7 +17,15 @@ RULE:
 """
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends
-from app.schemas.auth import UserLoginRequest, TokenResponse
+from app.schemas.auth import (
+    UserLoginRequest,
+    TokenResponse,
+    RefreshRequest,
+    ChangePasswordRequest,
+    VerifyRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+)
 from app.services import auth_service
 from app.api import get_db
 from app.schemas.user import UserCreate, UserOut
@@ -70,7 +78,7 @@ async def register(user_data: UserCreate, db=Depends(get_db)):
     """
     ## Register
 
-    Create a new user account.
+    Create a new user account. A verification email is sent automatically.
 
     ### Request body
     | Field | Type | Required | Description |
@@ -86,3 +94,38 @@ async def register(user_data: UserCreate, db=Depends(get_db)):
     - **422** — Validation error (malformed request body).
     """
     return await auth_service.register(db, user_data)
+
+
+@router.post("/verify")
+async def verify_email(request: VerifyRequest, db=Depends(get_db)):
+    """Verify email address using the token sent after registration."""
+    return await auth_service.verify_email(db, request)
+
+
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest, db=Depends(get_db)):
+    """Request a password reset email. Always returns 200 to prevent email enumeration."""
+    return await auth_service.forgot_password(db, request)
+
+
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest, db=Depends(get_db)):
+    """Reset password using the token from the reset email."""
+    return await auth_service.reset_password(db, request)
+
+
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh(request: RefreshRequest, db=Depends(get_db)):
+    """Rotate tokens: exchange a valid refresh token for a new access + refresh token pair."""
+    return await auth_service.refresh(db, request)
+
+
+@router.post("/change-password")
+async def change_password(
+    request: ChangePasswordRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db=Depends(get_db),
+):
+    """Change password for the currently authenticated user."""
+    return await auth_service.change_password(db, current_user, request)
+

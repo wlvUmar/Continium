@@ -32,6 +32,12 @@ class Settings(BaseSettings):
         default_factory=lambda: ["*"],
         validation_alias="CORS_ALLOW_HEADERS",
     )
+    smtp_host: str = Field("smtp.gmail.com", validation_alias="SMTP_HOST")
+    smtp_port: int = Field(587, validation_alias="SMTP_PORT")
+    smtp_user: str = Field("", validation_alias="SMTP_USER")
+    smtp_password: str = Field("", validation_alias="SMTP_PASSWORD")
+    smtp_from: str = Field("noreply@continium.uz", validation_alias="SMTP_FROM")
+    app_url: str = Field("https://continium.uz", validation_alias="APP_URL")
     model_config = SettingsConfigDict(
         env_file=".env",
         env_ignore_empty=True,
