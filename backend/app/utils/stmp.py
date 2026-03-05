@@ -1,23 +1,28 @@
-import aiosmtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import httpx
+import logging
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 async def send_email(to: str, subject: str, html: str) -> None:
-    message = MIMEMultipart("alternative")
-    message["Subject"] = subject
-    message["From"] = settings.smtp_from
-    message["To"] = to
-    message.attach(MIMEText(html, "html"))
-    await aiosmtplib.send(
-        message,
-        hostname=settings.smtp_host,
-        port=settings.smtp_port,
-        username=settings.smtp_user,
-        password=settings.smtp_password,
-        start_tls=True,
-    )
+    if not settings.resend_api_key:
+        logger.warning("RESEND_API_KEY not set — skipping email to %s", to)
+        return
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {settings.resend_api_key}"},
+            json={
+                "from": settings.smtp_from,
+                "to": [to],
+                "subject": subject,
+                "html": html,
+            },
+            timeout=10,
+        )
+        resp.raise_for_status()
+        logger.info("Email sent to %s (id=%s)", to, resp.json().get("id"))
 
 
 async def send_verification_email(to: str, token: str) -> None:

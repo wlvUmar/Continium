@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Annotated
 from app.db.dal import user
 from app.core.security import (
@@ -27,6 +28,17 @@ from app.schemas.user import UserCreate, UserOut
 from app.db.session import get_db
 from app.utils.stmp import send_verification_email, send_password_reset_email
 
+logger = logging.getLogger(__name__)
+
+
+async def _fire(coro):
+    """Run a coroutine as a background task; log any errors instead of silently dropping them."""
+    try:
+        await coro
+    except Exception as exc:
+        logger.error("Background task failed: %s: %s", type(exc).__name__, exc)
+
+
 oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
@@ -47,7 +59,7 @@ async def register(db: AsyncSession, request: UserCreate) -> User:
     new_user = User(email=request.email, password_hash=password_hash, full_name=request.full_name, image_url=request.image_url)
     created = await user.create(db, new_user)
     token = create_one_time_token(created.id, "email_verify", ttl_seconds=86400)
-    asyncio.create_task(send_verification_email(created.email, token))
+    asyncio.create_task(_fire(send_verification_email(created.email, token)))
     return created
 
 
@@ -64,7 +76,7 @@ async def forgot_password(db: AsyncSession, request: ForgotPasswordRequest) -> d
     db_user = await user.get_by_email(db, request.email)
     if db_user:
         token = create_one_time_token(db_user.id, "password_reset", ttl_seconds=3600)
-        asyncio.create_task(send_password_reset_email(db_user.email, token))
+        asyncio.create_task(_fire(send_password_reset_email(db_user.email, token)))
     # Always return the same response to prevent email enumeration
     return {"message": "If that email is registered, a reset link has been sent"}
 

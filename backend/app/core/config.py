@@ -36,8 +36,9 @@ class Settings(BaseSettings):
     smtp_port: int = Field(587, validation_alias="SMTP_PORT")
     smtp_user: str = Field("", validation_alias="SMTP_USER")
     smtp_password: str = Field("", validation_alias="SMTP_PASSWORD")
-    smtp_from: str = Field("noreply@continium.uz", validation_alias="SMTP_FROM")
+    smtp_from: str = Field("Continium <onboarding@resend.dev>", validation_alias="SMTP_FROM")
     app_url: str = Field("https://continium.uz", validation_alias="APP_URL")
+    resend_api_key: str = Field("", validation_alias="RESEND_API_KEY")
     model_config = SettingsConfigDict(
         env_file=".env",
         env_ignore_empty=True,
