@@ -234,32 +234,38 @@ async function handleRegister(e) {
 
 
 // ============================================
+// HELPERS
+// ============================================
+function getHashParams() {
+    const hash = window.location.hash; // e.g. "#/verify?token=abc"
+    const queryPart = hash.includes('?') ? hash.substring(hash.indexOf('?') + 1) : '';
+    return new URLSearchParams(queryPart);
+}
+
+
+// ============================================
 // VERIFICATION PAGE - Issue #69, #72
 // ============================================
 function renderVerification() {
-    // Get token from URL if present
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('verification-token');
-    const type = urlParams.get('type');
-    
+    const token = getHashParams().get('token');
+
     appContainer.innerHTML = `
         <div class="auth-page">
             <div class="auth-container">
                 <div class="auth-card verification-card">
                     <div class="auth-header">
                         <h1 class="logo-text">Continium</h1>
-                        <p class="auth-subtitle">Verification</p>
+                        <p class="auth-subtitle">Email Verification</p>
                     </div>
-                    
                     <div id="verificationContent" class="verification-content">
-                        ${token && type ? `
+                        ${token ? `
                             <div class="verification-loading">
                                 <div class="spinner-large"></div>
                                 <p>Verifying your email...</p>
                             </div>
                         ` : `
                             <div class="verification-message">
-                                <p>Please check your email for verification link.</p>
+                                <p>Please check your email for a verification link.</p>
                                 <p class="text-muted">We've sent a verification email to your address.</p>
                                 <a href="#/login" class="btn-primary">Back to Login</a>
                             </div>
@@ -269,17 +275,13 @@ function renderVerification() {
             </div>
         </div>
     `;
-    
-    // If token exists, verify automatically
-    if (token && type) {
-        verifyEmail(token, type);
-    }
+
+    if (token) verifyEmail(token);
 }
 
-async function verifyEmail(token, type) {
+async function verifyEmail(token) {
     try {
-        await authService.verifyEmail(token, type);
-        
+        await authService.verifyEmail(token);
         document.getElementById('verificationContent').innerHTML = `
             <div class="verification-success">
                 <div class="success-icon">✓</div>
@@ -288,7 +290,6 @@ async function verifyEmail(token, type) {
                 <a href="#/login" class="btn-primary">Continue to Login</a>
             </div>
         `;
-        
         Toast.success('Email verified successfully!');
     } catch (err) {
         document.getElementById('verificationContent').innerHTML = `
@@ -299,7 +300,6 @@ async function verifyEmail(token, type) {
                 <a href="#/login" class="btn-primary">Back to Login</a>
             </div>
         `;
-        
         Toast.error('Verification failed');
     }
 }
@@ -362,7 +362,7 @@ async function handleForgotPassword(e) {
     Spinner.show('Sending reset link...');
     
     try {
-        await authService.changePassword(email);
+        await authService.forgotPassword(email);
         
         Toast.success('Reset link sent! Check your email.');
         
@@ -384,8 +384,7 @@ async function handleForgotPassword(e) {
 
 
 // Toggle password visibility
-window.togglePassword = function(inputId, btn) {
-    const input = document.getElementById(inputId);
+window.togglePassword = function(inputId, btn) {    const input = document.getElementById(inputId);
     const img = btn.querySelector('img');
     if (input.type === 'password') {
         input.type = 'text';
@@ -401,3 +400,122 @@ window.renderLogin = renderLogin;
 window.renderRegister = renderRegister;
 window.renderVerification = renderVerification;
 window.renderForgotPassword = renderForgotPassword;
+
+
+// ============================================
+// RESET PASSWORD PAGE
+// ============================================
+function renderResetPassword() {
+    const token = getHashParams().get('token');
+
+    if (!token) {
+        appContainer.innerHTML = `
+            <div class="auth-page">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h1 class="logo-text">Continium</h1>
+                        </div>
+                        <div class="verification-error">
+                            <div class="error-icon">✕</div>
+                            <h3>Invalid Link</h3>
+                            <p>This password reset link is invalid or has expired.</p>
+                            <a href="#/forgot-password" class="btn-primary">Request New Link</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    appContainer.innerHTML = `
+        <div class="auth-page">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1 class="logo-text">Continium</h1>
+                        <p class="auth-subtitle">Set New Password</p>
+                    </div>
+
+                    <form id="resetPasswordForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <div class="input-wrapper">
+                                <img src="assets/icons/mdi_password.svg" class="input-icon" alt="">
+                                <input type="password" id="newPassword" class="form-input with-icon with-toggle"
+                                    placeholder="Enter new password" required />
+                                <button type="button" class="password-toggle" onclick="togglePassword('newPassword', this)">
+                                    <img src="assets/icons/wpf_invisible.svg" alt="Show password">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <img src="assets/icons/line-md_confirm.svg" class="input-icon" alt="">
+                                <input type="password" id="confirmNewPassword" class="form-input with-icon with-toggle"
+                                    placeholder="Confirm new password" required />
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmNewPassword', this)">
+                                    <img src="assets/icons/wpf_invisible.svg" alt="Show password">
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full">Reset Password</button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <a href="#/login" class="link-text">← Back to Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('resetPasswordForm').addEventListener('submit', (e) => handleResetPassword(e, token));
+}
+
+async function handleResetPassword(e, token) {
+    e.preventDefault();
+
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+    ErrorMessage.clear(document.querySelector('.auth-card'));
+
+    if (newPassword !== confirmPassword) {
+        Toast.error('Passwords do not match');
+        ErrorMessage.render('Passwords do not match', document.querySelector('.auth-form'));
+        return;
+    }
+    if (newPassword.length < 6) {
+        Toast.error('Password must be at least 6 characters');
+        ErrorMessage.render('Password must be at least 6 characters', document.querySelector('.auth-form'));
+        return;
+    }
+
+    Spinner.show('Resetting password...');
+    try {
+        await authService.resetPassword(token, newPassword);
+        Toast.success('Password reset successfully!');
+        document.querySelector('.auth-card').innerHTML = `
+            <div class="auth-header"><h1 class="logo-text">Continium</h1></div>
+            <div class="verification-success">
+                <div class="success-icon">✓</div>
+                <h3>Password Reset!</h3>
+                <p>Your password has been successfully updated.</p>
+                <a href="#/login" class="btn-primary">Sign In</a>
+            </div>
+        `;
+    } catch (err) {
+        const msg = err.message || 'Reset failed. The link may have expired.';
+        Toast.error(msg);
+        ErrorMessage.render(msg, document.querySelector('.auth-form'));
+    } finally {
+        Spinner.hide();
+    }
+}
+
+window.renderResetPassword = renderResetPassword;

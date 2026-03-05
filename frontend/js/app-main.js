@@ -38,6 +38,10 @@ router.on('/forgot-password', () => {
     renderForgotPassword();
 });
 
+router.on('/reset-password', () => {
+    renderResetPassword();
+});
+
 router.on('/app', protectedRoute(() => {
     renderDashboard();
 }));

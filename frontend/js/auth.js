@@ -68,12 +68,21 @@ const authService = {
     },
 
     // Verify email with token
-    async verifyEmail(token, type) {
-        const response = await api.post('/auth/verify-email', { token, type });
-        return response;
+    async verifyEmail(token) {
+        return await api.post('/auth/verify', { token });
     },
 
     // Request password reset link
+    async forgotPassword(email) {
+        return await api.post('/auth/forgot-password', { email });
+    },
+
+    // Reset password using token from email
+    async resetPassword(token, newPassword) {
+        return await api.post('/auth/reset-password', { token, new_password: newPassword });
+    },
+
+    // Change password (authenticated)
     async changePassword(email) {
         const response = await api.post('/auth/forgot-password', { email });
         return response;

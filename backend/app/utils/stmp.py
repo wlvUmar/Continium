@@ -26,7 +26,7 @@ async def send_email(to: str, subject: str, html: str) -> None:
 
 
 async def send_verification_email(to: str, token: str) -> None:
-    link = f"{settings.app_url}/verify?token={token}"
+    link = f"{settings.app_url}/#/verify?token={token}"
     html = f"""
     <div style="font-family:sans-serif;max-width:480px;margin:auto">
       <h2>Verify your Continium account</h2>
@@ -39,7 +39,7 @@ async def send_verification_email(to: str, token: str) -> None:
 
 
 async def send_password_reset_email(to: str, token: str) -> None:
-    link = f"{settings.app_url}/reset-password?token={token}"
+    link = f"{settings.app_url}/#/reset-password?token={token}"
     html = f"""
     <div style="font-family:sans-serif;max-width:480px;margin:auto">
       <h2>Reset your Continium password</h2>

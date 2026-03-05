@@ -29,7 +29,7 @@ class ChangePasswordRequest(BaseModel):
 
 class VerifyRequest(BaseModel):
     token: str
-    type: str  # "email_verify" or "reset"
+    type: Optional[str] = None
 
 
 class UserSignupRequest(BaseModel):
