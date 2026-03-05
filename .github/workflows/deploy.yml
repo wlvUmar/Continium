@@ -83,6 +83,8 @@ jobs:
               --network continium \
               --restart unless-stopped \
               -p 80:80 \
+              -p 443:443 \
+              -v /etc/letsencrypt:/etc/letsencrypt:ro \
               ${{ env.FRONTEND_IMAGE }}:latest
 
             docker image prune -f
