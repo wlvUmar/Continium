@@ -1,0 +1,12 @@
+**/__pycache__
+**/*.pyc
+**/*.pyo
+.git
+.env
+venv/
+.venv/
+*.db
+frontend/
+mockserver/
+docs/
+contribution_report.txt
