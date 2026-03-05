@@ -68,6 +68,7 @@ async def filter_incomplete(db: AsyncSession, user_id: int, is_complete: bool, s
 
 async def get_by_name(
     db: AsyncSession,
+    user_id: int,
     name: str,
     skip: int = 0,
     take: int = 100
@@ -75,7 +76,7 @@ async def get_by_name(
 
     query = (
         select(Goal)
-        .where(Goal.title.ilike(f"%{name}%")) 
+        .where(Goal.user_id == user_id, Goal.title.ilike(f"%{name}%"))
         .offset(skip)
         .limit(take)
     )

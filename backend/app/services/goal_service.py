@@ -8,6 +8,7 @@ TODO:
   - frequency enum validation
 - Optionally: prevent stats creation if goal is_complete
 """
+from sqlalchemy.engine import result
 from typing_extensions import Annotated
 from app.db.dal import goal
 from app.core.security import current_user, get_current_user
@@ -48,6 +49,16 @@ async def get_goals(db: AsyncSession, user:User, skip: int = 0, limit: int = 100
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     goals = await goal.list_goals(db, user_id=cur_user.id, skip=skip, limit=limit)
     return [GoalOut.from_orm(g) for g in goals]
+
+
+async def get_goal(db: AsyncSession, user:User, goal_id:int) -> GoalOut:
+    cur_user = user
+    if not cur_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    result = await goal.get_goal(db, goal_id)
+    if not result or result.user_id != cur_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    return GoalOut.from_orm(result)
 
 async def update_goal(db: AsyncSession, goal_id: int, goal_data: GoalUpdate, user:User) -> GoalOut:
     cur_user = user
@@ -108,5 +119,5 @@ async def get_by_name(name:str, db:AsyncSession, user:User, skip:int=0, take:int
     current_user = user
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="UnAuthorized")
-    goals = await goal.get_by_name(db, name, skip, take)
+    goals = await goal.get_by_name(db, user_id=current_user.id, name=name, skip=skip, take=take)
     return [GoalOut.from_orm(g) for g in goals]

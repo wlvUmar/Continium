@@ -43,15 +43,28 @@ async def list_stats_for_goal(db: AsyncSession, goal_id: int, filters: dict) -> 
     result = await db.execute(query)
     return result.scalars().all()
 
-async def aggregate_overall_for_user(db: AsyncSession, user_id: int, range_type: str) -> dict:
-    query = select(func.count(Stats.id)).join(Stats.goal).where(Stats.goal.has(user_id=user_id))
-    if range_type == "last_7_days":
-        query = query.where(Stats.timestamp >= func.now() - func.interval('7 days'))
-    elif range_type == "this_month":
-        query = query.where(func.extract('month', Stats.timestamp) == func.extract('month', func.now()))
+async def aggregate_overall_for_user(db: AsyncSession, user_id: int) -> dict:
+    query = select(func.sum(Stats.duration_minutes)).where(Stats.user_id == user_id)
     result = await db.execute(query)
-    total_stats = result.scalar()
-    return {"total_stats": total_stats}
+    total = result.scalar() or 0
+    return {"total_minutes": total}
+
+async def get_stat_by_goal_and_date(
+    db: AsyncSession,
+    user_id: int,
+    goal_id: int,
+    date: datetime | None,
+) -> Optional[Stats]:
+    if date is None:
+        date = datetime.now(timezone.utc)
+    query = select(Stats).where(
+        Stats.user_id == user_id,
+        Stats.goal_id == goal_id,
+        func.date(Stats.occurred_at) == func.date(date),
+    )
+    result = await db.execute(query)
+    return result.scalars().first()
+
 
 async def get_stat(db: AsyncSession, stat_id: int) -> Optional[Stats]:
     query = select(Stats).where(Stats.id == stat_id)

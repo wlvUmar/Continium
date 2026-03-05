@@ -9,7 +9,7 @@ TODO:
 """
 from collections import defaultdict
 from enum import Enum
-from typing import List
+from typing import Dict, List
 from typing_extensions import Annotated
 from app.core.security import current_user, get_current_user
 from app.db.models.stats import Stats
@@ -37,8 +37,8 @@ async def add_stat(db: AsyncSession, goal_id: int, stat_data: StatCreate, user :
     if old_stat is None:
         new_stat = await stats.create_stat(db, goal_id=goal_id, user_id=cur_user.id , **stat_data.dict(exclude_unset=True))
     else:
-        stat_data.duration = old_stat.duration + stat_data.duration
-        new_stat = await stats.update_stat(db, old_stat.id, stat_data.dict(exclude_unset=True))
+        new_duration = old_stat.duration_minutes + stat_data.duration_minutes
+        new_stat = await stats.update_stat(db, old_stat.id, {"duration_minutes": new_duration})
     return StatOut.from_orm(new_stat)
 
 
