@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    container_name: continium-backend
     ports:
       - "8000:8000"
     volumes:
@@ -10,6 +11,24 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+    networks:
+      - continium
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: continium-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - continium
 
 volumes:
   db_data:
+
+networks:
+  continium:

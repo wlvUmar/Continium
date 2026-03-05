@@ -5,7 +5,8 @@ on:
     branches: [main]
 
 env:
-  IMAGE: ghcr.io/wlvumar/continium-backend
+  BACKEND_IMAGE: ghcr.io/wlvumar/continium-backend
+  FRONTEND_IMAGE: ghcr.io/wlvumar/continium-frontend
 
 jobs:
   build-and-push:
@@ -24,15 +25,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: backend/Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.BACKEND_IMAGE }}:latest
+            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend
+          file: frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
 
   deploy:
     needs: build-and-push
@@ -47,14 +58,32 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u wlvumar --password-stdin
-            docker pull ${{ env.IMAGE }}:latest
+
+            docker network create continium || true
+
+            # Backend
+            docker pull ${{ env.BACKEND_IMAGE }}:latest
             docker stop continium-backend || true
             docker rm continium-backend || true
             docker run -d \
               --name continium-backend \
+              --network continium \
               --restart unless-stopped \
               -p 8000:8000 \
               -v continium_db:/data \
               --env-file /root/continium/.env \
-              ${{ env.IMAGE }}:latest
+              ${{ env.BACKEND_IMAGE }}:latest
+
+            # Frontend
+            docker pull ${{ env.FRONTEND_IMAGE }}:latest
+            docker stop continium-frontend || true
+            docker rm continium-frontend || true
+            docker run -d \
+              --name continium-frontend \
+              --network continium \
+              --restart unless-stopped \
+              -p 80:80 \
+              ${{ env.FRONTEND_IMAGE }}:latest
+
             docker image prune -f
+
