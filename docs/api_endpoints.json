@@ -1,0 +1,1354 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Continium API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Login",
+        "description": "## Login\n\nAuthenticate with email and password.\n\nReturns a **JWT access token** and a **refresh token**.\n\n### Request body\n| Field | Type | Description |\n|---|---|---|\n| `email` | string | Registered email address |\n| `password` | string | Account password |\n\n### Responses\n- **200** — Login successful. Returns `access_token`, `refresh_token`, `token_type`.\n- **401** — Invalid credentials.\n- **422** — Validation error (malformed request body).",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Get Me",
+        "description": "## Get Current User\n\nReturns the profile of the currently authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Responses\n- **200** — Returns `UserOut` (id, full_name, email, image_url, is_active, verified).\n- **401** — Missing or invalid token.\n- **403** — Account is inactive.",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Register",
+        "description": "## Register\n\nCreate a new user account.\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `full_name` | string | ✅ | Display name |\n| `email` | string | ✅ | Must be unique |\n| `password` | string | ✅ | Plain-text password (hashed server-side) |\n| `image_url` | string | ❌ | Optional profile picture URL |\n\n### Responses\n- **200** — Account created. Returns the new `UserOut` object.\n- **400** — Email already registered.\n- **422** — Validation error (malformed request body).",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/": {
+      "post": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Create Goal",
+        "description": "## Create Goal\n\nCreate a new goal for the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `title` | string | ✅ | Goal name (max 200 chars) |\n| `type` | string | ✅ | e.g. `\"One Time\"` or `\"Repeating\"` |\n| `start_date` | date | ✅ | ISO 8601 date — `YYYY-MM-DD` |\n| `deadline` | date | ✅ | ISO 8601 date — `YYYY-MM-DD` |\n| `frequency` | string | ✅ | One of `daily`, `weekly`, `monthly` |\n| `duration_min` | integer | ✅ | Daily target duration in **minutes** (≥ 0) |\n\n### Responses\n- **200** — Goal created. Returns the new `GoalOut` object.\n- **401** — Not authenticated.\n- **422** — Validation error.",
+        "operationId": "create_goal_api_v1_goals__post",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "List Goals",
+        "description": "## List Goals\n\nReturn all goals belonging to the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `skip` | integer | `0` | Number of records to skip (pagination offset) |\n| `limit` | integer | `100` | Maximum number of records to return |\n\n### Responses\n- **200** — Array of `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "operationId": "list_goals_api_v1_goals__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GoalOut"
+                  },
+                  "title": "Response List Goals Api V1 Goals  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/search": {
+      "get": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Get By Name",
+        "description": "## Search Goals by Name\n\nFull-text search (case-insensitive) across the authenticated user's goal titles.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Required | Description |\n|---|---|---|---|\n| `name` | string | ✅ | Substring to search for in goal titles |\n| `skip` | integer | `0` | Pagination offset |\n| `take` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of matching `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "operationId": "get_by_name_api_v1_goals_search_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Take"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/by-date/{target_date}": {
+      "get": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Get Goals By Date",
+        "description": "## Get Goals Active on a Date\n\nReturn all goals whose `start_date ≤ target_date ≤ deadline`.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `target_date` | date | ISO 8601 date — `YYYY-MM-DD` |\n\n### Responses\n- **200** — Array of `GoalOut` objects active on that date (may be empty).\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
+        "operationId": "get_goals_by_date_api_v1_goals_by_date__target_date__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "target_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Target Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GoalOut"
+                  },
+                  "title": "Response Get Goals By Date Api V1 Goals By Date  Target Date  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/filter-by-completion": {
+      "get": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Get Goals By Completion",
+        "description": "## Filter Goals by Completion Status\n\nReturn the authenticated user's goals filtered by `is_complete`.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `false` | `true` for completed goals, `false` for active |\n| `skip` | integer | `0` | Pagination offset |\n| `limit` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of `GoalOut` objects matching the filter (may be empty).\n- **401** — Not authenticated.",
+        "operationId": "get_goals_by_completion_api_v1_goals_filter_by_completion_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "is_complete",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Is Complete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GoalOut"
+                  },
+                  "title": "Response Get Goals By Completion Api V1 Goals Filter By Completion Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/{goal_id}": {
+      "get": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Get Goal",
+        "description": "## Get Goal\n\nFetch a single goal by ID. Only returns the goal if it belongs to the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to retrieve |\n\n### Responses\n- **200** — Returns the `GoalOut` object.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "operationId": "get_goal_api_v1_goals__goal_id__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Update Goal",
+        "description": "## Update Goal\n\nUpdate one or more fields of an existing goal. Only the owner can update their goal.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to update |\n\n### Request body\nAll fields are **optional** — only provided fields are updated.\n\n| Field | Type | Description |\n|---|---|---|\n| `title` | string | New goal title |\n| `type` | string | Goal type |\n| `start_date` | date | New start date (`YYYY-MM-DD`) |\n| `deadline` | date | New deadline (`YYYY-MM-DD`) |\n| `frequency` | string | `daily`, `weekly`, or `monthly` |\n| `duration_min` | integer | Daily target in minutes |\n| `is_complete` | boolean | Mark goal as complete/incomplete |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.\n- **422** — Validation error.",
+        "operationId": "update_goal_api_v1_goals__goal_id__put",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoalUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Delete Goal",
+        "description": "## Delete Goal\n\nPermanently delete a goal and all its associated stats. Only the owner can delete their goal.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to delete |\n\n### Responses\n- **204** — Goal deleted successfully (no content).\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "operationId": "delete_goal_api_v1_goals__goal_id__delete",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/goals/{goal_id}/complete": {
+      "patch": {
+        "tags": [
+          "goals",
+          "goals"
+        ],
+        "summary": "Update Goal Completion",
+        "description": "## Mark Goal Complete / Incomplete\n\nShortcut endpoint to toggle a goal's completion status without sending a full update body.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `true` | `true` to mark complete, `false` to reopen |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "operationId": "update_goal_completion_api_v1_goals__goal_id__complete_patch",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          },
+          {
+            "name": "is_complete",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Is Complete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stats/goal/{goal_id}": {
+      "post": {
+        "tags": [
+          "stats",
+          "stats"
+        ],
+        "summary": "Add Stat",
+        "description": "## Log a Session\n\nRecord a tracked work session for a specific goal.\n\nIf a stat entry already exists for the same goal on the same **calendar day**, the\n`duration_minutes` is **added** to the existing record rather than creating a duplicate.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal this session belongs to |\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `duration_minutes` | integer | ✅ | Session length in minutes (≥ 0) |\n| `occurred_at` | datetime | ❌ | ISO 8601 datetime. Defaults to **now** if omitted |\n\n### Responses\n- **200** — Returns the created or updated `StatOut`.\n- **401** — Not authenticated.\n- **422** — Validation error.",
+        "operationId": "add_stat_api_v1_stats_goal__goal_id__post",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "stats",
+          "stats"
+        ],
+        "summary": "Get Goal Stats",
+        "description": "## Get Stats for a Goal\n\nReturn all session records logged for a specific goal by the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Responses\n- **200** — Array of `StatOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "operationId": "get_goal_stats_api_v1_stats_goal__goal_id__get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatOut"
+                  },
+                  "title": "Response Get Goal Stats Api V1 Stats Goal  Goal Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stats/overall": {
+      "get": {
+        "tags": [
+          "stats",
+          "stats"
+        ],
+        "summary": "Get Overall Stats",
+        "description": "## Overall Statistics\n\nAggregate total tracked minutes across **all goals** for the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 120,\n    \"Read Books\": 45\n  }\n}\n```\nValues are in **minutes**. Keys are goal titles.\n\n### Responses\n- **200** — Returns `OverallOut`.\n- **401** — Not authenticated.",
+        "operationId": "get_overall_stats_api_v1_stats_overall_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverallOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/v1/stats/overall-by-type": {
+      "get": {
+        "tags": [
+          "stats",
+          "stats"
+        ],
+        "summary": "Get Overall Stats By Type",
+        "description": "## Overall Statistics by Goal Type\n\nAggregate total tracked minutes grouped by goal title, filtered by goal **type**.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `type` | string | `One Time` | Goal type filter. One of `One Time`, `Repeating` |\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 300\n  }\n}\n```\nValues are in **minutes**.\n\n### Responses\n- **200** — Returns aggregated stats object.\n- **401** — Not authenticated.\n- **422** — Invalid `type` value.",
+        "operationId": "get_overall_stats_by_type_api_v1_stats_overall_by_type_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Type",
+              "default": "One Time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stats/{goal_id}/by-date-range": {
+      "get": {
+        "tags": [
+          "stats",
+          "stats"
+        ],
+        "summary": "Get Stats By Date Range",
+        "description": "## Get Stats by Date Range\n\nReturn session records for a goal within a given date range (inclusive on both ends).\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `start_date` | string | Start of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n| `end_date` | string | End of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n\n### Responses\n- **200** — Array of `StatOut` objects within the range, ordered by `occurred_at`.\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
+        "operationId": "get_stats_by_date_range_api_v1_stats__goal_id__by_date_range_get",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "goal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Goal Id"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "End Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatOut"
+                  },
+                  "title": "Response Get Stats By Date Range Api V1 Stats  Goal Id  By Date Range Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GoalCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Title"
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Type"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date",
+            "title": "Deadline"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/GoalFrequency"
+          },
+          "duration_min": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Duration Min"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "type",
+          "start_date",
+          "deadline",
+          "frequency",
+          "duration_min"
+        ],
+        "title": "GoalCreate"
+      },
+      "GoalFrequency": {
+        "type": "string",
+        "enum": [
+          "daily",
+          "weekly",
+          "monthly"
+        ],
+        "title": "GoalFrequency"
+      },
+      "GoalOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date",
+            "title": "Deadline"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/GoalFrequency"
+          },
+          "duration_min": {
+            "type": "integer",
+            "title": "Duration Min"
+          },
+          "is_complete": {
+            "type": "boolean",
+            "title": "Is Complete"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "title",
+          "type",
+          "start_date",
+          "deadline",
+          "frequency",
+          "duration_min",
+          "is_complete"
+        ],
+        "title": "GoalOut"
+      },
+      "GoalUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "deadline": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deadline"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GoalFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duration_min": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Min"
+          },
+          "is_complete": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Complete"
+          }
+        },
+        "type": "object",
+        "title": "GoalUpdate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "OverallOut": {
+        "properties": {
+          "total_stats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Total Stats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_stats"
+        ],
+        "title": "OverallOut"
+      },
+      "StatCreate": {
+        "properties": {
+          "occurred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Duration Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "duration_minutes"
+        ],
+        "title": "StatCreate"
+      },
+      "StatOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "goal_id": {
+            "type": "integer",
+            "title": "Goal Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "title": "Duration Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "goal_id",
+          "user_id",
+          "occurred_at",
+          "duration_minutes"
+        ],
+        "title": "StatOut"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
+        "title": "TokenResponse"
+      },
+      "Type": {
+        "type": "string",
+        "enum": [
+          "One Time",
+          "Repeating"
+        ],
+        "title": "Type"
+      },
+      "UserCreate": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "email",
+          "password"
+        ],
+        "title": "UserCreate"
+      },
+      "UserLoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserLoginRequest"
+      },
+      "UserOut": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "email",
+          "id",
+          "is_active",
+          "verified"
+        ],
+        "title": "UserOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "description": "JWT authentication using the Authorization header with Bearer scheme. Example: 'Authorization: Bearer \u003Ctoken\u003E'",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
