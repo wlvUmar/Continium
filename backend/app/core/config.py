@@ -13,7 +13,14 @@ class Settings(BaseSettings):
     env: str = Field("dev", validation_alias="ENV")
     debug: bool = Field(True, validation_alias="DEBUG")
     cors_origins: list[str] = Field(
-        default_factory=lambda: ["http://localhost:3000"],
+        default_factory=lambda: [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],
         validation_alias="CORS_ORIGINS",
     )
     cors_allow_credentials: bool = Field(True, validation_alias="CORS_ALLOW_CREDENTIALS")
