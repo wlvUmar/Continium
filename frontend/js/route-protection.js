@@ -39,14 +39,8 @@ function protectedRoute(handler) {
 
 // Logout helper
 function handleLogout() {
-    authService.logout().then(() => {
-        router.navigate('/login');
-    }).catch(err => {
-        console.error('Logout failed:', err);
-        // Force logout anyway
-        localStorage.clear();
-        router.navigate('/login');
-    });
+    authService.logout();
+    router.navigate('/login');
 }
 
 window.protectedRoute = protectedRoute;

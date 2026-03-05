@@ -220,7 +220,7 @@ async function handleRegister(e) {
     Spinner.show('Creating account...');
     
     try {
-        await authService.register(name, email, password, confirmPassword);
+        await authService.register(name, email, password);
         Toast.success('Account created! Please verify your email.');
         router.navigate('/verify');
     } catch (err) {

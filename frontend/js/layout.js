@@ -641,15 +641,15 @@ window.handleAddGoalSubmit = async function(event) {
     const submitBtn = document.getElementById('addGoalSubmitBtn');
     submitBtn.disabled = true; submitBtn.textContent = 'Creating...';
     const freqType = document.querySelector('.freq-tab.active')?.dataset.type || 'repeating';
+    const today = new Date().toISOString().split('T')[0];
+    const oneYearLater = new Date(Date.now() + 365*24*60*60*1000).toISOString().split('T')[0];
     const goalData = {
         title: form.title.value.trim(),
-        color: form.color.value,
-        frequency_type: freqType,
-        frequency: freqType === 'repeating' ? form.frequency.value : null,
-        start_date: freqType === 'onetime' ? (form.start_date?.value || null) : null,
-        end_date: freqType === 'onetime' ? (form.end_date?.value || null) : null,
-        session_count: freqType === 'onetime' ? (parseInt(form.session_count?.value) || null) : null,
-        daily_target_hours: parseFloat(form.daily_target_hours.value) || null,
+        type: freqType === 'onetime' ? 'One Time' : 'Repeating',
+        start_date: freqType === 'onetime' ? (form.start_date?.value || today) : today,
+        deadline: freqType === 'onetime' ? (form.end_date?.value || oneYearLater) : oneYearLater,
+        frequency: freqType === 'onetime' ? 'daily' : (form.frequency.value || 'daily'),
+        duration_min: Math.round((parseFloat(form.daily_target_hours.value) || 0) * 60),
     };
     try {
         await goalsService.createGoal(goalData);
@@ -742,15 +742,15 @@ window.handleProfileSave = async function(event) {
     const confirmPw = form.confirm_password.value;
     if (newPw && newPw !== confirmPw) { Toast.error('Passwords do not match'); return; }
     saveBtn.disabled = true; saveBtn.textContent = 'Saving...';
-    const payload = {
-        full_name: form.full_name.value.trim(),
-        email: form.email.value.trim(),
-        birthdate: form.birthdate.value || null,
-    };
-    if (newPw) { payload.current_password = form.current_password.value; payload.new_password = newPw; }
     try {
-        const updated = await api.put('/auth/me', payload);
-        if (updated) localStorage.setItem('user', JSON.stringify(updated));
+        // Update local cache only (no profile update endpoint available yet)
+        const currentUser = authService.getUser() || {};
+        const updated = {
+            ...currentUser,
+            full_name: form.full_name.value.trim(),
+            email: form.email.value.trim(),
+        };
+        localStorage.setItem('user', JSON.stringify(updated));
         Toast.success('Profile saved!');
     } catch (err) {
         Toast.error(err.message || 'Failed to save profile');

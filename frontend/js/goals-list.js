@@ -11,7 +11,7 @@ const goalsService = {
     // Fetch all goals
     async fetchGoals() {
         try {
-            const goals = await api.get('/goals');
+            const goals = await api.get('/goals/');
             return goals;
         } catch (err) {
             console.error('Failed to fetch goals:', err);
@@ -33,7 +33,7 @@ const goalsService = {
     // Create goal
     async createGoal(goalData) {
         try {
-            const goal = await api.post('/goals', goalData);
+            const goal = await api.post('/goals/', goalData);
             return goal;
         } catch (err) {
             console.error('Failed to create goal:', err);
@@ -69,11 +69,13 @@ const goalsService = {
 // ============================================
 
 function createGoalCard(goal) {
-    const progress = goal.progress || 0;
-    const color = goal.color || '#00BCD4';
-    const spent = goal.timeSpent ? formatTime(goal.timeSpent) : '0h 00m';
-    const target = goal.daily_target_hours ? `${goal.daily_target_hours}h 00m` : null;
-    const timeDisplay = target ? `${spent} / ${target}` : spent;
+    const progress = goal.is_complete ? 100 : 0;
+    const color = '#00BCD4';
+    const durationMin = goal.duration_min || 0;
+    const hours = Math.floor(durationMin / 60);
+    const minutes = durationMin % 60;
+    const target = durationMin > 0 ? `${hours}h ${String(minutes).padStart(2, '0')}m` : null;
+    const timeDisplay = target || '0h 00m';
     return `
         <div class="project-list-card" onclick="router.navigate('/goal/${goal.id}')">
             <button class="project-play-circle" onclick="event.stopPropagation(); router.navigate('/project/${goal.id}')" title="Start session">

@@ -22,39 +22,29 @@ const authService = {
     },
 
     // Register new user
-    async register(name, email, password, rePassword) {
+    async register(name, email, password) {
         const response = await api.post('/auth/register', {
-            name,
+            full_name: name,
             email,
-            password,
-            re_password: rePassword
+            password
         });
-        
-        // Auto-login after registration
-        if (response.access_token) {
-            localStorage.setItem('access_token', response.access_token);
-            localStorage.setItem('refresh_token', response.refresh_token);
-            if (response.user) {
-                localStorage.setItem('user', JSON.stringify(response.user));
-            }
+
+        // Store user data returned from registration
+        if (response) {
+            localStorage.setItem('user', JSON.stringify(response));
         }
-        
+
+        // Auto-login after registration to obtain tokens
+        await this.login(email, password);
+
         return response;
     },
 
     // Logout
-    async logout() {
-        try {
-            await api.post('/auth/logout', {
-                access_token: localStorage.getItem('access_token'),
-                refresh_token: localStorage.getItem('refresh_token')
-            });
-        } finally {
-            // Clear storage even if request fails
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user');
-        }
+    logout() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
     },
 
     // Check if user is logged in
