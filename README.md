@@ -89,7 +89,7 @@ continium/
 
 ## API
 
-Base URL: `https://continium.uz/api/v1` · Docs: [`/docs`](https://continium.uz/docs)
+Base URL: `http://178.128.37.233/api/v1` · Docs: [`/docs`](http://178.128.37.233/docs)
 
 <details>
 <summary><strong>Auth</strong> — 8 endpoints</summary>
