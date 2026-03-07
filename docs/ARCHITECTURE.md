@@ -1,5 +1,11 @@
 # Continium — System Architecture
 
+**Project:** Continium — Goal & Time Tracking Application
+**Version:** 1.0
+**Author:** Umar Tolibov
+**Date:** 2026-03-07
+
+---
 ## 1. System Overview
 
 ```mermaid
