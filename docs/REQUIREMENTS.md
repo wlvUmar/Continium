@@ -1,8 +1,8 @@
-# 📋 Requirements Document
+# Requirements Document
 
-**Project:** Continium — Goal & Time Tracking Application  
-**Version:** 1.0  
-**Author:** Umar Tolibov  
+**Project:** Continium — Goal & Time Tracking Application 
+**Version:** 1.0 
+**Author:** Umar Tolibov 
 **Date:** 2026-03-07
 
 ---
@@ -183,10 +183,10 @@ Continium solves this by combining goal management with a time-tracking journal 
 
 ## 6. Out of Scope (V1)
 
-- 📱 Mobile native applications (iOS / Android)
-- 👥 Team or collaborative goal sharing
-- 📅 Calendar integration (Google Calendar, Outlook)
-- 🔔 Notifications / reminders (push notifications, scheduled emails)
-- 🌐 Social features (leaderboards, public goal sharing)
-- 🏷️ Goal templates or categories beyond type/frequency
-- 💳 Paid plans or subscription management
+- Mobile native applications (iOS / Android)
+- Team or collaborative goal sharing
+- Calendar integration (Google Calendar, Outlook)
+- Notifications / reminders (push notifications, scheduled emails)
+- Social features (leaderboards, public goal sharing)
+- Goal templates or categories beyond type/frequency
+- Paid plans or subscription management

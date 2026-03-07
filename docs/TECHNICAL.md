@@ -1,12 +1,12 @@
-# 🛠️ Technical Document
+# Technical Document
 
-**Project:** Continium — Goal & Time Tracking Application  
-**Version:** 1.0  
-**Author:** Umar Tolibov  
+**Project:** Continium — Goal & Time Tracking Application 
+**Version:** 1.0 
+**Author:** Umar Tolibov 
 **Date:** 2026-03-07
 
-> **Live URL:** https://continium.uz  
-> **API URL:** http://178.128.37.233:8000/api/v1  
+> **Live URL:** https://continium.uz 
+> **API URL:** http://178.128.37.233:8000/api/v1 
 > **Health:** http://178.128.37.233:8000/health
 
 ---
@@ -62,73 +62,73 @@ Continium is a full-stack web application for personal goal and time management.
 ```
 Continium/
 ├── backend/
-│   ├── main.py                        Entry point (FastAPI app init, lifespan)
-│   ├── Dockerfile
-│   ├── pytest.ini
-│   └── app/
-│       ├── main.py                    App factory (middleware, routers)
-│       ├── core/
-│       │   ├── config.py              Settings (env vars via pydantic-settings)
-│       │   ├── security.py            JWT encode/decode, password hashing
-│       │   └── logging_setup.py       Coloured console + file logging
-│       ├── api/
-│       │   ├── router.py              Aggregates all sub-routers under /api/v1
-│       │   ├── dependencies.py        Shared FastAPI dependencies (get_db)
-│       │   └── routes/
-│       │       ├── auth.py            Auth endpoints
-│       │       ├── goals.py           Goal CRUD endpoints
-│       │       └── stats.py           Stats logging & aggregation endpoints
-│       ├── services/
-│       │   ├── auth_service.py        Auth business logic
-│       │   ├── goal_service.py        Goal business logic
-│       │   └── stat_service.py        Stats aggregation logic
-│       ├── db/
-│       │   ├── base.py                SQLAlchemy declarative Base
-│       │   ├── session.py             Async engine + session factory
-│       │   ├── models/
-│       │   │   ├── user.py            User ORM model
-│       │   │   ├── goal.py            Goal ORM model
-│       │   │   └── stats.py           Stats ORM model
-│       │   └── dal/                   Data Access Layer
-│       │       ├── user.py            User DB queries
-│       │       ├── goal.py            Goal DB queries
-│       │       └── stats.py           Stats DB queries
-│       ├── schemas/                   Pydantic DTOs (request/response shapes)
-│       │   ├── user.py                UserCreate, UserOut
-│       │   ├── goal.py                GoalCreate, GoalUpdate, GoalOut
-│       │   ├── stat.py                StatCreate, StatOut, OverallOut
-│       │   └── auth.py                LoginRequest, TokenResponse, etc.
-│       └── utils/
-│           └── smtp.py                Email sending (verification, reset)
+│ ├── main.py Entry point (FastAPI app init, lifespan)
+│ ├── Dockerfile
+│ ├── pytest.ini
+│ └── app/
+│ ├── main.py App factory (middleware, routers)
+│ ├── core/
+│ │ ├── config.py Settings (env vars via pydantic-settings)
+│ │ ├── security.py JWT encode/decode, password hashing
+│ │ └── logging_setup.py Coloured console + file logging
+│ ├── api/
+│ │ ├── router.py Aggregates all sub-routers under /api/v1
+│ │ ├── dependencies.py Shared FastAPI dependencies (get_db)
+│ │ └── routes/
+│ │ ├── auth.py Auth endpoints
+│ │ ├── goals.py Goal CRUD endpoints
+│ │ └── stats.py Stats logging & aggregation endpoints
+│ ├── services/
+│ │ ├── auth_service.py Auth business logic
+│ │ ├── goal_service.py Goal business logic
+│ │ └── stat_service.py Stats aggregation logic
+│ ├── db/
+│ │ ├── base.py SQLAlchemy declarative Base
+│ │ ├── session.py Async engine + session factory
+│ │ ├── models/
+│ │ │ ├── user.py User ORM model
+│ │ │ ├── goal.py Goal ORM model
+│ │ │ └── stats.py Stats ORM model
+│ │ └── dal/ Data Access Layer
+│ │ ├── user.py User DB queries
+│ │ ├── goal.py Goal DB queries
+│ │ └── stats.py Stats DB queries
+│ ├── schemas/ Pydantic DTOs (request/response shapes)
+│ │ ├── user.py UserCreate, UserOut
+│ │ ├── goal.py GoalCreate, GoalUpdate, GoalOut
+│ │ ├── stat.py StatCreate, StatOut, OverallOut
+│ │ └── auth.py LoginRequest, TokenResponse, etc.
+│ └── utils/
+│ └── smtp.py Email sending (verification, reset)
 │
 ├── frontend/
-│   ├── index.html                     Single HTML entry point
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── js/
-│       ├── app.js                     Route registration
-│       ├── core/
-│       │   ├── api.js                 Fetch wrapper (auth headers, errors)
-│       │   ├── router.js              Hash-based router
-│       │   └── route-protection.js    Auth guard (redirect to /login)
-│       ├── pages/
-│       │   ├── goals.js               Goals list (active + completed)
-│       │   ├── goal-detail.js         Single goal view + time logging
-│       │   ├── add-goal.js            Create goal form
-│       │   ├── statistics.js          Stats dashboard with charts
-│       │   ├── profile.js             User profile + change password
-│       │   └── auth/                  Login, register, verify, reset pages
-│       ├── services/
-│       │   └── auth.service.js        Login, logout, token management
-│       └── components/
-│           ├── layout.js              Navbar + logout
-│           ├── toast.js               Toast notifications (auto-dismiss)
-│           ├── spinner.js             Loading spinner
-│           └── error-message.js       Error display block
+│ ├── index.html Single HTML entry point
+│ ├── Dockerfile
+│ ├── nginx.conf
+│ └── js/
+│ ├── app.js Route registration
+│ ├── core/
+│ │ ├── api.js Fetch wrapper (auth headers, errors)
+│ │ ├── router.js Hash-based router
+│ │ └── route-protection.js Auth guard (redirect to /login)
+│ ├── pages/
+│ │ ├── goals.js Goals list (active + completed)
+│ │ ├── goal-detail.js Single goal view + time logging
+│ │ ├── add-goal.js Create goal form
+│ │ ├── statistics.js Stats dashboard with charts
+│ │ ├── profile.js User profile + change password
+│ │ └── auth/ Login, register, verify, reset pages
+│ ├── services/
+│ │ └── auth.service.js Login, logout, token management
+│ └── components/
+│ ├── layout.js Navbar + logout
+│ ├── toast.js Toast notifications (auto-dismiss)
+│ ├── spinner.js Loading spinner
+│ └── error-message.js Error display block
 │
-├── .github/workflows/                 CI/CD pipelines
+├── .github/workflows/ CI/CD pipelines
 ├── docker-compose.yml
-├── docs/                              Project documentation
+├── docs/ Project documentation
 └── README.md
 ```
 
@@ -174,9 +174,9 @@ Continium/
 ### Relationships
 
 ```
-users  1 ──< goals   (one user has many goals)
-users  1 ──< stats   (one user has many stat records)
-goals  1 ──< stats   (one goal has many stat records)
+users 1 ──< goals (one user has many goals)
+users 1 ──< stats (one user has many stat records)
+goals 1 ──< stats (one goal has many stat records)
 ```
 
 > **Cascade:** Deleting a user removes all their goals and stats. Deleting a goal removes all its stat records.
@@ -185,8 +185,8 @@ goals  1 ──< stats   (one goal has many stat records)
 
 ## 5. API Reference
 
-**Base URL:** `/api/v1`  
-**Auth:** `Authorization: Bearer <access_token>` (marked 🔒)
+**Base URL:** `/api/v1` 
+**Auth:** `Authorization: Bearer <access_token>` (marked )
 
 ### Auth `/auth`
 
@@ -197,33 +197,33 @@ goals  1 ──< stats   (one goal has many stat records)
 | POST | `/auth/verify` | — | Verify email with token |
 | POST | `/auth/forgot-password` | — | Send password reset email |
 | POST | `/auth/reset-password` | — | Reset password with token |
-| GET | `/auth/me` | 🔒 | Get current user profile |
+| GET | `/auth/me` | | Get current user profile |
 | POST | `/auth/refresh` | — | Rotate tokens |
-| POST | `/auth/change-password` | 🔒 | Change password |
+| POST | `/auth/change-password` | | Change password |
 
 ### Goals `/goals`
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/goals/` | 🔒 | Create a new goal |
-| GET | `/goals/` | 🔒 | List all goals (paginated) |
-| GET | `/goals/{goal_id}` | 🔒 | Get a single goal |
-| PUT | `/goals/{goal_id}` | 🔒 | Update a goal |
-| DELETE | `/goals/{goal_id}` | 🔒 | Delete a goal |
-| PATCH | `/goals/{goal_id}/complete` | 🔒 | Toggle completion status |
-| GET | `/goals/search?name=` | 🔒 | Search goals by title |
-| GET | `/goals/by-date/{date}` | 🔒 | Goals active on a date |
-| GET | `/goals/filter-by-completion?is_complete=` | 🔒 | Filter by completion |
+| POST | `/goals/` | | Create a new goal |
+| GET | `/goals/` | | List all goals (paginated) |
+| GET | `/goals/{goal_id}` | | Get a single goal |
+| PUT | `/goals/{goal_id}` | | Update a goal |
+| DELETE | `/goals/{goal_id}` | | Delete a goal |
+| PATCH | `/goals/{goal_id}/complete` | | Toggle completion status |
+| GET | `/goals/search?name=` | | Search goals by title |
+| GET | `/goals/by-date/{date}` | | Goals active on a date |
+| GET | `/goals/filter-by-completion?is_complete=` | | Filter by completion |
 
 ### Stats `/stats`
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/stats/goal/{goal_id}` | 🔒 | Log time for a goal |
-| GET | `/stats/goal/{goal_id}` | 🔒 | Get all stats for a goal |
-| GET | `/stats/{goal_id}/by-date-range` | 🔒 | Stats within date range |
-| GET | `/stats/overall` | 🔒 | Total minutes per goal |
-| GET | `/stats/overall-by-type?type=` | 🔒 | Total minutes filtered by goal type |
+| POST | `/stats/goal/{goal_id}` | | Log time for a goal |
+| GET | `/stats/goal/{goal_id}` | | Get all stats for a goal |
+| GET | `/stats/{goal_id}/by-date-range` | | Stats within date range |
+| GET | `/stats/overall` | | Total minutes per goal |
+| GET | `/stats/overall-by-type?type=` | | Total minutes filtered by goal type |
 
 ### Health
 
@@ -239,22 +239,22 @@ goals  1 ──< stats   (one goal has many stat records)
 
 ```
 Login:
-  1. Validate email exists in DB; verify password with Argon2
-  2. Generate access token  (TTL: 15 min)  → { sub: user_id, type: "access" }
-  3. Generate refresh token (TTL: 30 days) → { sub: user_id, type: "refresh" }
-  4. Return both tokens to client
+ 1. Validate email exists in DB; verify password with Argon2
+ 2. Generate access token (TTL: 15 min) → { sub: user_id, type: "access" }
+ 3. Generate refresh token (TTL: 30 days) → { sub: user_id, type: "refresh" }
+ 4. Return both tokens to client
 
 Token Refresh (rotation):
-  1. Decode refresh token; validate type == "refresh"
-  2. Issue brand-new access + refresh pair
-  3. Old refresh token implicitly invalidated
+ 1. Decode refresh token; validate type == "refresh"
+ 2. Issue brand-new access + refresh pair
+ 3. Old refresh token implicitly invalidated
 
 Route Protection (FastAPI dependency):
-  1. Extract Bearer token from Authorization header
-  2. Decode JWT with HS256 + secret key
-  3. Assert type == "access" and not expired
-  4. Fetch user from DB by sub (user_id)
-  5. Return user or raise HTTP 401/403
+ 1. Extract Bearer token from Authorization header
+ 2. Decode JWT with HS256 + secret key
+ 3. Assert type == "access" and not expired
+ 4. Fetch user from DB by sub (user_id)
+ 5. Return user or raise HTTP 401/403
 ```
 
 ### 6.2 Stats Daily Aggregation
@@ -263,13 +263,13 @@ When a user logs time for a goal (`POST /stats/goal/{id}`):
 
 ```
 existing = query Stats WHERE goal_id == id
-                         AND date(occurred_at) == today
-                         AND user_id == current_user
+ AND date(occurred_at) == today
+ AND user_id == current_user
 
 IF existing:
-    existing.duration_minutes += new_duration   → UPDATE
+ existing.duration_minutes += new_duration → UPDATE
 ELSE:
-    INSERT new Stats record
+ INSERT new Stats record
 ```
 
 One row per goal per day — repeated logs accumulate rather than creating duplicate rows.
@@ -298,7 +298,7 @@ Returns: `{ "goal_title": total_minutes, ... }`
 - Hash-based: all routes use `#/path` format
 - `router.js` parses `window.location.hash`, matches patterns (supports `:id` params)
 - `route-protection.js` wraps every protected handler:
-  - No `access_token` in localStorage → redirect to `/login`
+ - No `access_token` in localStorage → redirect to `/login`
 - On logout: `localStorage.clear()` — synchronous, no API call
 
 ---
