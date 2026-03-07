@@ -1,0 +1,418 @@
+TECHNICAL DOCUMENT
+==================
+Project  : Continium — Goal & Time Tracking Application
+Version  : 1.0
+Author   : Umar Tolibov
+Date     : 2026-03-07
+
+
+========================================================
+1. OVERVIEW
+========================================================
+
+Continium is a full-stack web application for personal goal and time
+management. Users create goals, log work sessions against them, and
+view aggregated statistics to track their progress over time.
+
+Live URL  : https://continium.uz
+API URL   : http://178.128.37.233:8000/api/v1
+Health    : http://178.128.37.233:8000/health
+
+
+========================================================
+2. TECH STACK
+========================================================
+
+BACKEND
+-------
+Language      : Python 3.12
+Framework     : FastAPI 0.128.7
+ASGI Server   : Uvicorn 0.40.0
+ORM           : SQLAlchemy 2.0.46 (async)
+Database      : SQLite (dev) / PostgreSQL-ready (asyncpg)
+Auth          : PyJWT 2.11.0, Argon2 password hashing (pwdlib 0.3)
+Validation    : Pydantic 2.12.5
+Migrations    : Alembic
+Email         : aiosmtplib 3.0.1 / Resend HTTP API (switchable)
+Testing       : pytest, pytest-asyncio, anyio
+
+FRONTEND
+--------
+Language      : Vanilla JavaScript (ES6+)
+Routing       : Custom hash-based router (js/core/router.js)
+HTTP Client   : Fetch API with Bearer token auth wrapper
+State Storage : localStorage (tokens, user data, goal colours)
+Styling       : Plain CSS (no frameworks or build tools)
+
+INFRASTRUCTURE
+--------------
+Containers    : Docker (backend: python:3.12-slim, frontend: nginx:alpine)
+Orchestration : Docker Compose (local dev)
+Production    : DigitalOcean Droplet (Ubuntu 24.04), manual Docker
+CI            : GitHub Actions (.github/workflows/ci.yml) — runs pytest on PR
+CD            : GitHub Actions (.github/workflows/deploy.yml) — builds image,
+                pushes to ghcr.io/wlvumar/continium-backend, SSHes to droplet
+HTTPS         : Let's Encrypt via Certbot, HSTS headers via Nginx
+
+
+========================================================
+3. DIRECTORY STRUCTURE
+========================================================
+
+Continium/
+├── backend/
+│   ├── main.py                        Entry point (FastAPI app init, lifespan)
+│   ├── Dockerfile
+│   ├── pytest.ini
+│   ├── app/
+│   │   ├── main.py                    App factory (middleware, routers)
+│   │   ├── core/
+│   │   │   ├── config.py              Settings (env vars via pydantic-settings)
+│   │   │   ├── security.py            JWT encode/decode, password hashing
+│   │   │   └── logging_setup.py       Coloured console + file logging
+│   │   ├── api/
+│   │   │   ├── router.py              Aggregates all sub-routers under /api/v1
+│   │   │   ├── dependencies.py        Shared FastAPI dependencies (get_db)
+│   │   │   └── routes/
+│   │   │       ├── auth.py            Auth endpoints
+│   │   │       ├── goals.py           Goal CRUD endpoints
+│   │   │       └── stats.py           Stats logging & aggregation endpoints
+│   │   ├── services/
+│   │   │   ├── auth_service.py        Auth business logic
+│   │   │   ├── goal_service.py        Goal business logic
+│   │   │   └── stat_service.py        Stats aggregation logic
+│   │   ├── db/
+│   │   │   ├── base.py                SQLAlchemy declarative Base
+│   │   │   ├── session.py             Async engine + session factory
+│   │   │   ├── models/
+│   │   │   │   ├── user.py            User ORM model
+│   │   │   │   ├── goal.py            Goal ORM model
+│   │   │   │   └── stats.py           Stats ORM model
+│   │   │   └── dal/                   Data Access Layer
+│   │   │       ├── user.py            User DB queries
+│   │   │       ├── goal.py            Goal DB queries
+│   │   │       └── stats.py           Stats DB queries
+│   │   ├── schemas/                   Pydantic DTOs (request/response shapes)
+│   │   │   ├── user.py                UserCreate, UserOut
+│   │   │   ├── goal.py                GoalCreate, GoalUpdate, GoalOut
+│   │   │   ├── stat.py                StatCreate, StatOut, OverallOut
+│   │   │   └── auth.py                LoginRequest, TokenResponse, etc.
+│   │   └── utils/
+│   │       └── stmp.py                Email sending (verification, reset)
+│   ├── alembic/                       DB migration scripts
+│   └── tests/                         pytest test suite
+│
+├── frontend/
+│   ├── index.html                     Single HTML entry point
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── js/
+│   │   ├── app.js                     Route registration
+│   │   ├── core/
+│   │   │   ├── api.js                 Fetch wrapper (auth headers, errors)
+│   │   │   ├── router.js              Hash-based router
+│   │   │   └── route-protection.js    Auth guard (redirect to /login)
+│   │   ├── pages/
+│   │   │   ├── goals.js               Goals list (active + completed)
+│   │   │   ├── goal-detail.js         Single goal view + time logging
+│   │   │   ├── add-goal.js            Create goal form
+│   │   │   ├── statistics.js          Stats dashboard with charts
+│   │   │   ├── profile.js             User profile + change password
+│   │   │   └── auth/                  Login, register, verify, reset pages
+│   │   ├── services/
+│   │   │   └── auth.service.js        Login, logout, token management
+│   │   └── components/
+│   │       ├── layout.js              Navbar + logout
+│   │       ├── toast.js               Toast notifications (auto-dismiss)
+│   │       ├── spinner.js             Loading spinner
+│   │       └── error-message.js       Error display block
+│   └── css/                           Plain CSS stylesheets
+│
+├── .github/workflows/                 CI/CD pipelines
+├── docker-compose.yml
+├── .gitignore
+└── README.md
+
+
+========================================================
+4. DATABASE SCHEMA
+========================================================
+
+TABLE: users
+  id             INTEGER   PRIMARY KEY AUTOINCREMENT
+  full_name      VARCHAR(200)   NOT NULL
+  email          VARCHAR(255)   NOT NULL  UNIQUE  INDEXED
+  password_hash  VARCHAR(255)   NOT NULL
+  image_url      VARCHAR(500)   NULLABLE
+  is_active      BOOLEAN        DEFAULT TRUE
+  verified       BOOLEAN        DEFAULT FALSE
+
+TABLE: goals
+  id             INTEGER   PRIMARY KEY AUTOINCREMENT
+  user_id        INTEGER   FK → users.id   INDEXED  ON DELETE CASCADE
+  title          VARCHAR(200)   NOT NULL
+  type           VARCHAR(50)    NOT NULL  [e.g. "One Time", "Repeating"]
+  start_date     DATE           NOT NULL
+  deadline       DATE           NOT NULL
+  frequency      ENUM           [daily | weekly | monthly]
+  duration_min   INTEGER        CHECK(duration_min >= 0)
+  is_complete    BOOLEAN        DEFAULT FALSE
+
+TABLE: stats
+  id                INTEGER   PRIMARY KEY AUTOINCREMENT
+  goal_id           INTEGER   FK → goals.id   INDEXED  ON DELETE CASCADE
+  user_id           INTEGER   FK → users.id   INDEXED  ON DELETE CASCADE
+  occurred_at       DATETIME WITH TIMEZONE   INDEXED  DEFAULT now()
+  duration_minutes  INTEGER   CHECK(duration_minutes >= 0)
+
+Relationships:
+  users  1───< goals  (one user has many goals)
+  users  1───< stats  (one user has many stat records)
+  goals  1───< stats  (one goal has many stat records)
+
+Cascade behaviour:
+  Deleting a user deletes all their goals and stats.
+  Deleting a goal deletes all its stat records.
+
+
+========================================================
+5. API REFERENCE
+========================================================
+
+Base URL: /api/v1
+Auth: Bearer <access_token> in Authorization header (where marked ✅)
+
+---- AUTH (/auth) ----------------------------------------
+
+POST   /auth/register
+  Body   : { full_name, email, password }
+  Returns: UserOut { id, full_name, email, is_active, verified }
+  Notes  : Sends email verification link automatically
+
+POST   /auth/login
+  Body   : { email, password }
+  Returns: TokenResponse { access_token, refresh_token, token_type }
+
+POST   /auth/verify
+  Body   : { token }
+  Returns: { message: "Email verified" }
+
+POST   /auth/forgot-password
+  Body   : { email }
+  Returns: 200 always (prevents email enumeration)
+
+POST   /auth/reset-password
+  Body   : { token, new_password }
+  Returns: { message: "Password reset successful" }
+
+GET    /auth/me          ✅
+  Returns: UserOut
+
+POST   /auth/refresh
+  Body   : { refresh_token }
+  Returns: TokenResponse (new access + refresh pair)
+
+POST   /auth/change-password   ✅
+  Body   : { current_password, new_password }
+  Returns: { message: "Password changed" }
+
+---- GOALS (/goals) --------------------------------------
+
+POST   /goals/           ✅
+  Body   : GoalCreate { title, type, start_date, deadline,
+                        frequency, duration_min }
+  Returns: GoalOut { id, user_id, title, type, start_date, deadline,
+                     frequency, duration_min, is_complete }
+
+GET    /goals/           ✅
+  Query  : skip (int, default=0), limit (int, default=100)
+  Returns: List[GoalOut]
+
+GET    /goals/{goal_id}  ✅
+  Returns: GoalOut  (404 if not owned by requester)
+
+PUT    /goals/{goal_id}  ✅
+  Body   : GoalUpdate (all fields optional)
+  Returns: GoalOut
+
+PATCH  /goals/{goal_id}/complete   ✅
+  Returns: GoalOut  (is_complete toggled)
+
+DELETE /goals/{goal_id}  ✅
+  Returns: { message: "Goal deleted" }
+
+GET    /goals/search?name=<str>   ✅
+  Returns: List[GoalOut]
+
+GET    /goals/by-date/{target_date}   ✅  (date: YYYY-MM-DD)
+  Returns: List[GoalOut]  where start_date <= target_date <= deadline
+
+GET    /goals/filter-by-completion?is_complete=<bool>   ✅
+  Returns: List[GoalOut]
+
+---- STATS (/stats) --------------------------------------
+
+POST   /stats/goal/{goal_id}    ✅
+  Body   : StatCreate { duration_minutes }
+  Returns: StatOut { id, goal_id, user_id, occurred_at, duration_minutes }
+  Notes  : If a stat already exists for this goal on today's date,
+           duration_minutes is ADDED to the existing record (daily aggregation)
+
+GET    /stats/goal/{goal_id}    ✅
+  Returns: List[StatOut]
+
+GET    /stats/{goal_id}/by-date-range   ✅
+  Query  : start_date, end_date (ISO 8601)
+  Returns: List[StatOut]
+
+GET    /stats/overall    ✅
+  Returns: OverallOut { total_stats: { "goal_title": total_minutes, ... } }
+
+GET    /stats/overall-by-type?type=<str>   ✅
+  Query  : type = "One Time" | "Repeating"
+  Returns: OverallOut
+
+---- HEALTH ----------------------------------------------
+
+GET    /health
+  Returns: { status: "ok" }
+
+
+========================================================
+6. KEY ALGORITHMS & LOGIC
+========================================================
+
+6.1  JWT AUTHENTICATION FLOW
+-----------------------------
+Login:
+  1. Validate email exists in DB; verify password with Argon2
+  2. Generate access token  (TTL: 15 min)  payload: { sub: user_id, type: "access" }
+  3. Generate refresh token (TTL: 30 days) payload: { sub: user_id, type: "refresh" }
+  4. Return both tokens to client
+
+Token Refresh (rotation):
+  1. Decode refresh token; validate type == "refresh"
+  2. Issue brand-new access + refresh pair
+  3. Old refresh token is implicitly invalidated (client replaces it)
+
+Route Protection (FastAPI dependency):
+  1. Extract Bearer token from Authorization header
+  2. Decode JWT with HS256 + secret key
+  3. Assert token type == "access" and not expired
+  4. Fetch user from DB by sub (user_id)
+  5. Return user or raise HTTP 401/403
+
+Password Hashing:
+  - Algorithm : Argon2 via pwdlib.PasswordHash.recommended()
+  - Store     : password_hash column (never plain text)
+
+One-Time Tokens (email verification / password reset):
+  - Signed JWTs with short TTL (24h verify, 1h reset)
+  - type field distinguishes: "email_verification" | "password_reset"
+
+6.2  STATS DAILY AGGREGATION
+-----------------------------
+When a user logs time for a goal (POST /stats/goal/{id}):
+
+  existing = query Stats WHERE goal_id == id
+                           AND date(occurred_at) == today
+                           AND user_id == current_user
+
+  IF existing:
+      existing.duration_minutes += new_duration
+      UPDATE existing record
+  ELSE:
+      INSERT new Stats record
+
+This ensures one row per goal per day; repeated logs in the same day
+accumulate rather than create duplicate rows.
+
+6.3  OVERALL STATS AGGREGATION
+--------------------------------
+GET /stats/overall:
+  SELECT goal.title, SUM(stats.duration_minutes)
+  FROM stats
+  JOIN goals ON stats.goal_id == goals.id
+  WHERE stats.user_id == current_user
+  GROUP BY goals.title
+
+Returns: { "goal_title": total_minutes, ... }
+
+6.4  EMAIL DELIVERY
+--------------------
+  - Primary  : Resend HTTP API (configured via RESEND_API_KEY)
+  - Fallback : SMTP/Gmail (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD)
+  - Emails are sent via asyncio.create_task() — non-blocking background task
+  - Forgot-password always returns HTTP 200 regardless of whether the
+    email address exists (prevents user enumeration attack)
+
+6.5  FRONTEND ROUTING
+----------------------
+  - Hash-based: all routes use #/path format
+  - router.js parses window.location.hash, matches patterns (supports :id params)
+  - route-protection.js wraps every protected handler:
+      IF localStorage has no access_token → redirect to /login
+  - On logout: localStorage.clear() (synchronous, no API call needed)
+
+
+========================================================
+7. CONFIGURATION & ENVIRONMENT VARIABLES
+========================================================
+
+Variable             Default / Example              Description
+--------------------+------------------------------+--------------------------------
+DATABASE_URL         sqlite+aiosqlite:///./app.db   DB connection string
+JWT_SECRET           <random 32+ char string>       HMAC-SHA256 signing key
+JWT_ALG              HS256                           JWT algorithm
+ACCESS_TOKEN_TTL     900                             Access token lifetime (seconds)
+REFRESH_TOKEN_TTL    2592000                         Refresh token lifetime (seconds)
+ENV                  dev                             "dev" or "prod"
+DEBUG                True                            Debug mode flag
+CORS_ORIGINS         http://localhost:3000,...       Allowed CORS origins (comma-sep)
+SMTP_HOST            smtp.gmail.com                  SMTP server host
+SMTP_PORT            587                             SMTP port
+SMTP_USER            your@email.com                  SMTP sender address
+SMTP_PASSWORD        <app password>                  SMTP password
+RESEND_API_KEY       re_xxxx                         Resend API key (optional)
+APP_URL              https://continium.uz            Used in email links
+
+
+========================================================
+8. CI/CD PIPELINE
+========================================================
+
+CI  (.github/workflows/ci.yml)
+  Trigger : Pull request to dev or main
+  Steps   :
+    1. Checkout code
+    2. Set up Python 3.12
+    3. pip install -r requirements.txt + pytest + anyio
+    4. Run pytest (asyncio_mode=auto via pytest.ini)
+
+CD  (.github/workflows/deploy.yml)
+  Trigger : Push to main
+  Steps   :
+    1. Build Docker image for backend
+    2. Push to ghcr.io/wlvumar/continium-backend
+    3. SSH into DigitalOcean droplet (178.128.37.233)
+    4. docker pull latest image
+    5. Stop + remove old container
+    6. docker run new container (port 8000, /data volume for SQLite)
+
+Required GitHub Secrets:
+  SSH_PRIVATE_KEY, SSH_USER, SERVER_IP, GHCR_TOKEN
+
+
+========================================================
+9. SECURITY NOTES
+========================================================
+
+- Passwords hashed with Argon2 (memory-hard, brute-force resistant)
+- JWT signed with HS256; access tokens expire in 15 minutes
+- Refresh token rotation on every /auth/refresh call
+- Ownership check on every goal/stats endpoint (user_id == current_user.id)
+- CORS restricted to known origins only
+- HTTPS enforced via Let's Encrypt; HSTS header set in Nginx
+- Forgot-password always returns 200 (no email enumeration)
+- .env file excluded from version control (.gitignore)
+- Docker image excludes venv/, .env, __pycache__ (.dockerignore)
