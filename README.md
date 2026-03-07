@@ -17,7 +17,7 @@
 
 🔗 **[continium.uz](https://continium.uz)**
 
-[Architecture](docs/ARCHITECTURE.md) · [Technical](docs/TECHNICAL.md) · [Requirements](docs/REQUIREMENTS.md) · [Contributing](docs/CONTRIBUTING.md)
+[Architecture](docs/ARCHITECTURE.md) · [Technical](docs/TECHNICAL.md) · [Requirements](docs/REQUIREMENTS.md) · [Contributing](docs/CONTRIBUTING.md) · [Project Board](https://github.com/users/wlvUmar/projects/1)
 
 </div>
 
