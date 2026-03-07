@@ -45,6 +45,8 @@ backend/backend_init.py
 pyrightconfig.json
 
 contribution_report.txt
+docs/technical_document.txt
+docs/requirements_document.txt
 
 
 
