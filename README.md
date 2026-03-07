@@ -7,7 +7,13 @@
 [![Live](https://img.shields.io/badge/Live-continium.uz-4CAF50?style=flat)](https://continium.uz)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![SQLite](https://img.shields.io/badge/SQLite-aiosqlite-003B57?style=flat&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?style=flat)](https://www.sqlalchemy.org)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Nginx](https://img.shields.io/badge/Nginx-alpine-009639?style=flat&logo=nginx&logoColor=white)](https://nginx.org)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white)](https://docker.com)
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?style=flat&logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![DigitalOcean](https://img.shields.io/badge/DigitalOcean-Droplet-0080FF?style=flat&logo=digitalocean&logoColor=white)](https://digitalocean.com)
 
 🔗 **[continium.uz](https://continium.uz)**
 
