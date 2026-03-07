@@ -44,14 +44,10 @@ temp/
 backend/backend_init.py
 pyrightconfig.json
 
+contribution_report.txt
 
 
 
 
-
-backend/app.db
-||||||| 35ceacf
-=======
 *.db
 *.pyc
->>>>>>> dev
