@@ -20,7 +20,8 @@ class Router {
 
     init() {
         window.addEventListener('hashchange', () => this.handleRoute());
-        this.handleRoute();
+        // Routes are registered in app.js after this module loads.
+        // app.js calls router.handleRoute() explicitly once all routes are set up.
     }
 
     handleRoute() {
