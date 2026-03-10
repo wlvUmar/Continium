@@ -74,15 +74,34 @@ window.handleProfileSave = async function(event) {
     event.preventDefault();
     const form    = event.target;
     const saveBtn = document.getElementById('profileSaveBtn');
-    const newPw   = form.new_password.value;
-    const confPw  = form.confirm_password.value;
+    const currentPw = form.current_password.value;
+    const newPw     = form.new_password.value;
+    const confPw    = form.confirm_password.value;
+
     if (newPw && newPw !== confPw) { Toast.error('Passwords do not match'); return; }
+    if (newPw && !currentPw) { Toast.error('Enter your current password to set a new one'); return; }
+
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     try {
+        // Save profile info to localStorage
         const currentUser = authService.getUser() || {};
-        const updated = { ...currentUser, full_name: form.full_name.value.trim(), email: form.email.value.trim() };
+        const updated = {
+            ...currentUser,
+            full_name: form.full_name.value.trim(),
+            email:     form.email.value.trim(),
+            birthdate: form.birthdate.value,
+        };
         localStorage.setItem('user', JSON.stringify(updated));
+
+        // Change password if fields are filled
+        if (newPw && currentPw) {
+            await authService.changePassword(currentPw, newPw);
+            form.current_password.value = '';
+            form.new_password.value     = '';
+            form.confirm_password.value = '';
+        }
+
         Toast.success('Profile saved!');
     } catch (err) {
         Toast.error(err.message || 'Failed to save profile');

@@ -83,9 +83,11 @@ const authService = {
     },
 
     // Change password (authenticated)
-    async changePassword(email) {
-        const response = await api.post('/auth/forgot-password', { email });
-        return response;
+    async changePassword(currentPassword, newPassword) {
+        return await api.post('/auth/change-password', {
+            current_password: currentPassword,
+            new_password: newPassword
+        });
     }
 };
 

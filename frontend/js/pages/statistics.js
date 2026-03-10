@@ -12,7 +12,10 @@ const statsService = {
         return await api.get('/stats/overall');
     },
     async fetchBreakdown(type) {
-        return await api.get(`/stats/overall-by-type?type=${type}`);
+        if (!type || type === 'all') {
+            return await api.get('/stats/overall');
+        }
+        return await api.get(`/stats/overall-by-type?type=${encodeURIComponent(type)}`);
     }
 };
 
@@ -208,9 +211,9 @@ function createStatisticsContentHTML(insightsData, breakdownData) {
             <div class="stat-card-large">
                 <h3>Breakdown</h3>
                 <div class="insights-tabs">
-                    <button class="tab-btn active" onclick="changeBreakdownPeriod('day')">Day</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('week')">Week</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('month')">Month</button>
+                    <button class="tab-btn active" onclick="changeBreakdownPeriod('all')">All</button>
+                    <button class="tab-btn" onclick="changeBreakdownPeriod('One Time')">One Time</button>
+                    <button class="tab-btn" onclick="changeBreakdownPeriod('Repeating')">Repeating</button>
                 </div>
                 <p class="stat-date" id="breakdownDate">${breakdownData.date || ''}</p>
                 <div class="circular-chart">
@@ -276,7 +279,7 @@ function _transformOverallOut(apiResponse, colorMap) {
 // ============================================
 
 let _currentInsightsPeriod  = 'week';
-let _currentBreakdownPeriod = 'day';
+let _currentBreakdownPeriod = 'all';
 
 async function loadStatisticsPage() {
     const container = document.getElementById('statisticsContainer');
@@ -346,7 +349,7 @@ window.changeInsightsPeriod = async function(period) {
 window.changeBreakdownPeriod = async function(period) {
     _currentBreakdownPeriod = period;
     document.querySelectorAll('.stat-card-large:last-child .tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === period);
+        btn.classList.toggle('active', btn.textContent === period || (period === 'all' && btn.textContent === 'All'));
     });
     await loadStatisticsPage();
 };
