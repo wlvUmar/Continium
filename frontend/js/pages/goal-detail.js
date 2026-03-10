@@ -1,18 +1,89 @@
 /**
  * Goal / Project Detail Page + Timer
- * Extracted from layout.js
  */
 
-let _timerInterval = null;
-let _timerRunning  = false;
-let _timerElapsed  = 0;
-let _timerGoalSeconds = 9000; // 2h 30m default
+let _timerInterval    = null;
+let _timerRunning     = false;
+let _timerElapsed     = 0;
+let _timerGoalSeconds = 9000; // updated from goal.duration_min on load
+let _currentGoalId    = null;
+let _activeGoals      = [];   // for "next goal" navigation
 const TIMER_CIRCUMFERENCE = 565.49; // 2 * PI * 90
 
-function renderProjectDetailContent(projectId) {
+// ============================================
+// HELPERS
+// ============================================
+
+function _fmtMinutes(min) {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return `${h}h ${String(m).padStart(2, '0')}m`;
+}
+
+function _getCurrentPeriod() {
+    const btn = document.querySelector('.period-tab.active');
+    if (!btn) return 'week';
+    const txt = btn.textContent.trim().toLowerCase();
+    if (txt === '3 months') return '3months';
+    return txt; // 'week' or 'month'
+}
+
+// Save elapsed seconds to backend as a stat entry
+async function _saveSession() {
+    if (!_currentGoalId || _timerElapsed < 60) return; // skip sessions under 1 min
+    const minutes = Math.round(_timerElapsed / 60);
+    try {
+        await api.post(`/stats/goal/${_currentGoalId}`, { duration_minutes: minutes });
+        _loadGoalStats(_currentGoalId, _getCurrentPeriod());
+    } catch (err) {
+        Toast.error('Failed to save session');
+    }
+}
+
+// Load stats for a goal and period, update the summary cards
+async function _loadGoalStats(goalId, period) {
+    const totalEl = document.getElementById('statTotal');
+    const avgEl   = document.getElementById('statAverage');
+    if (!totalEl || !avgEl) return;
+
+    try {
+        const today = new Date();
+        const start = new Date(today);
+        if (period === 'month') {
+            start.setMonth(today.getMonth() - 1);
+        } else if (period === '3months') {
+            start.setMonth(today.getMonth() - 3);
+        } else { // week (default)
+            start.setDate(today.getDate() - 7);
+        }
+
+        const fmt   = d => d.toISOString().split('T')[0];
+        const stats = await api.get(`/stats/${goalId}/by-date-range?start_date=${fmt(start)}&end_date=${fmt(today)}`);
+
+        const totalMin = stats.reduce((sum, s) => sum + s.duration_minutes, 0);
+        const days     = stats.length;
+        const avgMin   = days > 0 ? Math.round(totalMin / days) : 0;
+
+        totalEl.textContent = _fmtMinutes(totalMin);
+        avgEl.textContent   = _fmtMinutes(avgMin);
+    } catch (_) {
+        // silently fail — stats panel stays at defaults
+    }
+}
+
+// ============================================
+// CONTENT TEMPLATE
+// ============================================
+
+function renderProjectDetailContent(goal) {
+    const durationMin  = goal.duration_min || 150;
+    const h            = Math.floor(durationMin / 60);
+    const m            = durationMin % 60;
+    const dailyLabel   = `Daily goal: ${h}h ${String(m).padStart(2, '0')}m`;
+
     return `
         <div class="page-header">
-            <h1>Project ${projectId}</h1>
+            <h1>${goal.title || 'Untitled'}</h1>
         </div>
 
         <div class="project-detail-wrapper">
@@ -39,7 +110,7 @@ function renderProjectDetailContent(projectId) {
                 </div>
             </div>
 
-            <div class="timer-goal-label" id="timerGoalLabel">Daily goal: 2h 30m</div>
+            <div class="timer-goal-label" id="timerGoalLabel">${dailyLabel}</div>
 
             <div class="timer-controls">
                 <button class="timer-btn" title="Reset" onclick="timerReset()">
@@ -48,7 +119,7 @@ function renderProjectDetailContent(projectId) {
                 <button class="timer-btn timer-btn-primary" title="Play/Pause" onclick="timerToggle()">
                     <img src="assets/icons/play_vector.svg" alt="Play" id="playPauseIcon">
                 </button>
-                <button class="timer-btn" title="Next session" onclick="timerNext()">
+                <button class="timer-btn" title="Next goal" onclick="timerNext()">
                     <img src="assets/icons/Vector.svg" alt="Next">
                 </button>
             </div>
@@ -61,11 +132,11 @@ function renderProjectDetailContent(projectId) {
 
             <div class="project-stats-summary">
                 <div class="stats-summary-item">
-                    <span class="stat-large">0h 00m</span>
+                    <span class="stat-large" id="statTotal">0h 00m</span>
                     <span style="font-size:13px;color:#999;">Total</span>
                 </div>
                 <div class="stats-summary-item">
-                    <span class="stat-large">0h 00m</span>
+                    <span class="stat-large" id="statAverage">0h 00m</span>
                     <span style="font-size:13px;color:#999;">Average</span>
                 </div>
             </div>
@@ -73,18 +144,51 @@ function renderProjectDetailContent(projectId) {
     `;
 }
 
-function renderProjectDetail(projectId) {
+// ============================================
+// PAGE RENDER (async — fetches real goal data)
+// ============================================
+
+async function renderProjectDetail(projectId) {
+    _currentGoalId = parseInt(projectId);
     const appContainer = document.getElementById('app');
+
+    // Stop any running timer
     if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
     _timerRunning = false;
     _timerElapsed = 0;
-    appContainer.innerHTML = createLayout(renderProjectDetailContent(projectId), `/project/${projectId}`);
+
+    // Temporary loading state
+    appContainer.innerHTML = `<div style="padding:60px;text-align:center;color:#999;">Loading...</div>`;
+
+    // Fetch goal data + active goals list in parallel
+    let goal = { id: projectId, title: `Project ${projectId}`, duration_min: 150 };
+    try {
+        const [fetchedGoal, allGoals] = await Promise.all([
+            goalsService.fetchGoal(projectId),
+            goalsService.fetchGoals()
+        ]);
+        goal          = fetchedGoal;
+        _timerGoalSeconds = (goal.duration_min || 150) * 60;
+        _activeGoals  = allGoals.filter(g => !g.is_complete && g.status !== 'completed');
+    } catch (_) {
+        _activeGoals = [];
+    }
+
+    appContainer.innerHTML = createLayout(renderProjectDetailContent(goal), `/project/${projectId}`);
     attachNavigationListeners();
+    _updateTimerDisplay();
+
+    // Load initial stats (week)
+    _loadGoalStats(projectId, 'week');
 }
 
 function renderGoal(goalId) {
     renderProjectDetail(goalId);
 }
+
+// ============================================
+// TIMER DISPLAY
+// ============================================
 
 function _updateTimerDisplay() {
     const display = document.getElementById('timerDisplay');
@@ -97,12 +201,18 @@ function _updateTimerDisplay() {
     arc.style.strokeDashoffset = TIMER_CIRCUMFERENCE * (1 - Math.min(_timerElapsed / _timerGoalSeconds, 1));
 }
 
+// ============================================
+// TIMER CONTROLS
+// ============================================
+
 window.timerToggle = function() {
     const icon = document.getElementById('playPauseIcon');
     if (_timerRunning) {
         clearInterval(_timerInterval);
         _timerRunning = false;
         if (icon) { icon.src = 'assets/icons/play_vector.svg'; icon.alt = 'Play'; }
+        // Save session to backend when paused
+        _saveSession();
     } else {
         _timerRunning = true;
         if (icon) { icon.src = 'assets/icons/Pause.svg'; icon.alt = 'Pause'; }
@@ -113,13 +223,39 @@ window.timerToggle = function() {
 window.timerReset = function() {
     clearInterval(_timerInterval);
     _timerRunning = false;
-    _timerElapsed = 0;
     const icon = document.getElementById('playPauseIcon');
     if (icon) { icon.src = 'assets/icons/play_vector.svg'; icon.alt = 'Play'; }
+    // Save what was elapsed, then reset display
+    const elapsed = _timerElapsed;
+    _timerElapsed = 0;
     _updateTimerDisplay();
+    if (elapsed >= 60 && _currentGoalId) {
+        api.post(`/stats/goal/${_currentGoalId}`, { duration_minutes: Math.round(elapsed / 60) })
+            .then(() => _loadGoalStats(_currentGoalId, _getCurrentPeriod()))
+            .catch(() => Toast.error('Failed to save session'));
+    }
 };
 
-window.timerNext = function() { timerReset(); };
+window.timerNext = async function() {
+    // Stop timer and save the current session
+    clearInterval(_timerInterval);
+    _timerRunning = false;
+    const icon = document.getElementById('playPauseIcon');
+    if (icon) { icon.src = 'assets/icons/play_vector.svg'; icon.alt = 'Play'; }
+    await _saveSession();
+
+    // Navigate to the next active goal
+    if (_activeGoals.length < 2) return; // no other goal to switch to
+    const idx      = _activeGoals.findIndex(g => g.id === _currentGoalId);
+    const nextGoal = _activeGoals[(idx + 1) % _activeGoals.length];
+    if (nextGoal) {
+        router.navigate(`/project/${nextGoal.id}`);
+    }
+};
+
+// ============================================
+// TAB HANDLERS
+// ============================================
 
 window.switchProjectTab = function(tab, btn) {
     document.querySelectorAll('.project-main-tab').forEach(t => t.classList.remove('active'));
@@ -129,7 +265,12 @@ window.switchProjectTab = function(tab, btn) {
 window.switchPeriodTab = function(period, btn) {
     document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
+    if (_currentGoalId) _loadGoalStats(_currentGoalId, period);
 };
 
+// ============================================
+// EXPORTS
+// ============================================
+
 window.renderProjectDetail = renderProjectDetail;
-window.renderGoal = renderGoal;
+window.renderGoal          = renderGoal;
