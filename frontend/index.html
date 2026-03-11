@@ -1,18 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Continium - Goal Tracker</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/auth-styles.css">
-    <link rel="stylesheet" href="css/layout-styles.css">
-    <link rel="stylesheet" href="css/goals-list-styles.css">
-</head>
-<body>
+    <!-- Apply dark background to <html> immediately — kills the white flash before body exists -->
+    <script>
+      if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark-mode");
+      }
+    </script>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/auth-styles.css" />
+    <link rel="stylesheet" href="css/layout-styles.css" />
+    <link rel="stylesheet" href="css/goals-list-styles.css" />
+  </head>
+  <body>
+    <!-- Apply dark-mode to body synchronously before first paint — document.body exists here -->
+    <script>
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+    </script>
+
     <div id="app"></div>
 
     <!-- Entry point — reorganized per issue #108 -->
     <script type="module" src="js/app.js"></script>
-</body>
+  </body>
 </html>
