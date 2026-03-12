@@ -47,6 +47,31 @@ const authService = {
         localStorage.removeItem('user');
     },
 
+    // Exchange a refresh token for a new access token
+    async refreshToken() {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) return null;
+
+        // Use fetch directly to avoid triggering apiRequest's auto-refresh logic
+        const response = await fetch('/api/v1/auth/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refreshToken })
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        if (data && data.access_token) {
+            localStorage.setItem('access_token', data.access_token);
+            if (data.refresh_token) {
+                localStorage.setItem('refresh_token', data.refresh_token);
+            }
+        }
+
+        return data;
+    },
+
     // Check if user is logged in
     isAuthed() {
         return !!localStorage.getItem('access_token');
