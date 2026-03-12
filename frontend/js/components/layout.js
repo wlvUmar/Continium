@@ -7,12 +7,15 @@
 // SIDEBAR
 // ============================================
 
-function createSidebar(currentRoute = '/projects') {
-    const user = authService.getUser();
-    const userName = user ? (user.full_name || user.fullName || 'Username') : 'Username';
-    const isProjectsActive = currentRoute === '/projects' || currentRoute.startsWith('/project/');
+function createSidebar(currentRoute = "/projects") {
+  const user = authService.getUser();
+  const userName = user
+    ? user.full_name || user.fullName || "Username"
+    : "Username";
+  const isProjectsActive =
+    currentRoute === "/projects" || currentRoute.startsWith("/project/");
 
-    return `
+  return `
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="user-profile-header user-profile-header--clickable" onclick="router.navigate('/profile')" title="View profile">
@@ -31,7 +34,7 @@ function createSidebar(currentRoute = '/projects') {
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <!-- Projects: text area navigates, arrow toggles dropdown -->
-                    <div class="nav-item nav-item-dropdown ${isProjectsActive ? 'active' : ''}">
+                    <div class="nav-item nav-item-dropdown ${isProjectsActive ? "active" : ""}">
                         <span class="nav-icon" onclick="router.navigate('/projects')" style="cursor:pointer;">
                             <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
                         </span>
@@ -47,21 +50,21 @@ function createSidebar(currentRoute = '/projects') {
                     </div>
                 </div>
 
-                <a href="#/add-goal" class="nav-item ${currentRoute === '/add-goal' ? 'active' : ''}" data-route="/add-goal">
+                <a href="#/add-goal" class="nav-item ${currentRoute === "/add-goal" ? "active" : ""}" data-route="/add-goal">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
                     <span class="nav-text">Add goal</span>
                 </a>
 
-                <a href="#/statistics" class="nav-item ${currentRoute === '/statistics' ? 'active' : ''}" data-route="/statistics">
+                <a href="#/statistics" class="nav-item ${currentRoute === "/statistics" ? "active" : ""}" data-route="/statistics">
                     <span class="nav-icon">
                         <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
                     </span>
                     <span class="nav-text">Statistics</span>
                 </a>
 
-                <a href="#/completed" class="nav-item ${currentRoute === '/completed' ? 'active' : ''}" data-route="/completed">
+                <a href="#/completed" class="nav-item ${currentRoute === "/completed" ? "active" : ""}" data-route="/completed">
                     <span class="nav-icon">
                         <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
                     </span>
@@ -82,45 +85,50 @@ function createSidebar(currentRoute = '/projects') {
 }
 
 // Toggle projects dropdown (arrow button only)
-window.toggleProjectsDropdown = function(btn) {
-    const dropdown = document.getElementById('projectsDropdown');
-    const arrowImg = document.querySelector('#projectsArrow .dropdown-icon');
-    const isOpen = dropdown.style.display !== 'none' && dropdown.style.display !== '';
-    if (isOpen) {
-        dropdown.style.display = 'none';
-        if (arrowImg) arrowImg.style.transform = 'rotate(0deg)';
-    } else {
-        dropdown.style.display = 'block';
-        if (arrowImg) arrowImg.style.transform = 'rotate(180deg)';
-        loadSidebarProjects();
-    }
+window.toggleProjectsDropdown = function (btn) {
+  const dropdown = document.getElementById("projectsDropdown");
+  const arrowImg = document.querySelector("#projectsArrow .dropdown-icon");
+  const isOpen =
+    dropdown.style.display !== "none" && dropdown.style.display !== "";
+  if (isOpen) {
+    dropdown.style.display = "none";
+    if (arrowImg) arrowImg.style.transform = "rotate(0deg)";
+  } else {
+    dropdown.style.display = "block";
+    if (arrowImg) arrowImg.style.transform = "rotate(180deg)";
+    loadSidebarProjects();
+  }
 };
 
 // Load real projects into sidebar dropdown
-window.loadSidebarProjects = async function() {
-    const listEl = document.getElementById('sidebarProjectsList');
-    if (!listEl) return;
-    try {
-        const goals = await goalsService.fetchGoals();
-        const active = goals.filter(g => !g.is_complete && g.status !== 'completed');
-        if (!active.length) {
-            listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">No projects yet</div>`;
-            return;
-        }
-        const storedColors = JSON.parse(localStorage.getItem('goalColors') || '{}');
-        listEl.innerHTML = active.map(g => {
-            const color = g.color || storedColors[g.id] || storedColors[g.title] || '#00BCD4';
-            const durationMin = g.duration_min || 0;
-            const h = Math.floor(durationMin / 60);
-            const m = durationMin % 60;
-            const timeStr = `0h 00m / ${h}h ${String(m).padStart(2,'0')}m`;
-            return `
+window.loadSidebarProjects = async function () {
+  const listEl = document.getElementById("sidebarProjectsList");
+  if (!listEl) return;
+  try {
+    const goals = await goalsService.fetchGoals();
+    const active = goals.filter(
+      (g) => !g.is_complete && g.status !== "completed",
+    );
+    if (!active.length) {
+      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">No projects yet</div>`;
+      return;
+    }
+    const storedColors = JSON.parse(localStorage.getItem("goalColors") || "{}");
+    listEl.innerHTML = active
+      .map((g) => {
+        const color =
+          g.color || storedColors[g.id] || storedColors[g.title] || "#00BCD4";
+        const durationMin = g.duration_min || 0;
+        const h = Math.floor(durationMin / 60);
+        const m = durationMin % 60;
+        const timeStr = `0h 00m / ${h}h ${String(m).padStart(2, "0")}m`;
+        return `
                 <div class="project-item" onclick="router.navigate('/project/${g.id}')">
                     <div class="sidebar-project-row">
                         <button class="sidebar-play-btn" onclick="event.stopPropagation(); router.navigate('/project/${g.id}')" title="Start">
                             <img src="assets/icons/play_vector.svg" alt="Play">
                         </button>
-                        <span class="project-name">${g.title || 'Untitled'}</span>
+                        <span class="project-name">${g.title || "Untitled"}</span>
                         <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                     </div>
                     <div class="project-progress">
@@ -131,41 +139,43 @@ window.loadSidebarProjects = async function() {
                     </div>
                 </div>
             `;
-        }).join('');
-    } catch (err) {
-        if (listEl) listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">Failed to load</div>`;
-    }
+      })
+      .join("");
+  } catch (err) {
+    if (listEl)
+      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">Failed to load</div>`;
+  }
 };
 
 // Toggle notification icon on/off
-window.toggleNotifications = function(btn) {
-    const img = btn.querySelector('.notification-icon');
-    if (img.src.includes('notification-on')) {
-        img.src = 'assets/icons/basil_notification-off-solid.svg';
-        img.alt = 'Notifications off';
-    } else {
-        img.src = 'assets/icons/basil_notification-on-solid.svg';
-        img.alt = 'Notifications on';
-    }
+window.toggleNotifications = function (btn) {
+  const img = btn.querySelector(".notification-icon");
+  if (img.src.includes("notification-on")) {
+    img.src = "assets/icons/basil_notification-off-solid.svg";
+    img.alt = "Notifications off";
+  } else {
+    img.src = "assets/icons/basil_notification-on-solid.svg";
+    img.alt = "Notifications on";
+  }
 };
 
 // Toggle light/dark theme
-window.toggleTheme = function() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    const lightBtn = document.querySelector('.theme-opt-light');
-    const darkBtn  = document.querySelector('.theme-opt-dark');
-    if (lightBtn) lightBtn.classList.toggle('active', !isDark);
-    if (darkBtn)  darkBtn.classList.toggle('active', isDark);
+window.toggleTheme = function () {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  const lightBtn = document.querySelector(".theme-opt-light");
+  const darkBtn = document.querySelector(".theme-opt-dark");
+  if (lightBtn) lightBtn.classList.toggle("active", !isDark);
+  if (darkBtn) darkBtn.classList.toggle("active", isDark);
 };
-
 
 // ============================================
 // LAYOUT WRAPPER
 // ============================================
 
-function createLayout(content, currentRoute = '/projects') {
-    const isDark = document.body.classList.contains('dark-mode');
-    return `
+function createLayout(content, currentRoute = "/projects") {
+  const isDark = document.body.classList.contains("dark-mode");
+  return `
         <div class="app-layout">
             ${createSidebar(currentRoute)}
             <main class="main-container">
@@ -173,10 +183,10 @@ function createLayout(content, currentRoute = '/projects') {
             </main>
         </div>
         <div class="theme-toggle-pill">
-            <button class="theme-opt theme-opt-light ${isDark ? '' : 'active'}" onclick="toggleTheme()" title="Light mode">
+            <button class="theme-opt theme-opt-light ${isDark ? "" : "active"}" onclick="toggleTheme()" title="Light mode">
                 <img src="assets/icons/Light.svg" alt="Light">
             </button>
-            <button class="theme-opt theme-opt-dark ${isDark ? 'active' : ''}" onclick="toggleTheme()" title="Dark mode">
+            <button class="theme-opt theme-opt-dark ${isDark ? "active" : ""}" onclick="toggleTheme()" title="Dark mode">
                 <img src="assets/icons/Dark.svg" alt="Dark">
             </button>
         </div>
@@ -184,15 +194,19 @@ function createLayout(content, currentRoute = '/projects') {
 }
 
 function attachNavigationListeners() {
-    document.querySelectorAll('.nav-item:not(.nav-item-dropdown)').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const route = item.getAttribute('data-route');
-            if (!route) return;
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            router.navigate(route);
-        });
+  document
+    .querySelectorAll(".nav-item:not(.nav-item-dropdown)")
+    .forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const route = item.getAttribute("data-route");
+        if (!route) return;
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        item.classList.add("active");
+        router.navigate(route);
+      });
     });
 }
 
