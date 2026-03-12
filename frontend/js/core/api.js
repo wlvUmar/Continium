@@ -8,6 +8,43 @@ function getAuthToken() {
     return localStorage.getItem('access_token');
 }
 
+// Shared promise for an in-flight refresh so concurrent 401s reuse one request
+let refreshPromise = null;
+
+async function refreshAccessToken() {
+    // Reuse an ongoing refresh rather than firing a duplicate request
+    if (refreshPromise) {
+        return refreshPromise;
+    }
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+        throw new Error('No refresh token available');
+    }
+
+    refreshPromise = fetch(buildUrl('/auth/refresh'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                throw new Error('Token refresh failed');
+            }
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access_token);
+            if (data.refresh_token) {
+                localStorage.setItem('refresh_token', data.refresh_token);
+            }
+            return data.access_token;
+        })
+        .finally(() => {
+            refreshPromise = null;
+        });
+
+    return refreshPromise;
+}
+
 async function apiRequest(endpoint, options = {}) {
     const token = getAuthToken();
     console.log(buildUrl(endpoint));
@@ -27,7 +64,27 @@ async function apiRequest(endpoint, options = {}) {
 
     try {
         const response = await fetch(buildUrl(endpoint), config);
-        
+
+        // On 401, attempt a single token refresh then retry the original request.
+        // The _isRetry flag prevents an infinite loop if the retry also gets a 401.
+        if (response.status === 401 && !options._isRetry) {
+            try {
+                await refreshAccessToken();
+            } catch (_refreshError) {
+                // Refresh failed — clear session and redirect to login
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user');
+                if (window.router) {
+                    window.router.navigate('/login');
+                }
+                throw new Error('Session expired. Please log in again.');
+            }
+
+            // Retry original request with the new access token
+            return apiRequest(endpoint, { ...options, _isRetry: true });
+        }
+
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
             // FastAPI uses "detail", express-style APIs use "message"
