@@ -10,22 +10,23 @@ function renderLogin() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continium</h1>
+                        <div class="auth-brand">
+                            <img src="favicon.svg" class="auth-logo" alt="Continium logo">
+                            <span class="auth-brand-text">Continium</span>
+                        </div>
                         <p class="auth-subtitle">Login</p>
                     </div>
                     <form id="loginForm" class="auth-form">
                         <div class="form-group">
-                            <label for="loginEmail">Email</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/ic_baseline-email.svg" class="input-icon" alt="">
-                                <input type="email" id="loginEmail" class="form-input with-icon" placeholder="Enter your email" required>
+                                <input type="email" id="loginEmail" class="form-input with-icon" placeholder="Email" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="loginPassword">Password</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/mdi_password.svg" class="input-icon" alt="">
-                                <input type="password" id="loginPassword" class="form-input with-icon with-toggle" placeholder="Enter your password" required>
+                                <input type="password" id="loginPassword" class="form-input with-icon with-toggle" placeholder="Password" required>
                                 <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
                                     <img src="assets/icons/wpf_invisible.svg" alt="Show password">
                                 </button>
@@ -33,12 +34,14 @@ function renderLogin() {
                         </div>
                         <button type="submit" class="btn-primary btn-full">Sign In</button>
                     </form>
+                    <div class="auth-divider" aria-hidden="true">
+                        <span class="auth-divider-line"></span>
+                        <span class="auth-divider-text">Don't have an account?</span>
+                        <span class="auth-divider-line"></span>
+                    </div>
+                    <button type="button" class="btn-secondary-auth btn-full" onclick="router.navigate('/register')">Sign Up</button>
                     <div class="auth-footer">
                         <a href="#/forgot-password" class="link-text">Forgot your password?</a>
-                    </div>
-                    <div class="auth-switch">
-                        <span>Don't have an account? </span>
-                        <a href="#/register" class="link-primary">Sign up</a>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,10 @@ function renderForgotPassword() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continium</h1>
+                        <div class="auth-brand">
+                            <img src="favicon.svg" class="auth-logo" alt="Continium logo">
+                            <span class="auth-brand-text">Continium</span>
+                        </div>
                         <p class="auth-subtitle">Forgot Password</p>
                     </div>
                     <p class="text-muted" style="margin-bottom: 20px;">

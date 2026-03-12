@@ -149,12 +149,6 @@ function _createCompletedCard(goal) {
 async function renderProjectsPageWithGoals() {
     const appContainer = document.getElementById('app');
     const content = `
-        <div class="page-header">
-            <h1>Projects</h1>
-        </div>
-        <div class="search-bar-full">
-            <input type="text" class="search-input-pill" placeholder="Search projects...">
-        </div>
         <div id="projectsContainer">${_createLoadingState()}</div>
     `;
     appContainer.innerHTML = createLayout(content, '/projects');
@@ -182,12 +176,6 @@ let _completedFilter = 'all';
 async function renderCompletedPageWithGoals() {
     const appContainer = document.getElementById('app');
     const content = `
-        <div class="page-header">
-            <h1>Completed</h1>
-        </div>
-        <div class="search-bar-full">
-            <input type="text" class="search-input-pill" placeholder="Search completed projects...">
-        </div>
         <div class="completed-filter-row" style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
             <div class="insights-tabs">
                 <button class="tab-btn active" onclick="setCompletedFilter('all', this)">All time</button>

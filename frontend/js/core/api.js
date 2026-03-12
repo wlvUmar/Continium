@@ -46,7 +46,6 @@ async function refreshAccessToken() {
 
 async function apiRequest(endpoint, options = {}) {
   const token = getAuthToken();
-  console.log(buildUrl(endpoint));
 
   const config = {
     method: options.method || "GET",

@@ -25,7 +25,7 @@ function renderResetPassword() {
     if (!token) {
         appContainer.innerHTML = `
             <div class="auth-page"><div class="auth-container"><div class="auth-card">
-                <div class="auth-header"><h1 class="logo-text">Continium</h1></div>
+                <div class="auth-header"><div class="auth-brand"><img src="favicon.svg" class="auth-logo" alt="Continium logo"><span class="auth-brand-text">Continium</span></div></div>
                 <div class="verification-error">
                     <div class="error-icon">✕</div>
                     <h3>Invalid Link</h3>
@@ -42,7 +42,10 @@ function renderResetPassword() {
             <div class="auth-container">
                 <div class="auth-card">
                     <div class="auth-header">
-                        <h1 class="logo-text">Continium</h1>
+                        <div class="auth-brand">
+                            <img src="favicon.svg" class="auth-logo" alt="Continium logo">
+                            <span class="auth-brand-text">Continium</span>
+                        </div>
                         <p class="auth-subtitle">Set New Password</p>
                     </div>
                     <form id="resetPasswordForm" class="auth-form">
@@ -98,7 +101,7 @@ async function _handleResetPassword(e, token) {
         await authService.resetPassword(token, newPassword);
         Toast.success('Password reset successfully!');
         document.querySelector('.auth-card').innerHTML = `
-            <div class="auth-header"><h1 class="logo-text">Continium</h1></div>
+            <div class="auth-header"><div class="auth-brand"><img src="favicon.svg" class="auth-logo" alt="Continium logo"><span class="auth-brand-text">Continium</span></div></div>
             <div class="verification-success">
                 <div class="success-icon">✓</div>
                 <h3>Password Reset!</h3>

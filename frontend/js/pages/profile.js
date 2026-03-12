@@ -11,6 +11,7 @@ function renderProfileContent() {
     const initial   = userName.charAt(0).toUpperCase();
 
     return `
+
         <div class="page-header">
             <h1>Profile</h1>
         </div>

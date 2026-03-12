@@ -7,13 +7,11 @@
 // SIDEBAR
 // ============================================
 
-function createSidebar(currentRoute = "/projects") {
+function createSidebar() {
   const user = authService.getUser();
   const userName = user
     ? user.full_name || user.fullName || "Username"
     : "Username";
-  const isProjectsActive =
-    currentRoute === "/projects" || currentRoute.startsWith("/project/");
 
   return `
         <aside class="sidebar">
@@ -34,37 +32,37 @@ function createSidebar(currentRoute = "/projects") {
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <!-- Projects: text area navigates, arrow toggles dropdown -->
-                    <div class="nav-item nav-item-dropdown ${isProjectsActive ? "active" : ""}">
-                        <span class="nav-icon" onclick="router.navigate('/projects')" style="cursor:pointer;">
+                    <div class="nav-item nav-item-dropdown">
+                        <span class="nav-icon nav-target" onclick="router.navigate('/projects')">
                             <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
                         </span>
-                        <span class="nav-text" onclick="router.navigate('/projects')" style="cursor:pointer; flex:1;">Projects</span>
-                        <button class="dropdown-arrow" id="projectsArrow" onclick="toggleProjectsDropdown(this)" style="background:none;border:none;cursor:pointer;padding:4px;">
+                        <span class="nav-text nav-target" onclick="router.navigate('/projects')">Projects</span>
+                        <button class="dropdown-arrow dropdown-arrow-btn" id="projectsArrow" onclick="toggleProjectsDropdown()">
                             <img src="assets/icons/ARROW Frame.svg" alt="▼" class="dropdown-icon">
                         </button>
                     </div>
-                    <div class="projects-dropdown" id="projectsDropdown" style="display:none;">
+                    <div class="projects-dropdown projects-dropdown--closed" id="projectsDropdown">
                         <div id="sidebarProjectsList">
-                            <div style="padding:8px 12px; color:#aaa; font-size:13px;">Loading...</div>
+                            <div class="sidebar-projects-state">Loading...</div>
                         </div>
                     </div>
                 </div>
 
-                <a href="#/add-goal" class="nav-item ${currentRoute === "/add-goal" ? "active" : ""}" data-route="/add-goal">
+                <a href="#/add-goal" class="nav-item" data-route="/add-goal">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
                     <span class="nav-text">Add goal</span>
                 </a>
 
-                <a href="#/statistics" class="nav-item ${currentRoute === "/statistics" ? "active" : ""}" data-route="/statistics">
+                <a href="#/statistics" class="nav-item" data-route="/statistics">
                     <span class="nav-icon">
                         <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
                     </span>
                     <span class="nav-text">Statistics</span>
                 </a>
 
-                <a href="#/completed" class="nav-item ${currentRoute === "/completed" ? "active" : ""}" data-route="/completed">
+                <a href="#/completed" class="nav-item" data-route="/completed">
                     <span class="nav-icon">
                         <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
                     </span>
@@ -85,16 +83,18 @@ function createSidebar(currentRoute = "/projects") {
 }
 
 // Toggle projects dropdown (arrow button only)
-window.toggleProjectsDropdown = function (btn) {
+window.toggleProjectsDropdown = function () {
   const dropdown = document.getElementById("projectsDropdown");
   const arrowImg = document.querySelector("#projectsArrow .dropdown-icon");
-  const isOpen =
-    dropdown.style.display !== "none" && dropdown.style.display !== "";
+  const isOpen = dropdown.classList.contains("projects-dropdown--open");
+
   if (isOpen) {
-    dropdown.style.display = "none";
+    dropdown.classList.remove("projects-dropdown--open");
+    dropdown.classList.add("projects-dropdown--closed");
     if (arrowImg) arrowImg.style.transform = "rotate(0deg)";
   } else {
-    dropdown.style.display = "block";
+    dropdown.classList.remove("projects-dropdown--closed");
+    dropdown.classList.add("projects-dropdown--open");
     if (arrowImg) arrowImg.style.transform = "rotate(180deg)";
     loadSidebarProjects();
   }
@@ -110,7 +110,7 @@ window.loadSidebarProjects = async function () {
       (g) => !g.is_complete && g.status !== "completed",
     );
     if (!active.length) {
-      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">No projects yet</div>`;
+      listEl.innerHTML = `<div class="sidebar-projects-state">No projects yet</div>`;
       return;
     }
     const storedColors = JSON.parse(localStorage.getItem("goalColors") || "{}");
@@ -134,7 +134,7 @@ window.loadSidebarProjects = async function () {
                     <div class="project-progress">
                         <span class="project-progress-text">${timeStr}</span>
                         <div class="project-progress-bar">
-                            <div class="project-progress-fill" style="width:0%; background:${color};"></div>
+                            <div class="project-progress-fill" style="width:0; background:${color};"></div>
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ window.loadSidebarProjects = async function () {
       .join("");
   } catch (err) {
     if (listEl)
-      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">Failed to load</div>`;
+      listEl.innerHTML = `<div class="sidebar-projects-state">Failed to load</div>`;
   }
 };
 
@@ -201,10 +201,6 @@ function attachNavigationListeners() {
         e.preventDefault();
         const route = item.getAttribute("data-route");
         if (!route) return;
-        document
-          .querySelectorAll(".nav-item")
-          .forEach((n) => n.classList.remove("active"));
-        item.classList.add("active");
         router.navigate(route);
       });
     });

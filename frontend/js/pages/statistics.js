@@ -167,12 +167,6 @@ function _fmtTime(seconds) {
 
 function createStatisticsPageHTML() {
     return `
-        <div class="page-header">
-            <h1>Statistics</h1>
-        </div>
-        <div class="search-bar-full">
-            <input type="text" class="search-input-pill" placeholder="Search projects...">
-        </div>
         <div id="statisticsContainer" class="statistics-content">
             <div style="text-align:center;padding:60px 0;">
                 <div class="spinner-large"></div>

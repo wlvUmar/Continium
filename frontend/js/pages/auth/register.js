@@ -15,31 +15,27 @@ function renderRegister() {
                     </div>
                     <form id="registerForm" class="auth-form">
                         <div class="form-group">
-                            <label for="registerName">Full Name</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/mdi_user.svg" class="input-icon" alt="">
-                                <input type="text" id="registerName" class="form-input with-icon" placeholder="Enter your full name" required>
+                                <input type="text" id="registerName" class="form-input with-icon" placeholder="Full name" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="registerEmail">Email</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/ic_baseline-email.svg" class="input-icon" alt="">
-                                <input type="email" id="registerEmail" class="form-input with-icon" placeholder="Enter your email" required>
+                                <input type="email" id="registerEmail" class="form-input with-icon" placeholder="Email" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="registerPassword">Password</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/mdi_password.svg" class="input-icon" alt="">
-                                <input type="password" id="registerPassword" class="form-input with-icon with-toggle" placeholder="Create a password" required>
+                                <input type="password" id="registerPassword" class="form-input with-icon with-toggle" placeholder="Password" required>
                                 <button type="button" class="password-toggle" onclick="togglePassword('registerPassword', this)">
                                     <img src="assets/icons/wpf_invisible.svg" alt="Show password">
                                 </button>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="registerConfirmPassword">Confirm Password</label>
                             <div class="input-wrapper">
                                 <img src="assets/icons/line-md_confirm.svg" class="input-icon" alt="">
                                 <input type="password" id="registerConfirmPassword" class="form-input with-icon with-toggle" placeholder="Confirm your password" required>
@@ -50,10 +46,12 @@ function renderRegister() {
                         </div>
                         <button type="submit" class="btn-primary btn-full">Sign Up</button>
                     </form>
-                    <div class="auth-switch">
-                        <span>Already have an account? </span>
-                        <a href="#/login" class="link-primary">Sign in</a>
+                    <div class="auth-divider" aria-hidden="true">
+                        <span class="auth-divider-line"></span>
+                        <span class="auth-divider-text">OR</span>
+                        <span class="auth-divider-line"></span>
                     </div>
+                    <button type="button" class="btn-secondary-auth btn-full" onclick="router.navigate('/login')">Sign In</button>
                 </div>
             </div>
         </div>
