@@ -55,7 +55,7 @@
           "auth"
         ],
         "summary": "Get Me",
-        "description": "## Get Current User\n\nReturns the profile of the currently authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Responses\n- **200** — Returns `UserOut` (id, full_name, email, image_url, is_active, verified).\n- **401** — Missing or invalid token.\n- **403** — Account is inactive.",
+        "description": "## Get Current User\n\nReturns the profile of the currently authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Responses\n- **200** — Returns `UserOut` (id, full_name, email, image_url, is_active, verified).\n- **401** — Missing or invalid token.\n- **403** — Account is inactive.",
         "operationId": "get_me_api_v1_auth_me_get",
         "responses": {
           "200": {
@@ -83,7 +83,7 @@
           "auth"
         ],
         "summary": "Register",
-        "description": "## Register\n\nCreate a new user account.\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `full_name` | string | ✅ | Display name |\n| `email` | string | ✅ | Must be unique |\n| `password` | string | ✅ | Plain-text password (hashed server-side) |\n| `image_url` | string | ❌ | Optional profile picture URL |\n\n### Responses\n- **200** — Account created. Returns the new `UserOut` object.\n- **400** — Email already registered.\n- **422** — Validation error (malformed request body).",
+        "description": "## Register\n\nCreate a new user account. A verification email is sent automatically.\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `full_name` | string |  | Display name |\n| `email` | string |  | Must be unique |\n| `password` | string |  | Plain-text password (hashed server-side) |\n| `image_url` | string |  | Optional profile picture URL |\n\n### Responses\n- **200** — Account created. Returns the new `UserOut` object.\n- **400** — Email already registered.\n- **422** — Validation error (malformed request body).",
         "operationId": "register_api_v1_auth_register_post",
         "requestBody": {
           "content": {
@@ -119,6 +119,226 @@
         }
       }
     },
+    "/api/v1/auth/verify": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Verify Email",
+        "description": "Verify email address using the token sent after registration.",
+        "operationId": "verify_email_api_v1_auth_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Forgot Password",
+        "description": "Request a password reset email. Always returns 200 to prevent email enumeration.",
+        "operationId": "forgot_password_api_v1_auth_forgot_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Reset Password",
+        "description": "Reset password using the token from the reset email.",
+        "operationId": "reset_password_api_v1_auth_reset_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Refresh",
+        "description": "Rotate tokens: exchange a valid refresh token for a new access + refresh token pair.",
+        "operationId": "refresh_api_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/change-password": {
+      "post": {
+        "tags": [
+          "auth",
+          "auth"
+        ],
+        "summary": "Change Password",
+        "description": "Change password for the currently authenticated user.",
+        "operationId": "change_password_api_v1_auth_change_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/v1/goals/": {
       "post": {
         "tags": [
@@ -126,7 +346,7 @@
           "goals"
         ],
         "summary": "Create Goal",
-        "description": "## Create Goal\n\nCreate a new goal for the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `title` | string | ✅ | Goal name (max 200 chars) |\n| `type` | string | ✅ | e.g. `\"One Time\"` or `\"Repeating\"` |\n| `start_date` | date | ✅ | ISO 8601 date — `YYYY-MM-DD` |\n| `deadline` | date | ✅ | ISO 8601 date — `YYYY-MM-DD` |\n| `frequency` | string | ✅ | One of `daily`, `weekly`, `monthly` |\n| `duration_min` | integer | ✅ | Daily target duration in **minutes** (≥ 0) |\n\n### Responses\n- **200** — Goal created. Returns the new `GoalOut` object.\n- **401** — Not authenticated.\n- **422** — Validation error.",
+        "description": "## Create Goal\n\nCreate a new goal for the authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `title` | string |  | Goal name (max 200 chars) |\n| `type` | string |  | e.g. `\"One Time\"` or `\"Repeating\"` |\n| `start_date` | date |  | ISO 8601 date — `YYYY-MM-DD` |\n| `deadline` | date |  | ISO 8601 date — `YYYY-MM-DD` |\n| `frequency` | string |  | One of `daily`, `weekly`, `monthly` |\n| `duration_min` | integer |  | Daily target duration in **minutes** (≥ 0) |\n\n### Responses\n- **200** — Goal created. Returns the new `GoalOut` object.\n- **401** — Not authenticated.\n- **422** — Validation error.",
         "operationId": "create_goal_api_v1_goals__post",
         "security": [
           {
@@ -172,7 +392,7 @@
           "goals"
         ],
         "summary": "List Goals",
-        "description": "## List Goals\n\nReturn all goals belonging to the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `skip` | integer | `0` | Number of records to skip (pagination offset) |\n| `limit` | integer | `100` | Maximum number of records to return |\n\n### Responses\n- **200** — Array of `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "description": "## List Goals\n\nReturn all goals belonging to the authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `skip` | integer | `0` | Number of records to skip (pagination offset) |\n| `limit` | integer | `100` | Maximum number of records to return |\n\n### Responses\n- **200** — Array of `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
         "operationId": "list_goals_api_v1_goals__get",
         "security": [
           {
@@ -236,7 +456,7 @@
           "goals"
         ],
         "summary": "Get By Name",
-        "description": "## Search Goals by Name\n\nFull-text search (case-insensitive) across the authenticated user's goal titles.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Required | Description |\n|---|---|---|---|\n| `name` | string | ✅ | Substring to search for in goal titles |\n| `skip` | integer | `0` | Pagination offset |\n| `take` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of matching `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "description": "## Search Goals by Name\n\nFull-text search (case-insensitive) across the authenticated user's goal titles.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Required | Description |\n|---|---|---|---|\n| `name` | string |  | Substring to search for in goal titles |\n| `skip` | integer | `0` | Pagination offset |\n| `take` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of matching `GoalOut` objects (may be empty).\n- **401** — Not authenticated.",
         "operationId": "get_by_name_api_v1_goals_search_get",
         "security": [
           {
@@ -305,7 +525,7 @@
           "goals"
         ],
         "summary": "Get Goals By Date",
-        "description": "## Get Goals Active on a Date\n\nReturn all goals whose `start_date ≤ target_date ≤ deadline`.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `target_date` | date | ISO 8601 date — `YYYY-MM-DD` |\n\n### Responses\n- **200** — Array of `GoalOut` objects active on that date (may be empty).\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
+        "description": "## Get Goals Active on a Date\n\nReturn all goals whose `start_date ≤ target_date ≤ deadline`.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `target_date` | date | ISO 8601 date — `YYYY-MM-DD` |\n\n### Responses\n- **200** — Array of `GoalOut` objects active on that date (may be empty).\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
         "operationId": "get_goals_by_date_api_v1_goals_by_date__target_date__get",
         "security": [
           {
@@ -359,7 +579,7 @@
           "goals"
         ],
         "summary": "Get Goals By Completion",
-        "description": "## Filter Goals by Completion Status\n\nReturn the authenticated user's goals filtered by `is_complete`.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `false` | `true` for completed goals, `false` for active |\n| `skip` | integer | `0` | Pagination offset |\n| `limit` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of `GoalOut` objects matching the filter (may be empty).\n- **401** — Not authenticated.",
+        "description": "## Filter Goals by Completion Status\n\nReturn the authenticated user's goals filtered by `is_complete`.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `false` | `true` for completed goals, `false` for active |\n| `skip` | integer | `0` | Pagination offset |\n| `limit` | integer | `100` | Maximum number of results |\n\n### Responses\n- **200** — Array of `GoalOut` objects matching the filter (may be empty).\n- **401** — Not authenticated.",
         "operationId": "get_goals_by_completion_api_v1_goals_filter_by_completion_get",
         "security": [
           {
@@ -433,7 +653,7 @@
           "goals"
         ],
         "summary": "Get Goal",
-        "description": "## Get Goal\n\nFetch a single goal by ID. Only returns the goal if it belongs to the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to retrieve |\n\n### Responses\n- **200** — Returns the `GoalOut` object.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "description": "## Get Goal\n\nFetch a single goal by ID. Only returns the goal if it belongs to the authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to retrieve |\n\n### Responses\n- **200** — Returns the `GoalOut` object.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
         "operationId": "get_goal_api_v1_goals__goal_id__get",
         "security": [
           {
@@ -480,7 +700,7 @@
           "goals"
         ],
         "summary": "Update Goal",
-        "description": "## Update Goal\n\nUpdate one or more fields of an existing goal. Only the owner can update their goal.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to update |\n\n### Request body\nAll fields are **optional** — only provided fields are updated.\n\n| Field | Type | Description |\n|---|---|---|\n| `title` | string | New goal title |\n| `type` | string | Goal type |\n| `start_date` | date | New start date (`YYYY-MM-DD`) |\n| `deadline` | date | New deadline (`YYYY-MM-DD`) |\n| `frequency` | string | `daily`, `weekly`, or `monthly` |\n| `duration_min` | integer | Daily target in minutes |\n| `is_complete` | boolean | Mark goal as complete/incomplete |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.\n- **422** — Validation error.",
+        "description": "## Update Goal\n\nUpdate one or more fields of an existing goal. Only the owner can update their goal.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to update |\n\n### Request body\nAll fields are **optional** — only provided fields are updated.\n\n| Field | Type | Description |\n|---|---|---|\n| `title` | string | New goal title |\n| `type` | string | Goal type |\n| `start_date` | date | New start date (`YYYY-MM-DD`) |\n| `deadline` | date | New deadline (`YYYY-MM-DD`) |\n| `frequency` | string | `daily`, `weekly`, or `monthly` |\n| `duration_min` | integer | Daily target in minutes |\n| `is_complete` | boolean | Mark goal as complete/incomplete |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.\n- **422** — Validation error.",
         "operationId": "update_goal_api_v1_goals__goal_id__put",
         "security": [
           {
@@ -537,7 +757,7 @@
           "goals"
         ],
         "summary": "Delete Goal",
-        "description": "## Delete Goal\n\nPermanently delete a goal and all its associated stats. Only the owner can delete their goal.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to delete |\n\n### Responses\n- **204** — Goal deleted successfully (no content).\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "description": "## Delete Goal\n\nPermanently delete a goal and all its associated stats. Only the owner can delete their goal.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal to delete |\n\n### Responses\n- **204** — Goal deleted successfully (no content).\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
         "operationId": "delete_goal_api_v1_goals__goal_id__delete",
         "security": [
           {
@@ -579,7 +799,7 @@
           "goals"
         ],
         "summary": "Update Goal Completion",
-        "description": "## Mark Goal Complete / Incomplete\n\nShortcut endpoint to toggle a goal's completion status without sending a full update body.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `true` | `true` to mark complete, `false` to reopen |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
+        "description": "## Mark Goal Complete / Incomplete\n\nShortcut endpoint to toggle a goal's completion status without sending a full update body.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `is_complete` | boolean | `true` | `true` to mark complete, `false` to reopen |\n\n### Responses\n- **200** — Returns updated `GoalOut`.\n- **401** — Not authenticated.\n- **404** — Goal not found or does not belong to you.",
         "operationId": "update_goal_completion_api_v1_goals__goal_id__complete_patch",
         "security": [
           {
@@ -638,7 +858,7 @@
           "stats"
         ],
         "summary": "Add Stat",
-        "description": "## Log a Session\n\nRecord a tracked work session for a specific goal.\n\nIf a stat entry already exists for the same goal on the same **calendar day**, the\n`duration_minutes` is **added** to the existing record rather than creating a duplicate.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal this session belongs to |\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `duration_minutes` | integer | ✅ | Session length in minutes (≥ 0) |\n| `occurred_at` | datetime | ❌ | ISO 8601 datetime. Defaults to **now** if omitted |\n\n### Responses\n- **200** — Returns the created or updated `StatOut`.\n- **401** — Not authenticated.\n- **422** — Validation error.",
+        "description": "## Log a Session\n\nRecord a tracked work session for a specific goal.\n\nIf a stat entry already exists for the same goal on the same **calendar day**, the\n`duration_minutes` is **added** to the existing record rather than creating a duplicate.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal this session belongs to |\n\n### Request body\n| Field | Type | Required | Description |\n|---|---|---|---|\n| `duration_minutes` | integer |  | Session length in minutes (≥ 0) |\n| `occurred_at` | datetime |  | ISO 8601 datetime. Defaults to **now** if omitted |\n\n### Responses\n- **200** — Returns the created or updated `StatOut`.\n- **401** — Not authenticated.\n- **422** — Validation error.",
         "operationId": "add_stat_api_v1_stats_goal__goal_id__post",
         "security": [
           {
@@ -695,7 +915,7 @@
           "stats"
         ],
         "summary": "Get Goal Stats",
-        "description": "## Get Stats for a Goal\n\nReturn all session records logged for a specific goal by the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Responses\n- **200** — Array of `StatOut` objects (may be empty).\n- **401** — Not authenticated.",
+        "description": "## Get Stats for a Goal\n\nReturn all session records logged for a specific goal by the authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Responses\n- **200** — Array of `StatOut` objects (may be empty).\n- **401** — Not authenticated.",
         "operationId": "get_goal_stats_api_v1_stats_goal__goal_id__get",
         "security": [
           {
@@ -748,7 +968,7 @@
           "stats"
         ],
         "summary": "Get Overall Stats",
-        "description": "## Overall Statistics\n\nAggregate total tracked minutes across **all goals** for the authenticated user.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 120,\n    \"Read Books\": 45\n  }\n}\n```\nValues are in **minutes**. Keys are goal titles.\n\n### Responses\n- **200** — Returns `OverallOut`.\n- **401** — Not authenticated.",
+        "description": "## Overall Statistics\n\nAggregate total tracked minutes across **all goals** for the authenticated user.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 120,\n    \"Read Books\": 45\n  }\n}\n```\nValues are in **minutes**. Keys are goal titles.\n\n### Responses\n- **200** — Returns `OverallOut`.\n- **401** — Not authenticated.",
         "operationId": "get_overall_stats_api_v1_stats_overall_get",
         "responses": {
           "200": {
@@ -776,7 +996,7 @@
           "stats"
         ],
         "summary": "Get Overall Stats By Type",
-        "description": "## Overall Statistics by Goal Type\n\nAggregate total tracked minutes grouped by goal title, filtered by goal **type**.\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `type` | string | `One Time` | Goal type filter. One of `One Time`, `Repeating` |\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 300\n  }\n}\n```\nValues are in **minutes**.\n\n### Responses\n- **200** — Returns aggregated stats object.\n- **401** — Not authenticated.\n- **422** — Invalid `type` value.",
+        "description": "## Overall Statistics by Goal Type\n\nAggregate total tracked minutes grouped by goal title, filtered by goal **type**.\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Query parameters\n| Parameter | Type | Default | Description |\n|---|---|---|---|\n| `type` | string | `One Time` | Goal type filter. One of `One Time`, `Repeating` |\n\n### Response shape\n```json\n{\n  \"total_stats\": {\n    \"Learn Spanish\": 300\n  }\n}\n```\nValues are in **minutes**.\n\n### Responses\n- **200** — Returns aggregated stats object.\n- **401** — Not authenticated.\n- **422** — Invalid `type` value.",
         "operationId": "get_overall_stats_by_type_api_v1_stats_overall_by_type_get",
         "security": [
           {
@@ -825,7 +1045,7 @@
           "stats"
         ],
         "summary": "Get Stats By Date Range",
-        "description": "## Get Stats by Date Range\n\nReturn session records for a goal within a given date range (inclusive on both ends).\n\n\u003E 🔒 **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `start_date` | string | Start of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n| `end_date` | string | End of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n\n### Responses\n- **200** — Array of `StatOut` objects within the range, ordered by `occurred_at`.\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
+        "description": "## Get Stats by Date Range\n\nReturn session records for a goal within a given date range (inclusive on both ends).\n\n\u003E  **Requires** `Authorization: Bearer \u003Caccess_token\u003E`\n\n### Path parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `goal_id` | integer | ID of the goal |\n\n### Query parameters\n| Parameter | Type | Description |\n|---|---|---|\n| `start_date` | string | Start of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n| `end_date` | string | End of range — ISO 8601 (`YYYY-MM-DD` or datetime) |\n\n### Responses\n- **200** — Array of `StatOut` objects within the range, ordered by `occurred_at`.\n- **401** — Not authenticated.\n- **422** — Invalid date format.",
         "operationId": "get_stats_by_date_range_api_v1_stats__goal_id__by_date_range_get",
         "security": [
           {
@@ -888,10 +1108,62 @@
           }
         }
       }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ChangePasswordRequest": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "title": "Current Password"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordRequest"
+      },
+      "ForgotPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "ForgotPasswordRequest"
+      },
       "GoalCreate": {
         "properties": {
           "title": {
@@ -1112,6 +1384,37 @@
           "total_stats"
         ],
         "title": "OverallOut"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest"
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "title": "ResetPasswordRequest"
       },
       "StatCreate": {
         "properties": {
@@ -1341,6 +1644,30 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VerifyRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "VerifyRequest"
       }
     },
     "securitySchemes": {
