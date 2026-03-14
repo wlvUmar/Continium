@@ -31,7 +31,7 @@ function renderProfileModal() {
                         </div>
 
                         <!-- User Information Section -->
-                        <div class="profile-section">
+                        <div class="profile-info-section">
                             <p class="profile-section-title">User information</p>
 
                             <div class="form-group">
@@ -46,22 +46,23 @@ function renderProfileModal() {
                         </div>
 
                         <!-- Settings Section -->
-                        <div class="profile-section">
-                            <p class="profile-section-title">Settings</p>
+                        <div class="profile-settings-section">
 
                             <div class="profile-setting-item">
                                 <span class="profile-setting-label">Theme</span>
                                 <div class="profile-toggle">
-                                    <button type="button" class="profile-toggle-option ${!isDarkMode ? 'active' : ''}" onclick="handleThemeChange('light', event)">Light</button>
-                                    <button type="button" class="profile-toggle-option ${isDarkMode ? 'active' : ''}" onclick="handleThemeChange('dark', event)">Dark</button>
+                                    <button type="button" class="profile-toggle-option ${!isDarkMode ? 'active' : ''}" onclick="handleThemeChange('light', event)"><img src="assets/icons/Light.svg" alt="Light"> Light mode</button>
+                                    <button type="button" class="profile-toggle-option ${isDarkMode ? 'active' : ''}" onclick="handleThemeChange('dark', event)"><img src="assets/icons/Dark.svg" alt="Dark"> Dark mode</button>
                                 </div>
                             </div>
 
                             <div class="profile-setting-item">
                                 <span class="profile-setting-label">Notifications</span>
                                 <div class="profile-toggle">
-                                    <button type="button" class="profile-toggle-option active" onclick="handleNotifications('on', event)">On</button>
-                                    <button type="button" class="profile-toggle-option" onclick="handleNotifications('off', event)">Off</button>
+                                    <button type="button" class="profile-toggle-option active" onclick="handleNotifications('on', event)">
+                                    <img src="assets/icons/basil_notification-on-solid.svg" >Notification on</button>
+                                    <button type="button" class="profile-toggle-option" onclick="handleNotifications('off', event)">
+                                    <img src="assets/icons/basil_notification-off-solid.svg" >Notification off</button>
                                 </div>
                             </div>
                         </div>

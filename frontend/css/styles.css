@@ -399,7 +399,7 @@ body.dark-mode .project-list-card {
 .profile-modal {
   position: relative;
   width: 90vw;
-  max-width: 400px;
+  max-width: 700px;
   height: auto;
   max-height: 80vh;
   background: #F9F9F9;
@@ -530,9 +530,10 @@ body.dark-mode .project-list-card {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.54);
 }
 
-.profile-section {
+.profile-info-section {
   background: #FFFFFF;
   border: 1px solid #D9D9D9;
   border-radius: 8px;
@@ -540,6 +541,15 @@ body.dark-mode .project-list-card {
   margin-bottom: 12px;
 }
 
+.profile-settings-section {
+  background: #FFFFFF;
+  border: 1px solid #D9D9D9;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+}
 .profile-section-title {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
@@ -556,7 +566,7 @@ body.dark-mode .project-list-card {
 }
 
 .profile-setting-item {
-  display: flex;
+  display: block;
   align-items: center;
   justify-content: space-between;
   gap: 15px;
@@ -593,12 +603,23 @@ body.dark-mode .project-list-card {
   font-weight: 500;
   color: #475A6C;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .profile-toggle-option.active {
   background: #07B6D5;
   color: #FFFFFF;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-toggle-option > img {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .form-group {
