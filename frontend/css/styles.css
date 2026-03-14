@@ -477,7 +477,7 @@ body.dark-mode .project-list-card {
 
 .profile-user-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   margin-bottom: 15px;
 }
