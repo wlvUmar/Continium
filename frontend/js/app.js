@@ -23,6 +23,7 @@ import './components/error-message.js';
 // Note: goalsService is loaded later — layout functions that call it are
 // only invoked asynchronously after all modules have executed.
 import './components/layout.js';
+import './components/help-center.js';
 
 // Auth pages
 import './pages/auth/login.js';
