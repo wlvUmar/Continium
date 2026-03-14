@@ -1,6 +1,6 @@
 /**
  * Profile Modal
- * Modal dialog for editing user profile
+ * Modal dialog for editing user profile - 1:1 with Figma
  */
 
 function renderProfileModal() {
@@ -13,24 +13,29 @@ function renderProfileModal() {
     return `
         <div class="profile-modal-backdrop" onclick="closeProfileModal(event)">
             <div class="profile-modal" onclick="event.stopPropagation()">
-                <div class="profile-modal-header">
-                    <h2 class="profile-modal-title">Profile</h2>
-                    <button class="profile-modal-close" onclick="closeProfileModal()" aria-label="Close">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="profile-modal-content">
-                    <div class="profile-avatar-section">
-                        <div class="profile-avatar-large">${initial}</div>
-                        <p class="profile-username">${userName}</p>
-                        <p class="profile-user-email">${userEmail}</p>
+                <form class="profile-form" onsubmit="handleProfileSave(event)">
+                    <!-- Header: Title + Save Button -->
+                    <div class="profile-modal-header">
+                        <h2 class="profile-modal-title">Profile</h2>
+                        <button type="submit" class="btn-primary" id="profileSaveBtn">Save</button>
+                        <button type="button" class="profile-modal-close" onclick="closeProfileModal()" aria-label="Close">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
 
-                    <form class="profile-form" onsubmit="handleProfileSave(event)">
+                    <div class="profile-modal-content">
+                        <!-- User Header: Avatar + Name/Email -->
+                        <div class="profile-user-header">
+                            <div class="profile-avatar-large">${initial}</div>
+                            <div class="profile-user-info">
+                                <p class="profile-username">${userName}</p>
+                                <p class="profile-user-email">${userEmail}</p>
+                            </div>
+                        </div>
+
                         <!-- User Information Section -->
                         <div class="profile-section">
                             <p class="profile-section-title">User information</p>
@@ -67,12 +72,10 @@ function renderProfileModal() {
                             </div>
                         </div>
 
-                        <div class="profile-modal-actions">
-                            <button type="button" class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
-                            <button type="submit" class="btn-primary" id="profileSaveBtn">Save</button>
-                        </div>
-                    </form>
-                </div>
+                        <!-- Change Password Button -->
+                        <button type="button" class="btn-change-password" onclick="handleChangePassword()">Change password</button>
+                    </div>
+                </form>
             </div>
         </div>
     `;
@@ -95,7 +98,7 @@ function closeProfileModal(event) {
 
 window.handleThemeChange = function(theme, event) {
     event.preventDefault();
-    const buttons = document.querySelectorAll('.profile-toggle-option');
+    const buttons = event.target.parentElement.querySelectorAll('.profile-toggle-option');
     buttons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     
@@ -116,6 +119,10 @@ window.handleNotifications = function(status, event) {
     buttons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     localStorage.setItem('notifications', status);
+};
+
+window.handleChangePassword = function() {
+    Toast.info('Change password feature not yet implemented');
 };
 
 window.handleProfileSave = async function(event) {
