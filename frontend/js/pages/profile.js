@@ -18,12 +18,6 @@ function renderProfileModal() {
                     <div class="profile-modal-header">
                         <h2 class="profile-modal-title">Profile</h2>
                         <button type="submit" class="btn-primary" id="profileSaveBtn">Save</button>
-                        <button type="button" class="profile-modal-close" onclick="closeProfileModal()" aria-label="Close">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
                     </div>
 
                     <div class="profile-modal-content">
