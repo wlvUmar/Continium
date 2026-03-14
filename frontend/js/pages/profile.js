@@ -7,8 +7,8 @@ function renderProfileModal() {
     const user      = authService.getUser();
     const userName  = user ? (user.full_name || user.fullName || 'User') : 'User';
     const userEmail = user ? (user.email || '') : '';
-    const userBirth = user ? (user.birthdate || '') : '';
     const initial   = userName.charAt(0).toUpperCase();
+    const isDarkMode = document.documentElement.classList.contains('dark-mode') || document.body.classList.contains('dark-mode');
 
     return `
         <div class="profile-modal-backdrop" onclick="closeProfileModal(event)">
@@ -31,8 +31,9 @@ function renderProfileModal() {
                     </div>
 
                     <form class="profile-form" onsubmit="handleProfileSave(event)">
+                        <!-- User Information Section -->
                         <div class="profile-section">
-                            <p class="profile-section-title">Personal Information</p>
+                            <p class="profile-section-title">User information</p>
 
                             <div class="form-group">
                                 <label class="form-label">Full Name</label>
@@ -43,35 +44,32 @@ function renderProfileModal() {
                                 <label class="form-label">Email</label>
                                 <input type="email" name="email" class="form-input" value="${userEmail}" placeholder="your@email.com">
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Birthdate</label>
-                                <input type="date" name="birthdate" class="form-input" value="${userBirth}">
-                            </div>
                         </div>
 
+                        <!-- Settings Section -->
                         <div class="profile-section">
-                            <p class="profile-section-title">Change Password</p>
+                            <p class="profile-section-title">Settings</p>
 
-                            <div class="form-group">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-input" placeholder="Enter current password">
+                            <div class="profile-setting-item">
+                                <span class="profile-setting-label">Theme</span>
+                                <div class="profile-toggle">
+                                    <button type="button" class="profile-toggle-option ${!isDarkMode ? 'active' : ''}" onclick="handleThemeChange('light', event)">Light</button>
+                                    <button type="button" class="profile-toggle-option ${isDarkMode ? 'active' : ''}" onclick="handleThemeChange('dark', event)">Dark</button>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">New Password</label>
-                                <input type="password" name="new_password" class="form-input" placeholder="Enter new password">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" name="confirm_password" class="form-input" placeholder="Confirm new password">
+                            <div class="profile-setting-item">
+                                <span class="profile-setting-label">Notifications</span>
+                                <div class="profile-toggle">
+                                    <button type="button" class="profile-toggle-option active" onclick="handleNotifications('on', event)">On</button>
+                                    <button type="button" class="profile-toggle-option" onclick="handleNotifications('off', event)">Off</button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="profile-modal-actions">
                             <button type="button" class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
-                            <button type="submit" class="btn-primary" id="profileSaveBtn">Save Changes</button>
+                            <button type="submit" class="btn-primary" id="profileSaveBtn">Save</button>
                         </div>
                     </form>
                 </div>
@@ -95,17 +93,35 @@ function closeProfileModal(event) {
     }
 }
 
+window.handleThemeChange = function(theme, event) {
+    event.preventDefault();
+    const buttons = document.querySelectorAll('.profile-toggle-option');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark-mode');
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+    }
+};
+
+window.handleNotifications = function(status, event) {
+    event.preventDefault();
+    const buttons = event.target.parentElement.querySelectorAll('.profile-toggle-option');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    localStorage.setItem('notifications', status);
+};
 
 window.handleProfileSave = async function(event) {
     event.preventDefault();
     const form    = event.target;
     const saveBtn = document.getElementById('profileSaveBtn');
-    const currentPw = form.current_password.value;
-    const newPw     = form.new_password.value;
-    const confPw    = form.confirm_password.value;
-
-    if (newPw && newPw !== confPw) { Toast.error('Passwords do not match'); return; }
-    if (newPw && !currentPw) { Toast.error('Enter your current password to set a new one'); return; }
 
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
@@ -115,16 +131,8 @@ window.handleProfileSave = async function(event) {
             ...currentUser,
             full_name: form.full_name.value.trim(),
             email:     form.email.value.trim(),
-            birthdate: form.birthdate.value,
         };
         localStorage.setItem('user', JSON.stringify(updated));
-
-        if (newPw && currentPw) {
-            await authService.changePassword(currentPw, newPw);
-            form.current_password.value = '';
-            form.new_password.value     = '';
-            form.confirm_password.value = '';
-        }
 
         Toast.success('Profile saved!');
         closeProfileModal();
@@ -136,7 +144,7 @@ window.handleProfileSave = async function(event) {
         }
     } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Changes';
+        saveBtn.textContent = 'Save';
     }
 };
 
