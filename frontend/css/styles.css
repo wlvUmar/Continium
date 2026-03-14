@@ -398,10 +398,10 @@ body.dark-mode .project-list-card {
 
 .profile-modal {
   position: relative;
-  width: 95vw;
-  max-width: 600px;
+  width: 90vw;
+  max-width: 450px;
   height: auto;
-  max-height: 85vh;
+  max-height: 80vh;
   background: #F9F9F9;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.54);
   border-radius: 20px;
@@ -414,18 +414,18 @@ body.dark-mode .project-list-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 25px 30px;
+  padding: 20px 25px;
   border-bottom: 1px solid #E0E0E0;
   flex-shrink: 0;
 }
 
 .profile-modal-title {
   font-family: 'Inter', sans-serif;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
   color: #36465D;
   margin: 0;
-  line-height: 58px;
+  line-height: 30px;
 }
 
 .profile-modal-close {
@@ -567,8 +567,8 @@ body.dark-mode .project-list-card {
 .profile-modal-actions {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 20px 30px;
+  gap: 15px;
+  padding: 15px 20px;
   border-top: 1px solid #E0E0E0;
   flex-shrink: 0;
   background: #FFFFFF;

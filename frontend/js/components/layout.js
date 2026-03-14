@@ -48,7 +48,7 @@ function createSidebar() {
                     </div>
                 </div>
 
-                <button class="nav-item" style="background: none; border: none; padding: 0; cursor: pointer; width: 100%; text-align: left;" onclick="openAddGoalModal()">
+                <button class="nav-item" style="all: unset; display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer;" onclick="openAddGoalModal()">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
