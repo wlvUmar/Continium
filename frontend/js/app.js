@@ -63,13 +63,11 @@ router.on('/reset-password',  () => renderResetPassword());
 router.on('/app', protectedRoute(() => renderDashboard()));
 
 router.on('/projects',  protectedRoute(() => renderProjects()));
-router.on('/add-goal',  protectedRoute(() => renderAddGoal()));
 router.on('/statistics',protectedRoute(() => renderStatistics()));
 router.on('/completed', protectedRoute(() => renderCompleted()));
 
 router.on('/project/:id', protectedRoute((params) => renderProjectDetail(params.id)));
 router.on('/goal/:id',    protectedRoute((params) => renderGoal(params.id)));
-router.on('/profile',     protectedRoute(() => renderProfile()));
 
 router.on('/', () => {
     if (authService && authService.isAuthed()) {

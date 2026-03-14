@@ -1,79 +1,97 @@
 /**
- * Add Goal Page
- * Extracted from layout.js
+ * Add Goal Modal
+ * Modal dialog for creating a new goal
  */
 
-function renderAddGoalContent() {
+function renderAddGoalModal() {
     return `
-        <div class="add-goal-content">
-            <form class="add-goal-form" onsubmit="handleAddGoalSubmit(event)">
-                <div class="add-goal-header-row">
-                    <h2 class="add-goal-title">Add goal</h2>
-                    <button type="button" class="add-goal-close" onclick="router.navigate('/projects')" aria-label="Close add goal form">×</button>
+        <div class="add-goal-modal-backdrop" onclick="closeAddGoalModal(event)">
+            <div class="add-goal-modal" onclick="event.stopPropagation()">
+                <div class="add-goal-modal-header">
+                    <h2 class="add-goal-modal-title">Add goal</h2>
+                    <button class="add-goal-modal-close" onclick="closeAddGoalModal()" aria-label="Close">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Goal Name</label>
-                    <input type="text" name="title" class="form-input" placeholder="Enter Your Goal" required>
-                </div>
-
-                <div class="add-goal-time-card">
-                    <div class="form-group">
-                        <label class="form-label">Frequency</label>
-                        <div class="freq-type-tabs">
-                            <button type="button" class="freq-tab active" data-type="repeating" onclick="selectFreqType('repeating', this)">Repeating</button>
-                            <button type="button" class="freq-tab" data-type="onetime" onclick="selectFreqType('onetime', this)">One time</button>
-                        </div>
-                    </div>
-
-                    <div class="freq-options" id="freqRepeating">
+                <div class="add-goal-modal-content">
+                    <form class="add-goal-form" onsubmit="handleAddGoalSubmit(event)">
                         <div class="form-group">
-                            <label class="form-label">Repeat</label>
-                            <div class="repeat-group">
-                                <button type="button" class="repeat-btn active" onclick="selectRepeat('daily', this)">Daily</button>
-                                <button type="button" class="repeat-btn" onclick="selectRepeat('weekly', this)">Weekly</button>
-                                <button type="button" class="repeat-btn" onclick="selectRepeat('monthly', this)">Monthly</button>
-                            </div>
-                            <input type="hidden" name="frequency" id="goalFrequency" value="daily">
+                            <label class="form-label">Goal Name</label>
+                            <input type="text" name="title" class="form-input" placeholder="Enter Your Goal" required>
                         </div>
-                    </div>
 
-                    <div class="freq-options hidden" id="freqOnetime">
-                        <div class="form-group form-group-row">
-                            <div class="form-group-half">
-                                <label class="form-label">Start Date</label>
-                                <input type="date" name="start_date" class="form-input">
+                        <div class="add-goal-time-card">
+                            <div class="form-group">
+                                <label class="form-label">Frequency</label>
+                                <div class="freq-type-tabs">
+                                    <button type="button" class="freq-tab active" data-type="repeating" onclick="selectFreqType('repeating', this)">Repeating</button>
+                                    <button type="button" class="freq-tab" data-type="onetime" onclick="selectFreqType('onetime', this)">One time</button>
+                                </div>
                             </div>
-                            <div class="form-group-half">
-                                <label class="form-label">Deadline</label>
-                                <input type="date" name="end_date" class="form-input">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Session Count</label>
-                            <input type="number" name="session_count" class="form-input" placeholder="e.g. 10" min="1">
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Duration (hours)</label>
-                        <input type="number" name="daily_target_hours" class="form-input" placeholder="2h 00m" step="0.5" min="0.5" max="24">
-                    </div>
+                            <div class="freq-options" id="freqRepeating">
+                                <div class="form-group">
+                                    <label class="form-label">Repeat</label>
+                                    <div class="repeat-group">
+                                        <button type="button" class="repeat-btn active" onclick="selectRepeat('daily', this)">Daily</button>
+                                        <button type="button" class="repeat-btn" onclick="selectRepeat('weekly', this)">Weekly</button>
+                                        <button type="button" class="repeat-btn" onclick="selectRepeat('monthly', this)">Monthly</button>
+                                    </div>
+                                    <input type="hidden" name="frequency" id="goalFrequency" value="daily">
+                                </div>
+                            </div>
+
+                            <div class="freq-options hidden" id="freqOnetime">
+                                <div class="form-group form-group-row">
+                                    <div class="form-group-half">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="date" name="start_date" class="form-input">
+                                    </div>
+                                    <div class="form-group-half">
+                                        <label class="form-label">Deadline</label>
+                                        <input type="date" name="end_date" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Session Count</label>
+                                    <input type="number" name="session_count" class="form-input" placeholder="e.g. 10" min="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Duration (hours)</label>
+                                <input type="number" name="daily_target_hours" class="form-input" placeholder="2h 00m" step="0.5" min="0.5" max="24">
+                            </div>
+                        </div>
+
+                        <div class="add-goal-modal-actions">
+                            <button type="button" class="btn-secondary" onclick="closeAddGoalModal()">Cancel</button>
+                            <button type="submit" class="btn-primary" id="addGoalSubmitBtn">Save</button>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="form-actions add-goal-actions">
-                    <button type="button" class="btn-secondary" onclick="router.navigate('/projects')">Cancel</button>
-                    <button type="submit" class="btn-primary" id="addGoalSubmitBtn">Save</button>
-                </div>
-            </form>
+            </div>
         </div>
     `;
 }
 
-function renderAddGoal() {
-    const appContainer = document.getElementById('app');
-    appContainer.innerHTML = createLayout(renderAddGoalContent(), '/add-goal');
-    attachNavigationListeners();
+function openAddGoalModal() {
+    const modal = renderAddGoalModal();
+    document.body.insertAdjacentHTML('beforeend', modal);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddGoalModal(event) {
+    if (event && event.target.className !== 'add-goal-modal-backdrop') return;
+    const backdrop = document.querySelector('.add-goal-modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+        document.body.style.overflow = '';
+    }
 }
 
 window.selectFreqType = function(type, btn) {
@@ -112,12 +130,18 @@ window.handleAddGoalSubmit = async function(event) {
     try {
         await goalsService.createGoal(goalData);
         Toast.success('Goal created successfully!');
-        router.navigate('/projects');
+        closeAddGoalModal();
     } catch (err) {
-        Toast.error(err.message || 'Failed to create goal');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Goal';
+        const message = err.message || 'Failed to create goal';
+        const backdrop = document.querySelector('.add-goal-modal-backdrop');
+        if (backdrop) {
+            Toast.error(message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Goal';
+        }
     }
 };
 
-window.renderAddGoal = renderAddGoal;
+window.renderAddGoalModal = renderAddGoalModal;
+window.openAddGoalModal = openAddGoalModal;
+window.closeAddGoalModal = closeAddGoalModal;

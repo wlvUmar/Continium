@@ -16,15 +16,15 @@ function createSidebar() {
   return `
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="user-profile-header user-profile-header--clickable" onclick="router.navigate('/profile')" title="View profile">
+                <div class="user-profile-header user-profile-header--clickable" onclick="openProfileModal()" title="View profile">
                     <div class="user-avatar-header">
                         <img src="assets/icons/si_user-fill.svg" alt="User" style="width:28px;height:28px;filter:brightness(0) invert(1);">
                     </div>
                     <div class="user-info-header">
                         <p class="username-header">${userName}</p>
                     </div>
-                    <button class="notification-btn" onclick="event.stopPropagation(); toggleNotifications(this)">
-                        <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">
+                    <button class="header-logout-btn" onclick="event.stopPropagation(); handleLogout()" title="Logout">
+                        <img src="assets/icons/exit_vector.svg" alt="Logout" style="width:24px;height:24px;">
                     </button>
                 </div>
             </div>
@@ -48,7 +48,7 @@ function createSidebar() {
                     </div>
                 </div>
 
-                <a href="#/add-goal" class="nav-item" data-route="/add-goal">
+                <a href="#/add-goal" class="nav-item" data-route="/add-goal" onclick="event.preventDefault(); openAddGoalModal()">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
@@ -71,12 +71,6 @@ function createSidebar() {
             </nav>
 
             <div class="sidebar-footer">
-                <button class="nav-item logout-btn" onclick="handleLogout()">
-                    <span class="nav-icon">
-                        <img src="assets/icons/exit_vector.svg" alt="Logout" class="icon">
-                    </span>
-                    <span class="nav-text">Logout</span>
-                </button>
             </div>
         </aside>
     `;
@@ -144,18 +138,6 @@ window.loadSidebarProjects = async function () {
   } catch (err) {
     if (listEl)
       listEl.innerHTML = `<div class="sidebar-projects-state">Failed to load</div>`;
-  }
-};
-
-// Toggle notification icon on/off
-window.toggleNotifications = function (btn) {
-  const img = btn.querySelector(".notification-icon");
-  if (img.src.includes("notification-on")) {
-    img.src = "assets/icons/basil_notification-off-solid.svg";
-    img.alt = "Notifications off";
-  } else {
-    img.src = "assets/icons/basil_notification-on-solid.svg";
-    img.alt = "Notifications on";
   }
 };
 
