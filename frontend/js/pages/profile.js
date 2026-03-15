@@ -230,9 +230,10 @@ window.handleProfileSave = async function(event) {
     saveBtn.textContent = 'Saving...';
     try {
         const full_name = form.full_name.value.trim();
+        const email     = form.email.value.trim();
 
         // Call the backend to persist the change
-        await authService.updateProfile({ full_name });
+        await authService.updateProfile({ full_name, email });
 
         Toast.success('Profile saved!');
         closeProfileModal();
