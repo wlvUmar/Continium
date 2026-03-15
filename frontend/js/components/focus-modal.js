@@ -91,7 +91,7 @@ function renderFocusModal() {
             <div class="focus-modal" id="focusModalWindow">
                 <!-- Top Controls -->
                 <div class="focus-modal-controls">
-                    <button class="focus-modal-btn timer-page-btn" id="focusTimerPageBtn" title="Go to Timer Page" onclick="window.closeFocusModal(); router.navigate('/timer/${_focusModalGoalId}')">
+                    <button class="focus-modal-btn timer-page-btn" id="focusTimerPageBtn" title="Go to Timer Page" onclick="window.closeFocusModalAndNavigate('/timer/${_focusModalGoalId}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -190,19 +190,38 @@ window.openFocusModal = async function(goalId) {
     window.focusToggle();
 };
 
-window.closeFocusModal = function() {
-    const overlay = document.getElementById('focusModalOverlay');
-    if (overlay) {
-        overlay.classList.remove('active');
+window.closeFocusModal = async function() {
+    // Stop the timer and save session
+    if (_focusTimerRunning) {
+        clearInterval(_focusTimerInterval);
+        _focusTimerRunning = false;
+        const playBtn  = document.getElementById('focusPlayBtn');
+        const playIcon = document.getElementById('focusPlayIcon');
+        if (playBtn)  playBtn.classList.add('paused');
+        if (playIcon) playIcon.innerHTML = `<path d="M8 5v14l11-7z" />`;
     }
 
-    // Save session on close (pause timer first)
-    if (_focusTimerRunning) {
-        window.focusToggle();  // This calls _focusSaveSession internally
-    } else if (_focusTimerElapsed > 0) {
-        // If paused but has time, still save it
-        _focusSaveSession();
+    if (_focusTimerElapsed > _focusSessionStart) {
+        await _focusSaveSession();
     }
+
+    // Remove modal from DOM entirely
+    const container = document.getElementById('focusModalContainer');
+    if (container) container.remove();
+    const overlay = document.getElementById('focusModalOverlay');
+    if (overlay) overlay.remove();
+
+    // Reset state
+    _focusTimerElapsed  = 0;
+    _focusSessionStart  = 0;
+    _focusTimerRunning  = false;
+    _focusModalGoalId   = null;
+    _focusModalGoal     = null;
+};
+
+window.closeFocusModalAndNavigate = async function(route) {
+    await window.closeFocusModal();
+    router.navigate(route);
 };
 
 window.focusToggle = function() {
