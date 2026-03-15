@@ -34,15 +34,38 @@ const goalsService = {
 // ============================================
 
 function _getGoalColor(goal) {
-    if (goal.color) return goal.color;
-    const stored = JSON.parse(localStorage.getItem('goalColors') || '{}');
-    return stored[goal.id] || stored[goal.title] || '#00BCD4';
+    return colorManager.getColor(goal.id, goal.title);
 }
 
 function _fmtMin(durationMin) {
     const h = Math.floor(durationMin / 60);
     const m = durationMin % 60;
     return `${h}h ${String(m).padStart(2, '0')}m`;
+}
+
+// Calculate today's progress percentage for a goal
+async function _getTodayProgress(goalId) {
+    try {
+        const stats = await api.get(`/stats/goal/${goalId}`);
+        
+        if (!Array.isArray(stats)) {
+            return 0;
+        }
+        
+        // Get today's date in ISO format
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Sum all stats from today
+        const todayMinutes = stats.reduce((sum, stat) => {
+            const statDate = stat.occurred_at.split('T')[0];
+            return statDate === today ? sum + (stat.duration_minutes || 0) : sum;
+        }, 0);
+        
+        return todayMinutes;
+    } catch (err) {
+        console.error(`Failed to load progress for goal ${goalId}:`, err);
+        return 0;
+    }
 }
 
 function _createLoadingState() {
@@ -72,25 +95,31 @@ function _createErrorState(message) {
 
 function createGoalCard(goal) {
     const color       = _getGoalColor(goal);
-    const progress    = goal.is_complete ? 100 : 0;
+    const progress    = goal.is_complete ? 100 : 0;  // Will be updated by renderGoalsPage after fetching stats
     const durationMin = goal.duration_min || 0;
-    const timeDisplay = durationMin > 0 ? `0h 00m / ${_fmtMin(durationMin)}` : '0h 00m';
+    const todayMinutes = 0;  // Will be updated
+    const timeDisplay = durationMin > 0 ? `${Math.floor(todayMinutes/60)}h ${todayMinutes%60}m / ${_fmtMin(durationMin)}` : '0h 00m';
+    const progressFill = Math.max(0, Math.min(100, progress));
 
     return `
-        <div class="project-list-card" onclick="router.navigate('/goal/${goal.id}')">
-            <button class="project-play-circle" style="background:${color}; box-shadow:0 4px 12px ${color}55;"
-                onclick="event.stopPropagation(); router.navigate('/project/${goal.id}')" title="Start session">
+        <div class="project-card-main" data-goal-id="${goal.id}">
+            <button class="project-card-play-btn" 
+                onclick="event.stopPropagation(); window.openFocusModal('${goal.id}')" title="Start session">
                 <img src="assets/icons/play_vector.svg" alt="Play">
             </button>
-            <div class="project-list-info">
-                <span class="project-list-name">${goal.title || 'Untitled'}</span>
-                <span class="project-list-time">${timeDisplay}</span>
-                <div class="project-list-bar">
-                    <div class="project-list-bar-fill" style="width:${progress}%; background:${color};"></div>
+            <div class="project-card-title">${goal.title || 'Untitled'}</div>
+            <div class="project-card-time">${timeDisplay}</div>
+            <div class="project-card-progress-container">
+                <div class="project-card-progress-bar">
+                    <div class="project-card-progress-fill" style="width:${progressFill}%; background:${color};"></div>
                 </div>
             </div>
-            <span class="project-list-percent">${progress}%</span>
-            <img src="assets/icons/next_vector.svg" class="project-list-chevron" alt="">
+            <div class="project-card-percentage" style="color:#07B6D5;">${progress}%</div>
+            <a href="#" onclick="event.preventDefault(); router.navigate('/goal/${goal.id}')">
+                <svg class=project-card-chevron width="24" height="42" viewBox="0 0 24 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.8 0L24 21L4.8 42L0 36.75L14.4 21L0 5.25L4.8 0Z" fill="#D9D9D9"/>
+                </svg>
+            </a>
         </div>
     `;
 }
@@ -102,15 +131,81 @@ function createGoalsList(goals) {
                 <img src="assets/icons/empty-folder.png" alt="No projects" style="width:200px;height:auto;margin-bottom:24px;">
                 <h2>No projects yet</h2>
                 <p>You haven't created any projects yet.<br>Start by adding your first goal to begin tracking your progress.</p>
-                <button onclick="router.navigate('/add-goal')" class="btn-primary" style="margin-top:8px;">Create Goal</button>
+                <button onclick="openAddGoalModal()" class="btn-primary" style="margin-top:8px;">Create Goal</button>
             </div>
         `;
     }
     return `
-        <div class="project-list-outer">
+        <div class="project-cards-container">
             ${goals.map(g => createGoalCard(g)).join('')}
         </div>
     `;
+}
+
+// Update progress bars after rendering (fetches today's stats)
+async function _updateGoalsProgress(goals) {
+    // Register callback for live updates
+    statsManager.subscribe((goalId, todayMinutes, totalMinutes, percentage) => {
+        const goal = goals.find(g => g.id === goalId);
+        if (!goal) return;
+        
+        const color = _getGoalColor(goal);
+        
+        // Update card element
+        const cardEl = document.querySelector(`[data-goal-id="${goalId}"]`);
+        if (cardEl) {
+            // Update progress bar
+            const fill = cardEl.querySelector('.project-card-progress-fill');
+            if (fill) fill.style.width = percentage + '%';
+            
+            // Update percentage text (keep color #07B6D5, only progress bar changes)
+            const percent = cardEl.querySelector('.project-card-percentage');
+            if (percent) {
+                percent.textContent = percentage + '%';
+            }
+            
+            // Update time display - show TOTAL time worked
+            const durationMin = goal.duration_min || 0;
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const timeDisplay = durationMin > 0 ? `${h}h ${String(m).padStart(2, "0")}m / ${_fmtMin(durationMin)}` : `${h}h ${String(m).padStart(2, "0")}m`;
+            const timeEl = cardEl.querySelector('.project-card-time');
+            if (timeEl) timeEl.textContent = timeDisplay;
+        }
+    });
+
+    // Initial fetch for all goals using stats manager
+    for (const goal of goals) {
+        const durationMin = goal.duration_min || 0;
+        const color = _getGoalColor(goal);
+        const progress = await statsManager.getTodayProgress(goal.id, durationMin, false);
+        const progressPercent = progress.percentage;
+        const totalMinutes = progress.totalMinutes || 0;
+        
+        // Update card element
+        const cardEl = document.querySelector(`[data-goal-id="${goal.id}"]`);
+        if (cardEl) {
+            // Update progress bar
+            const fill = cardEl.querySelector('.project-card-progress-fill');
+            if (fill) fill.style.width = progressPercent + '%';
+            
+            // Update percentage text (keep color #07B6D5, only progress bar changes)
+            const percent = cardEl.querySelector('.project-card-percentage');
+            if (percent) {
+                percent.textContent = progressPercent + '%';
+            }
+            
+            // Update time display - show TOTAL time worked
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const timeDisplay = durationMin > 0 ? `${h}h ${String(m).padStart(2, "0")}m / ${_fmtMin(durationMin)}` : `${h}h ${String(m).padStart(2, "0")}m`;
+            const timeEl = cardEl.querySelector('.project-card-time');
+            if (timeEl) timeEl.textContent = timeDisplay;
+        }
+    }
+
+    // Start polling for updates
+    statsManager.startPolling(goals.map(g => g.id));
 }
 
 
@@ -124,19 +219,19 @@ function _createCompletedCard(goal) {
     const timeStr     = durationMin > 0 ? `${_fmtMin(durationMin)} / ${_fmtMin(durationMin)}` : '0h 00m / 0h 00m';
 
     return `
-        <div class="project-list-card" onclick="router.navigate('/goal/${goal.id}')">
-            <div class="project-done-circle" style="background:${color};">
+        <div class="project-card-main">
+            <div class="project-card-play-btn" style="background:${color};">
                 <img src="assets/icons/checkmark_icon.svg" alt="Done">
             </div>
-            <div class="project-list-info">
-                <span class="project-list-name">${goal.title || 'Untitled'}</span>
-                <span class="project-list-time">${timeStr}</span>
-                <div class="project-list-bar">
-                    <div class="project-list-bar-fill" style="width:100%; background:${color};"></div>
+            <div class="project-card-title">${goal.title || 'Untitled'}</div>
+            <div class="project-card-time">${timeStr}</div>
+            <div class="project-card-progress-container">
+                <div class="project-card-progress-bar">
+                    <div class="project-card-progress-fill" style="width:100%; background:${color};"></div>
                 </div>
             </div>
-            <span class="project-list-percent" style="background:#E8F5E9;color:#388E3C;">100%</span>
-            <img src="assets/icons/checkmark_icon.svg" class="project-list-chevron" alt="" style="width:20px;height:20px;opacity:0.7;filter:invert(40%) sepia(90%) saturate(400%) hue-rotate(90deg);">
+            <div class="project-card-percentage" style="color:#07B6D5;">100%</div>
+            <img src="assets/icons/checkmark_icon.svg" class="project-card-chevron" alt="">
         </div>
     `;
 }
@@ -149,6 +244,12 @@ function _createCompletedCard(goal) {
 async function renderProjectsPageWithGoals() {
     const appContainer = document.getElementById('app');
     const content = `
+        <div class="page-header">
+            <h1>Projects</h1>
+        </div>
+        <div class="search-bar-full">
+            <input type="text" class="search-input-pill" placeholder="Search projects...">
+        </div>
         <div id="projectsContainer">${_createLoadingState()}</div>
     `;
     appContainer.innerHTML = createLayout(content, '/projects');
@@ -159,6 +260,9 @@ async function renderProjectsPageWithGoals() {
         const active  = goals.filter(g => !g.is_complete && g.status !== 'completed');
         const el      = document.getElementById('projectsContainer');
         if (el) el.innerHTML = createGoalsList(active);
+        
+        // Load and update progress bars
+        await _updateGoalsProgress(active);
     } catch (err) {
         const el = document.getElementById('projectsContainer');
         if (el) el.innerHTML = _createErrorState(err.message);
@@ -261,6 +365,16 @@ window.setCompletedFilter = function(filter, btn) {
 window.clearCompleted = function() {
     Toast.info('Clear all is not yet implemented on the server.');
 };
+
+// Update sidebar project progress
+function _updateSidebarProjectProgress(goalId, progressPercent) {
+    // Find sidebar project item and update its progress bar using data-goal-id attribute
+    const sidebarItem = document.querySelector(`.project-item[data-goal-id="${goalId}"]`);
+    if (sidebarItem) {
+        const fill = sidebarItem.querySelector('.project-progress-fill');
+        if (fill) fill.style.width = progressPercent + '%';
+    }
+}
 
 
 // ============================================

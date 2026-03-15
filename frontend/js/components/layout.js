@@ -31,8 +31,7 @@ function createSidebar() {
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <!-- Projects: text area navigates, arrow toggles dropdown -->
-                    <div class="nav-item nav-item-dropdown">
+                    <div class="nav-item">
                         <span class="nav-icon nav-target" onclick="router.navigate('/projects')">
                             <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
                         </span>
@@ -40,10 +39,10 @@ function createSidebar() {
                         <button class="dropdown-arrow dropdown-arrow-btn" id="projectsArrow" onclick="toggleProjectsDropdown()">
                             <img src="assets/icons/ARROW Frame.svg" alt="▼" class="dropdown-icon">
                         </button>
-                    </div>
-                    <div class="projects-dropdown projects-dropdown--closed" id="projectsDropdown">
-                        <div id="sidebarProjectsList">
-                            <div class="sidebar-projects-state">Loading...</div>
+                        <div class="projects-dropdown" id="projectsDropdown" style="display: none;">
+                            <div id="sidebarProjectsList">
+                                <div class="sidebar-projects-state">Loading...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,15 +79,13 @@ function createSidebar() {
 window.toggleProjectsDropdown = function () {
   const dropdown = document.getElementById("projectsDropdown");
   const arrowImg = document.querySelector("#projectsArrow .dropdown-icon");
-  const isOpen = dropdown.classList.contains("projects-dropdown--open");
+  const isOpen = dropdown.style.display !== "none";
 
   if (isOpen) {
-    dropdown.classList.remove("projects-dropdown--open");
-    dropdown.classList.add("projects-dropdown--closed");
+    dropdown.style.display = "none";
     if (arrowImg) arrowImg.style.transform = "rotate(0deg)";
   } else {
-    dropdown.classList.remove("projects-dropdown--closed");
-    dropdown.classList.add("projects-dropdown--open");
+    dropdown.style.display = "block";
     if (arrowImg) arrowImg.style.transform = "rotate(180deg)";
     loadSidebarProjects();
   }
@@ -107,25 +104,22 @@ window.loadSidebarProjects = async function () {
       listEl.innerHTML = `<div class="sidebar-projects-state">No projects yet</div>`;
       return;
     }
-    const storedColors = JSON.parse(localStorage.getItem("goalColors") || "{}");
     listEl.innerHTML = active
       .map((g) => {
-        const color =
-          g.color || storedColors[g.id] || storedColors[g.title] || "#00BCD4";
+        const color = colorManager.getColor(g.id, g.title);
         const durationMin = g.duration_min || 0;
         const h = Math.floor(durationMin / 60);
         const m = durationMin % 60;
         const timeStr = `0h 00m / ${h}h ${String(m).padStart(2, "0")}m`;
         return `
-                <div class="project-item" onclick="router.navigate('/project/${g.id}')">
-                    <div class="sidebar-project-row">
-                        <button class="sidebar-play-btn" onclick="event.stopPropagation(); router.navigate('/project/${g.id}')" title="Start">
+                <div class="project-item" data-goal-id="${g.id}" onclick="router.navigate('/goal/${g.id}')">
+                    <div class="sidebar-project-button-container">
+                        <button class="sidebar-play-btn" onclick="event.stopPropagation(); window.openFocusModal('${g.id}')" title="Start">
                             <img src="assets/icons/play_vector.svg" alt="Play">
                         </button>
-                        <span class="project-name">${g.title || "Untitled"}</span>
-                        <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                     </div>
-                    <div class="project-progress">
+                    <div class="sidebar-project-content-container">
+                        <span class="project-name">${g.title || "Untitled"}</span>
                         <span class="project-progress-text">${timeStr}</span>
                         <div class="project-progress-bar">
                             <div class="project-progress-fill" style="width:0; background:${color};"></div>
@@ -135,11 +129,83 @@ window.loadSidebarProjects = async function () {
             `;
       })
       .join("");
+    
+    // Fetch and update progress for each sidebar project (initial load)
+    active.forEach(g => {
+      _fetchAndUpdateSidebarProgress(g.id, g.duration_min);
+    });
+
+    // Start polling for updates
+    statsManager.startPolling(active.map(g => g.id));
   } catch (err) {
     if (listEl)
       listEl.innerHTML = `<div class="sidebar-projects-state">Failed to load</div>`;
   }
 };
+
+// Fetch today's progress for sidebar project and update progress bar
+async function _fetchAndUpdateSidebarProgress(goalId, durationMin) {
+  try {
+    if (!durationMin || durationMin <= 0) {
+      // Even if no duration, still show the time worked
+      const progress = await statsManager.getTodayProgress(goalId, 1, false);
+      const todayMinutes = progress.todayMinutes || 0;
+      
+      const sidebarItem = document.querySelector(`.project-item[data-goal-id="${goalId}"]`);
+      if (sidebarItem) {
+        const h = Math.floor(todayMinutes / 60);
+        const m = todayMinutes % 60;
+        const timeText = sidebarItem.querySelector('.project-progress-text');
+        if (timeText) timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m`;
+      }
+      return;
+    }
+    
+    // Use stats manager for fetching and caching
+    const progress = await statsManager.getTodayProgress(goalId, durationMin, false);
+    const progressPercent = progress.percentage;
+    const totalMinutes = progress.totalMinutes || 0;
+    
+    // Update sidebar item progress bar
+    const sidebarItem = document.querySelector(`.project-item[data-goal-id="${goalId}"]`);
+    if (sidebarItem) {
+      // Update progress bar width
+      const fill = sidebarItem.querySelector('.project-progress-fill');
+      if (fill) fill.style.width = progressPercent + '%';
+      
+      // Update time text - show TOTAL time worked
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      const timeText = sidebarItem.querySelector('.project-progress-text');
+      if (timeText) timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m / ${Math.floor(durationMin/60)}h ${(durationMin%60).toString().padStart(2, "0")}m`;
+    }
+  } catch (err) {
+    console.error('❌ Failed to update sidebar progress:', err);
+  }
+}
+
+// Register callback for stats updates from polling
+statsManager.subscribe((goalId, todayMinutes, totalMinutes, percentage) => {
+  // Find all sidebar items for this goal and update them
+  document.querySelectorAll(`.project-item[data-goal-id="${goalId}"]`).forEach(sidebarItem => {
+    // Update progress bar
+    const fill = sidebarItem.querySelector('.project-progress-fill');
+    if (fill) fill.style.width = percentage + '%';
+    
+    // Update time text - show TOTAL time worked
+    const timeText = sidebarItem.querySelector('.project-progress-text');
+    if (timeText) {
+      const durationStr = timeText.textContent || '';
+      const match = durationStr.match(/\/ (\d+)h (\d+)m/);
+      if (match) {
+        const durationMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m / ${Math.floor(durationMin/60)}h ${(durationMin%60).toString().padStart(2, "0")}m`;
+      }
+    }
+  });
+});
 
 // Toggle light/dark theme
 window.toggleTheme = function () {

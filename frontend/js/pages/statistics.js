@@ -16,6 +16,12 @@ const statsService = {
             return await api.get('/stats/overall');
         }
         return await api.get(`/stats/overall-by-type?type=${encodeURIComponent(type)}`);
+    },
+    async fetchStatsByDateRange(startDate, endDate) {
+        return await api.get(`/stats/overall?start_date=${startDate}&end_date=${endDate}`);
+    },
+    async fetchGoalStatsByDateRange(goalId, startDate, endDate) {
+        return await api.get(`/stats/${goalId}/by-date-range?start_date=${startDate}&end_date=${endDate}`);
     }
 };
 
@@ -167,6 +173,9 @@ function _fmtTime(seconds) {
 
 function createStatisticsPageHTML() {
     return `
+        <div class="page-header">
+            <h1>Statistics</h1>
+        </div>
         <div id="statisticsContainer" class="statistics-content">
             <div style="text-align:center;padding:60px 0;">
                 <div class="spinner-large"></div>
@@ -178,42 +187,84 @@ function createStatisticsPageHTML() {
 
 function createStatisticsContentHTML(insightsData, breakdownData) {
     return `
-        <div class="stats-cards">
-            <div class="stat-card-large">
-                <h3>Insights</h3>
-                <div class="insights-tabs">
-                    <button class="tab-btn" onclick="changeInsightsPeriod('day')">Day</button>
-                    <button class="tab-btn active" onclick="changeInsightsPeriod('week')">Week</button>
-                    <button class="tab-btn" onclick="changeInsightsPeriod('month')">Month</button>
+        <div class="stats-page-container">
+            <!-- Left Card: Insights -->
+            <div class="stats-card insights-card">
+                <h2 class="stats-card-title">Insights</h2>
+                
+                <!-- Period Tabs -->
+                <div class="stats-period-tabs">
+                    <button class="stats-tab-btn active" onclick="changeInsightsPeriod('week')">Week</button>
+                    <button class="stats-tab-btn" onclick="changeInsightsPeriod('4weeks')">4 Weeks</button>
+                    <button class="stats-tab-btn" onclick="changeInsightsPeriod('8weeks')">8 Weeks</button>
                 </div>
-                <p class="stat-date" id="insightsDateRange">${insightsData.dateRange || 'All time'}</p>
-                <div class="stat-summary">
-                    <div>
-                        <span class="stat-label">Total</span>
-                        <span class="stat-value" id="insightsTotal">${_fmtTime(insightsData.total || 0)}</span>
+                
+                <!-- Date Navigator -->
+                <div class="stats-date-navigator">
+                    <button class="stats-date-arrow" onclick="previousPeriod('insights')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <span class="stats-date-text" id="insightsDateRange">${insightsData.dateRange || 'All time'}</span>
+                    <button class="stats-date-arrow" onclick="nextPeriod('insights')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Total & Average -->
+                <div class="stats-totals-row">
+                    <div class="stats-total-column">
+                        <span class="stats-label">Total</span>
+                        <span class="stats-value" id="insightsTotal">${_fmtTime(insightsData.total || 0)}</span>
                     </div>
-                    <div>
-                        <span class="stat-label">Average</span>
-                        <span class="stat-value" id="insightsAverage">${_fmtTime(insightsData.average || 0)}</span>
+                    <div class="stats-total-column">
+                        <span class="stats-label">Average</span>
+                        <span class="stats-value" id="insightsAverage">${_fmtTime(insightsData.average || 0)}</span>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="insightsBarChart" style="width:100%;height:200px;"></canvas>
+                
+                <!-- Bar Chart -->
+                <div class="stats-bar-chart-container">
+                    <canvas id="insightsBarChart"></canvas>
                 </div>
             </div>
-
-            <div class="stat-card-large">
-                <h3>Breakdown</h3>
-                <div class="insights-tabs">
-                    <button class="tab-btn active" onclick="changeBreakdownPeriod('all')">All</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('One Time')">One Time</button>
-                    <button class="tab-btn" onclick="changeBreakdownPeriod('Repeating')">Repeating</button>
+            
+            <!-- Right Card: Project Breakdown -->
+            <div class="stats-card breakdown-card">
+                <h2 class="stats-card-title">Project Breakdown</h2>
+                
+                <!-- Period Tabs -->
+                <div class="stats-period-tabs">
+                    <button class="stats-tab-btn active" onclick="changeBreakdownPeriod('day')">Day</button>
+                    <button class="stats-tab-btn" onclick="changeBreakdownPeriod('week')">Week</button>
+                    <button class="stats-tab-btn" onclick="changeBreakdownPeriod('month')">Month</button>
                 </div>
-                <p class="stat-date" id="breakdownDate">${breakdownData.date || ''}</p>
-                <div class="circular-chart">
-                    <canvas id="breakdownPieChart" style="width:200px;height:200px;"></canvas>
+                
+                <!-- Date Navigator -->
+                <div class="stats-date-navigator">
+                    <button class="stats-date-arrow" onclick="previousPeriod('breakdown')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <span class="stats-date-text" id="breakdownDateRange">${breakdownData.dateRange || 'All time'}</span>
+                    <button class="stats-date-arrow" onclick="nextPeriod('breakdown')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
                 </div>
-                <div class="project-breakdown" id="projectBreakdown">
+                
+                <!-- Donut Chart -->
+                <div class="stats-donut-chart-container">
+                    <canvas id="breakdownDonutChart"></canvas>
+                </div>
+                
+                <!-- Project Progress Bars -->
+                <div class="stats-project-progress" id="projectBreakdown">
                     ${renderProjectBreakdown(breakdownData.projects || [])}
                 </div>
             </div>
@@ -223,19 +274,21 @@ function createStatisticsContentHTML(insightsData, breakdownData) {
 
 function renderProjectBreakdown(projects) {
     if (!projects || projects.length === 0) {
-        return '<p class="empty-message" style="color:#aaa;text-align:center;">No project data available</p>';
+        return '<p style="color:#aaa;text-align:center;">No project data available</p>';
     }
-    const fallbackColors = ['#4CAF50', '#00BCD4', '#9C27B0', '#FF9800', '#F44336'];
+    const fallbackColors = ['#00FF2F', '#B300FF', '#FFEE00', '#4CAF50', '#00BCD4'];
     return projects.map((project, index) => {
         const color = project.color || fallbackColors[index % fallbackColors.length];
+        const percentage = project.percentage || 0;
         return `
-            <div class="breakdown-item">
-                <span class="breakdown-color" style="background:${color};"></span>
-                <span class="breakdown-name">${project.name || `Project ${index + 1}`}</span>
-                <div class="breakdown-bar-container">
-                    <div class="breakdown-bar" style="width:${project.percentage || 0}%;background:${color};"></div>
+            <div class="stats-project-item">
+                <div style="display:flex;justify-content:space-between;">
+                    <span class="stats-project-name">${project.name || `Project ${index + 1}`}</span>
+                    <span class="stats-project-time">${_fmtTime(project.timeSpent || 0)}</span>
                 </div>
-                <span class="breakdown-value">${_fmtTime(project.timeSpent || 0)}</span>
+                <div class="stats-project-bar">
+                    <div class="stats-project-bar-fill" style="width:${percentage}%;background:${color};"></div>
+                </div>
             </div>
         `;
     }).join('');
@@ -269,58 +322,204 @@ function _transformOverallOut(apiResponse, colorMap) {
 
 
 // ============================================
+// DATE UTILITIES
+// ============================================
+
+function _getDateRange(period, offset = 0) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let startDate = new Date(today);
+    let endDate = new Date(today);
+
+    if (period === 'week') {
+        // Get start of week (Sunday)
+        const day = today.getDay();
+        startDate.setDate(today.getDate() - day - (7 * offset));
+        endDate.setDate(startDate.getDate() + 6);
+    } else if (period === '4weeks') {
+        // Get 4 weeks back
+        startDate.setDate(today.getDate() - (28 * (offset + 1)) + 1);
+        endDate.setDate(today.getDate() - (28 * offset));
+    } else if (period === '8weeks') {
+        // Get 8 weeks back
+        startDate.setDate(today.getDate() - (56 * (offset + 1)) + 1);
+        endDate.setDate(today.getDate() - (56 * offset));
+    } else if (period === 'day') {
+        startDate.setDate(today.getDate() - offset);
+        endDate = new Date(startDate);
+    } else if (period === 'month') {
+        startDate.setMonth(today.getMonth() - offset);
+        startDate.setDate(1);
+        endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+    }
+
+    return {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        display: _formatDateRange(startDate, endDate, period)
+    };
+}
+
+function _formatDateRange(start, end, period) {
+    const opts = { month: 'short', day: 'numeric' };
+    const startStr = start.toLocaleDateString('en-US', opts);
+    const endStr = end.toLocaleDateString('en-US', opts);
+    if (period === 'day') {
+        return start.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+    return `${startStr} - ${endStr}`;
+}
+
+function _getDayLabels(period) {
+    if (period === 'week') return ['S', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+    if (period === '4weeks') return ['W1', 'W2', 'W3', 'W4'];
+    if (period === '8weeks') return ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'];
+    return [];
+}
+
+/**
+ * Aggregate stats by day for the given period.
+ * stats is array of { occurred_at, duration_minutes }
+ */
+function _aggregateStatsByDay(stats, period) {
+    const buckets = {};
+    const labels = _getDayLabels(period);
+    const numDays = labels.length;
+
+    // Initialize buckets
+    for (let i = 0; i < numDays; i++) {
+        buckets[i] = 0;
+    }
+
+    // Aggregate stats into buckets
+    (stats || []).forEach(stat => {
+        if (!stat.occurred_at) return;
+        const statDate = new Date(stat.occurred_at);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let dayIndex = -1;
+        const daysDiff = Math.floor((today - statDate) / (1000 * 60 * 60 * 24));
+
+        if (period === 'week') {
+            const currentDay = today.getDay();
+            const statDay = statDate.getDay();
+            if (daysDiff < 7) {
+                dayIndex = statDay;
+            }
+        } else if (period === '4weeks') {
+            if (daysDiff < 28) {
+                dayIndex = Math.floor(daysDiff / 7);
+            }
+        } else if (period === '8weeks') {
+            if (daysDiff < 56) {
+                dayIndex = Math.floor(daysDiff / 7);
+            }
+        } else if (period === 'day') {
+            dayIndex = 0;
+        }
+
+        if (dayIndex >= 0 && dayIndex < numDays) {
+            buckets[dayIndex] += (stat.duration_minutes || 0) * 60; // Convert to seconds
+        }
+    });
+
+    return Object.values(buckets);
+}
+
+// ============================================
 // PAGE CONTROLLER
 // ============================================
 
 let _currentInsightsPeriod  = 'week';
-let _currentBreakdownPeriod = 'all';
+let _currentBreakdownPeriod = 'day';
+let _insightsPeriodOffset   = 0;
+let _breakdownPeriodOffset  = 0;
 
 async function loadStatisticsPage() {
     const container = document.getElementById('statisticsContainer');
     if (!container) return;
 
     try {
-        // Fetch stats + all goals (for colors)
-        const [overallRaw, breakdownRaw, allGoals] = await Promise.all([
-            statsService.fetchOverallStats().catch(() => null),
-            statsService.fetchBreakdown(_currentBreakdownPeriod).catch(() => null),
-            goalsService.fetchGoals().catch(() => []),
-        ]);
+        const insightsRange = _getDateRange(_currentInsightsPeriod, _insightsPeriodOffset);
+        const breakdownRange = _getDateRange(_currentBreakdownPeriod, _breakdownPeriodOffset);
 
-        // Build name → color map from goals + localStorage
-        const storedColors = JSON.parse(localStorage.getItem('goalColors') || '{}');
-        const colorMap = {};
-        (allGoals || []).forEach(g => {
-            const c = g.color || storedColors[g.id] || storedColors[g.title] || null;
-            if (c) colorMap[g.title] = c;
+        // Fetch all goals for color mapping
+        const allGoals = await goalsService.fetchGoals().catch(() => []);
+        const colorMap = colorManager.buildColorMapByTitle(allGoals);
+
+        // Fetch stats for insights period
+        const insightsStatsRaw = await Promise.all(
+            (allGoals || []).map(goal => 
+                statsService.fetchGoalStatsByDateRange(goal.id, insightsRange.startDate, insightsRange.endDate)
+                    .catch(() => [])
+            )
+        );
+        const insightsStats = insightsStatsRaw.flat();
+
+        // Fetch stats for breakdown period
+        const breakdownStatsRaw = await Promise.all(
+            (allGoals || []).map((goal, idx) => 
+                statsService.fetchGoalStatsByDateRange(goal.id, breakdownRange.startDate, breakdownRange.endDate)
+                    .then(stats => stats.map(s => ({ ...s, goalTitle: goal.title })))
+                    .catch(() => [])
+            )
+        );
+        const breakdownStats = breakdownStatsRaw.flat();
+
+        // Calculate insights data
+        const totalSeconds = insightsStats.reduce((sum, s) => sum + (s.duration_minutes || 0) * 60, 0);
+        const avgSeconds = _getDayLabels(_currentInsightsPeriod).length > 0 
+            ? Math.round(totalSeconds / _getDayLabels(_currentInsightsPeriod).length) 
+            : 0;
+        const chartData = _aggregateStatsByDay(insightsStats, _currentInsightsPeriod);
+
+        // Calculate breakdown data
+        const breakdownByGoal = {};
+        breakdownStats.forEach(stat => {
+            const title = stat.goalTitle || 'Unknown';
+            if (!breakdownByGoal[title]) {
+                breakdownByGoal[title] = 0;
+            }
+            breakdownByGoal[title] += (stat.duration_minutes || 0);
         });
-        // Also pull from storedColors directly (name keys)
-        Object.assign(colorMap, storedColors);
 
-        const overall   = _transformOverallOut(overallRaw,   colorMap);
-        const breakdown = _transformOverallOut(breakdownRaw, colorMap);
+        const breakdownTotal = Object.values(breakdownByGoal).reduce((s, m) => s + m, 0) * 60;
+        const breakdownProjects = Object.entries(breakdownByGoal).map(([name, minutes]) => ({
+            name,
+            timeSpent: minutes * 60,
+            percentage: breakdownTotal > 0 ? Math.round((minutes * 60 / breakdownTotal) * 100) : 0,
+            color: colorMap[name] || null,
+        }));
 
         const safeInsights = {
-            total:     overall.totalSecs,
-            average:   overall.avgSecs,
-            dateRange: 'All time',
-            chartData: [0, 0, 0, 0, 0, 0, 0],
-            labels:    ['S', 'M', 'T', 'W', 'Th', 'F', 'S'],
+            total:     totalSeconds,
+            average:   avgSeconds,
+            dateRange: insightsRange.display,
+            chartData: chartData,
+            labels:    _getDayLabels(_currentInsightsPeriod),
         };
+
         const safeBreakdown = {
             date:     _currentBreakdownPeriod,
-            total:    breakdown.totalSecs,
-            projects: breakdown.projects,
+            total:    breakdownTotal,
+            dateRange: breakdownRange.display,
+            projects: breakdownProjects,
         };
 
         container.innerHTML = createStatisticsContentHTML(safeInsights, safeBreakdown);
 
+        // Update date range text
+        document.getElementById('insightsDateRange').textContent = insightsRange.display;
+        document.getElementById('breakdownDateRange').textContent = breakdownRange.display;
+
         setTimeout(() => {
             renderBarChart('insightsBarChart', safeInsights.chartData, safeInsights.labels);
-            renderPieChart('breakdownPieChart', safeBreakdown.projects);
+            renderPieChart('breakdownDonutChart', safeBreakdown.projects);
         }, 150);
 
     } catch (err) {
+        console.error('Statistics load error:', err);
         container.innerHTML = `
             <div style="text-align:center;padding:60px 0;">
                 <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
@@ -334,17 +533,45 @@ async function loadStatisticsPage() {
 
 window.changeInsightsPeriod = async function(period) {
     _currentInsightsPeriod = period;
-    document.querySelectorAll('.stat-card-large:first-child .tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === period);
+    _insightsPeriodOffset = 0;
+    document.querySelectorAll('.insights-card .stats-tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', 
+            (idx === 0 && period === 'week') ||
+            (idx === 1 && period === '4weeks') ||
+            (idx === 2 && period === '8weeks')
+        );
     });
     await loadStatisticsPage();
 };
 
 window.changeBreakdownPeriod = async function(period) {
     _currentBreakdownPeriod = period;
-    document.querySelectorAll('.stat-card-large:last-child .tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent === period || (period === 'all' && btn.textContent === 'All'));
+    _breakdownPeriodOffset = 0;
+    document.querySelectorAll('.breakdown-card .stats-tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active',
+            (idx === 0 && period === 'day') ||
+            (idx === 1 && period === 'week') ||
+            (idx === 2 && period === 'month')
+        );
     });
+    await loadStatisticsPage();
+};
+
+window.previousPeriod = async function(card) {
+    if (card === 'insights') {
+        _insightsPeriodOffset++;
+    } else {
+        _breakdownPeriodOffset++;
+    }
+    await loadStatisticsPage();
+};
+
+window.nextPeriod = async function(card) {
+    if (card === 'insights') {
+        if (_insightsPeriodOffset > 0) _insightsPeriodOffset--;
+    } else {
+        if (_breakdownPeriodOffset > 0) _breakdownPeriodOffset--;
+    }
     await loadStatisticsPage();
 };
 
