@@ -10,8 +10,6 @@ import './core/router.js';
 
 // Services
 import './services/auth.service.js';
-import './services/stats-manager.js';
-import './services/color-manager.js';
 
 // Core (depends on authService + router)
 import './core/route-protection.js';
@@ -20,7 +18,6 @@ import './core/route-protection.js';
 import './components/toast.js';
 import './components/spinner.js';
 import './components/error-message.js';
-import './components/timer.js';
 
 // Shared layout (depends on router, authService, goalsService)
 // Note: goalsService is loaded later — layout functions that call it are
@@ -39,12 +36,8 @@ import './pages/dashboard.js';
 import './pages/goals.js';        // defines goalsService + renderProjects + renderCompleted
 import './pages/add-goal.js';
 import './pages/goal-detail.js';
-import './pages/timer.js';        // Timer page
 import './pages/profile.js';
 import './pages/statistics.js';
-
-// Global components
-import './components/focus-modal.js'; // Global focus modal (can open from anywhere)
 
 // Expose app container
 const appContainer = document.getElementById('app');
@@ -70,11 +63,13 @@ router.on('/reset-password',  () => renderResetPassword());
 router.on('/app', protectedRoute(() => renderDashboard()));
 
 router.on('/projects',  protectedRoute(() => renderProjects()));
+router.on('/add-goal',  protectedRoute(() => renderAddGoal()));
 router.on('/statistics',protectedRoute(() => renderStatistics()));
 router.on('/completed', protectedRoute(() => renderCompleted()));
 
+router.on('/project/:id', protectedRoute((params) => renderProjectDetail(params.id)));
 router.on('/goal/:id',    protectedRoute((params) => renderGoal(params.id)));
-router.on('/timer/:id',   protectedRoute((params) => renderTimerPage(params.id)));
+router.on('/profile',     protectedRoute(() => renderProfile()));
 
 router.on('/', () => {
     if (authService && authService.isAuthed()) {

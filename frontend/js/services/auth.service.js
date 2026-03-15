@@ -85,18 +85,11 @@ const authService = {
 
     // Get current user from server
     async fetchUser() {
-        try {
-            console.log('👤 AUTH: Fetching user from server...');
-            const user = await api.get('/auth/me');
-            if (user) {
-                console.log('✅ AUTH: User fetched successfully:', user.email);
-                localStorage.setItem('user', JSON.stringify(user));
-            }
-            return user;
-        } catch (err) {
-            console.error('❌ AUTH: Failed to fetch user:', err.message);
-            throw err;
+        const user = await api.get('/auth/me');
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
         }
+        return user;
     },
 
     // Verify email with token

@@ -11,12 +11,14 @@ function checkAuth(routePath) {
     
     // If not logged in and trying to access protected route
     if (!isAuthenticated && !isPublicRoute) {
+        console.log('Access denied - redirecting to login');
         router.navigate('/login');
         return false;
     }
     
     // If logged in and trying to access login/register
     if (isAuthenticated && (routePath === '/login' || routePath === '/register')) {
+        console.log('Already logged in - redirecting to app');
         router.navigate('/app');
         return false;
     }
