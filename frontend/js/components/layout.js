@@ -7,64 +7,61 @@
 // SIDEBAR
 // ============================================
 
-function createSidebar(currentRoute = "/projects") {
+function createSidebar() {
   const user = authService.getUser();
   const userName = user
     ? user.full_name || user.fullName || "Username"
     : "Username";
-  const isProjectsActive =
-    currentRoute === "/projects" || currentRoute.startsWith("/project/");
 
   return `
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="user-profile-header user-profile-header--clickable" onclick="router.navigate('/profile')" title="View profile">
+                <div class="user-profile-header user-profile-header--clickable" onclick="openProfileModal()" title="View profile">
                     <div class="user-avatar-header">
                         <img src="assets/icons/si_user-fill.svg" alt="User" style="width:28px;height:28px;filter:brightness(0) invert(1);">
                     </div>
                     <div class="user-info-header">
                         <p class="username-header">${userName}</p>
                     </div>
-                    <button class="notification-btn" onclick="event.stopPropagation(); toggleNotifications(this)">
-                        <img src="assets/icons/basil_notification-on-solid.svg" alt="Notifications" class="notification-icon">
+                    <button class="header-logout-btn" onclick="event.stopPropagation(); handleLogout()" title="Logout">
+                        <img src="assets/icons/exit_vector.svg" alt="Logout" style="width:24px;height:24px;">
                     </button>
                 </div>
             </div>
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <!-- Projects: text area navigates, arrow toggles dropdown -->
-                    <div class="nav-item nav-item-dropdown ${isProjectsActive ? "active" : ""}">
-                        <span class="nav-icon" onclick="router.navigate('/projects')" style="cursor:pointer;">
+                    <div class="nav-item">
+                        <span class="nav-icon nav-target" onclick="router.navigate('/projects')">
                             <img src="assets/icons/material-symbols_border-all-rounded.svg" alt="Projects" class="icon">
                         </span>
-                        <span class="nav-text" onclick="router.navigate('/projects')" style="cursor:pointer; flex:1;">Projects</span>
-                        <button class="dropdown-arrow" id="projectsArrow" onclick="toggleProjectsDropdown(this)" style="background:none;border:none;cursor:pointer;padding:4px;">
+                        <span class="nav-text nav-target" onclick="router.navigate('/projects')">Projects</span>
+                        <button class="dropdown-arrow dropdown-arrow-btn" id="projectsArrow" onclick="toggleProjectsDropdown()">
                             <img src="assets/icons/ARROW Frame.svg" alt="▼" class="dropdown-icon">
                         </button>
-                    </div>
-                    <div class="projects-dropdown" id="projectsDropdown" style="display:none;">
-                        <div id="sidebarProjectsList">
-                            <div style="padding:8px 12px; color:#aaa; font-size:13px;">Loading...</div>
+                        <div class="projects-dropdown" id="projectsDropdown" style="display: none;">
+                            <div id="sidebarProjectsList">
+                                <div class="sidebar-projects-state">Loading...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <a href="#/add-goal" class="nav-item ${currentRoute === "/add-goal" ? "active" : ""}" data-route="/add-goal">
+                <a class="nav-item" href="javascript:void(0)" onclick="openAddGoalModal(); return false;">
                     <span class="nav-icon">
                         <img src="assets/icons/carbon_add-filled.svg" alt="Add Goal" class="icon">
                     </span>
                     <span class="nav-text">Add goal</span>
                 </a>
 
-                <a href="#/statistics" class="nav-item ${currentRoute === "/statistics" ? "active" : ""}" data-route="/statistics">
+                <a href="#/statistics" class="nav-item" data-route="/statistics">
                     <span class="nav-icon">
                         <img src="assets/icons/solar_chart-bold.svg" alt="Statistics" class="icon">
                     </span>
                     <span class="nav-text">Statistics</span>
                 </a>
 
-                <a href="#/completed" class="nav-item ${currentRoute === "/completed" ? "active" : ""}" data-route="/completed">
+                <a href="#/completed" class="nav-item" data-route="/completed">
                     <span class="nav-icon">
                         <img src="assets/icons/checkmark_icon.svg" alt="Completed" class="icon">
                     </span>
@@ -73,23 +70,17 @@ function createSidebar(currentRoute = "/projects") {
             </nav>
 
             <div class="sidebar-footer">
-                <button class="nav-item logout-btn" onclick="handleLogout()">
-                    <span class="nav-icon">
-                        <img src="assets/icons/exit_vector.svg" alt="Logout" class="icon">
-                    </span>
-                    <span class="nav-text">Logout</span>
-                </button>
             </div>
         </aside>
     `;
 }
 
 // Toggle projects dropdown (arrow button only)
-window.toggleProjectsDropdown = function (btn) {
+window.toggleProjectsDropdown = function () {
   const dropdown = document.getElementById("projectsDropdown");
   const arrowImg = document.querySelector("#projectsArrow .dropdown-icon");
-  const isOpen =
-    dropdown.style.display !== "none" && dropdown.style.display !== "";
+  const isOpen = dropdown.style.display !== "none";
+
   if (isOpen) {
     dropdown.style.display = "none";
     if (arrowImg) arrowImg.style.transform = "rotate(0deg)";
@@ -110,54 +101,111 @@ window.loadSidebarProjects = async function () {
       (g) => !g.is_complete && g.status !== "completed",
     );
     if (!active.length) {
-      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">No projects yet</div>`;
+      listEl.innerHTML = `<div class="sidebar-projects-state">No projects yet</div>`;
       return;
     }
-    const storedColors = JSON.parse(localStorage.getItem("goalColors") || "{}");
     listEl.innerHTML = active
       .map((g) => {
-        const color =
-          g.color || storedColors[g.id] || storedColors[g.title] || "#00BCD4";
+        const color = colorManager.getColor(g.id, g.title);
         const durationMin = g.duration_min || 0;
         const h = Math.floor(durationMin / 60);
         const m = durationMin % 60;
         const timeStr = `0h 00m / ${h}h ${String(m).padStart(2, "0")}m`;
         return `
-                <div class="project-item" onclick="router.navigate('/project/${g.id}')">
-                    <div class="sidebar-project-row">
-                        <button class="sidebar-play-btn" onclick="event.stopPropagation(); router.navigate('/project/${g.id}')" title="Start">
+                <div class="project-item" data-goal-id="${g.id}" onclick="router.navigate('/goal/${g.id}')">
+                    <div class="sidebar-project-button-container">
+                        <button class="sidebar-play-btn" onclick="event.stopPropagation(); window.openFocusModal('${g.id}')" title="Start">
                             <img src="assets/icons/play_vector.svg" alt="Play">
                         </button>
-                        <span class="project-name">${g.title || "Untitled"}</span>
-                        <img src="assets/icons/next_vector.svg" class="project-next-icon" alt="">
                     </div>
-                    <div class="project-progress">
+                    <div class="sidebar-project-content-container">
+                        <span class="project-name">${g.title || "Untitled"}</span>
                         <span class="project-progress-text">${timeStr}</span>
                         <div class="project-progress-bar">
-                            <div class="project-progress-fill" style="width:0%; background:${color};"></div>
+                            <div class="project-progress-fill" style="width:0; background:${color};"></div>
                         </div>
                     </div>
                 </div>
             `;
       })
       .join("");
+    
+    // Fetch and update progress for each sidebar project (initial load)
+    active.forEach(g => {
+      _fetchAndUpdateSidebarProgress(g.id, g.duration_min);
+    });
+
+    // Start polling for updates
+    statsManager.startPolling(active.map(g => g.id));
   } catch (err) {
     if (listEl)
-      listEl.innerHTML = `<div style="padding:8px 12px; color:#aaa; font-size:13px;">Failed to load</div>`;
+      listEl.innerHTML = `<div class="sidebar-projects-state">Failed to load</div>`;
   }
 };
 
-// Toggle notification icon on/off
-window.toggleNotifications = function (btn) {
-  const img = btn.querySelector(".notification-icon");
-  if (img.src.includes("notification-on")) {
-    img.src = "assets/icons/basil_notification-off-solid.svg";
-    img.alt = "Notifications off";
-  } else {
-    img.src = "assets/icons/basil_notification-on-solid.svg";
-    img.alt = "Notifications on";
+// Fetch today's progress for sidebar project and update progress bar
+async function _fetchAndUpdateSidebarProgress(goalId, durationMin) {
+  try {
+    if (!durationMin || durationMin <= 0) {
+      // Even if no duration, still show the time worked
+      const progress = await statsManager.getTodayProgress(goalId, 1, false);
+      const todayMinutes = progress.todayMinutes || 0;
+      
+      const sidebarItem = document.querySelector(`.project-item[data-goal-id="${goalId}"]`);
+      if (sidebarItem) {
+        const h = Math.floor(todayMinutes / 60);
+        const m = todayMinutes % 60;
+        const timeText = sidebarItem.querySelector('.project-progress-text');
+        if (timeText) timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m`;
+      }
+      return;
+    }
+    
+    // Use stats manager for fetching and caching
+    const progress = await statsManager.getTodayProgress(goalId, durationMin, false);
+    const progressPercent = progress.percentage;
+    const totalMinutes = progress.totalMinutes || 0;
+    
+    // Update sidebar item progress bar
+    const sidebarItem = document.querySelector(`.project-item[data-goal-id="${goalId}"]`);
+    if (sidebarItem) {
+      // Update progress bar width
+      const fill = sidebarItem.querySelector('.project-progress-fill');
+      if (fill) fill.style.width = progressPercent + '%';
+      
+      // Update time text - show TOTAL time worked
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      const timeText = sidebarItem.querySelector('.project-progress-text');
+      if (timeText) timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m / ${Math.floor(durationMin/60)}h ${(durationMin%60).toString().padStart(2, "0")}m`;
+    }
+  } catch (err) {
+    console.error('❌ Failed to update sidebar progress:', err);
   }
-};
+}
+
+// Register callback for stats updates from polling
+statsManager.subscribe((goalId, todayMinutes, totalMinutes, percentage) => {
+  // Find all sidebar items for this goal and update them
+  document.querySelectorAll(`.project-item[data-goal-id="${goalId}"]`).forEach(sidebarItem => {
+    // Update progress bar
+    const fill = sidebarItem.querySelector('.project-progress-fill');
+    if (fill) fill.style.width = percentage + '%';
+    
+    // Update time text - show TOTAL time worked
+    const timeText = sidebarItem.querySelector('.project-progress-text');
+    if (timeText) {
+      const durationStr = timeText.textContent || '';
+      const match = durationStr.match(/\/ (\d+)h (\d+)m/);
+      if (match) {
+        const durationMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        timeText.textContent = `${h}h ${String(m).padStart(2, "0")}m / ${Math.floor(durationMin/60)}h ${(durationMin%60).toString().padStart(2, "0")}m`;
+      }
+    }
+  });
+});
 
 // Toggle light/dark theme
 window.toggleTheme = function () {
@@ -201,10 +249,6 @@ function attachNavigationListeners() {
         e.preventDefault();
         const route = item.getAttribute("data-route");
         if (!route) return;
-        document
-          .querySelectorAll(".nav-item")
-          .forEach((n) => n.classList.remove("active"));
-        item.classList.add("active");
         router.navigate(route);
       });
     });
