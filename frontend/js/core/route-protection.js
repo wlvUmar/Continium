@@ -6,7 +6,7 @@
 // Check if user should access this route
 function checkAuth(routePath) {
     const isAuthenticated = authService.isAuthed();
-    const publicRoutes = ['/login', '/register', '/forgot-password', '/verify'];
+    const publicRoutes = ['/login', '/register', '/forgot-password', '/verify', '/reset-password'];
     const isPublicRoute = publicRoutes.includes(routePath);
     
     // Stop polling when on public routes or unauthenticated

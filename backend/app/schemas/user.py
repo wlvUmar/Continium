@@ -26,3 +26,7 @@ class UserOut(UserBase):
     verified: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    image_url: Optional[str] = None

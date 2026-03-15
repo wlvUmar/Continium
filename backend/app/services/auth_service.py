@@ -24,7 +24,7 @@ from app.schemas.auth import (
 from app.db.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, security, status
-from app.schemas.user import UserCreate, UserOut
+from app.schemas.user import UserCreate, UserOut, UserUpdate
 from app.db.session import get_db
 from app.utils.stmp import send_verification_email, send_password_reset_email
 
@@ -105,6 +105,14 @@ async def change_password(db: AsyncSession, current: User, request: ChangePasswo
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
     await user.update(db, current.id, {"password_hash": hash_password(request.new_password)})
     return {"message": "Password changed successfully"}
+
+
+async def update_me(db: AsyncSession, current: User, data: UserUpdate) -> UserOut:
+    fields = {k: v for k, v in data.model_dump().items() if v is not None}
+    if not fields:
+        return UserOut.model_validate(current)
+    updated = await user.update(db, current.id, fields)
+    return UserOut.model_validate(updated)
 
 
 async def get_optional_user(

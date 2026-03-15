@@ -116,7 +116,7 @@ function createGoalCard(goal) {
             </div>
             <div class="project-card-percentage" style="color:#07B6D5;">${progress}%</div>
             <a href="#" onclick="event.preventDefault(); router.navigate('/goal/${goal.id}')">
-                <svg class=project-card-chevron width="24" height="42" viewBox="0 0 24 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="project-card-chevron" width="19" height="34" viewBox="0 0 24 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M4.8 0L24 21L4.8 42L0 36.75L14.4 21L0 5.25L4.8 0Z" fill="#D9D9D9"/>
                 </svg>
             </a>
@@ -280,6 +280,7 @@ let _completedFilter = 'all';
 async function renderCompletedPageWithGoals() {
     const appContainer = document.getElementById('app');
     const content = `
+        <h1 class="page-title">Completed</h1>
         <div class="completed-filter-row" style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
             <div class="insights-tabs">
                 <button class="tab-btn active" onclick="setCompletedFilter('all', this)">All time</button>
@@ -362,8 +363,31 @@ window.setCompletedFilter = function(filter, btn) {
     _loadCompletedGoals();
 };
 
-window.clearCompleted = function() {
-    Toast.info('Clear all is not yet implemented on the server.');
+window.clearCompleted = async function() {
+    // Show confirmation before deleting
+    if (!confirm('Are you sure you want to permanently delete all completed goals? This cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const goals = await goalsService.fetchGoals();
+        const completed = goals.filter(g => g.is_complete || g.status === 'completed');
+
+        if (completed.length === 0) {
+            Toast.info('No completed goals to clear.');
+            return;
+        }
+
+        // Delete all in parallel
+        await Promise.all(completed.map(g => goalsService.deleteGoal(g.id)));
+
+        Toast.success(`Cleared ${completed.length} completed goal${completed.length !== 1 ? 's' : ''}.`);
+
+        // Refresh the page
+        await _loadCompletedGoals();
+    } catch (err) {
+        Toast.error(err.message || 'Failed to clear completed goals');
+    }
 };
 
 // Update sidebar project progress

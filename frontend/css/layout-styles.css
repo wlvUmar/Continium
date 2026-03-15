@@ -841,7 +841,6 @@
     background: #00BCD4;
     color: white;
     border: none;
-    padding: 12px 24px;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
@@ -1634,23 +1633,23 @@
 .project-card-main {
     position: relative;
     width: 100%;
-    height: 110px;
+    height: 88px;
     background: #FFFFFF;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 
 
 .project-card-play-btn {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    left: 30px;
-    top: 15px;
+    width: 64px;
+    height: 64px;
+    left: 24px;
+    top: 12px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -1668,33 +1667,17 @@
 }
 
 .project-card-play-btn img {
-    width: 32px;
-    height: 32px;
+    width: 25px;
+    height: 25px;
     filter: brightness(0) invert(1);
 }
 
 .project-card-title {
     position: absolute;
-    width: 250px;
-    height: 36px;
-    left: 125px;
-    top: 15px;
-    font-family: 'Inter';
-    font-weight: 500;
-    font-size: 30px;
-    line-height: 36px;
-    color: #475A6C;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.project-card-time {
-    position: absolute;
-    width: 250px;
+    width: 200px;
     height: 29px;
-    left: 125px;
-    top: 60px;
+    left: 100px;
+    top: 12px;
     font-family: 'Inter';
     font-weight: 500;
     font-size: 24px;
@@ -1705,23 +1688,39 @@
     text-overflow: ellipsis;
 }
 
+.project-card-time {
+    position: absolute;
+    width: 200px;
+    height: 23px;
+    left: 100px;
+    top: 48px;
+    font-family: 'Inter';
+    font-weight: 500;
+    font-size: 19px;
+    line-height: 23px;
+    color: #475A6C;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .project-card-progress-container {
     position: absolute;
-    width: calc(100% - 400px);
-    height: 73px;
-    left: 345px;
-    top: 22px;
-    right: 90px;
+    width: calc(100% - 320px);
+    height: 58px;
+    left: 276px;
+    top: 18px;
+    right: 72px;
 }
 
 .project-card-progress-bar {
     position: absolute;
     width: 100%;
-    height: 30px;
+    height: 24px;
     left: 0;
-    top: 35px;
+    top: 28px;
     background: #D9D9D9;
-    border-radius: 100px;
+    border-radius: 80px;
     overflow: hidden;
     z-index: 1;
 }
@@ -1735,24 +1734,26 @@
 .project-card-percentage {
     background: #EBEBF1;
     position: absolute;
-    width: 100px;
-    height: 60px;
-    right: 56px;
-    top: 24px;
+    width: 80px;
+    height: 48px;
+    right: 45px;
+    top: 19px;
     font-family: 'Inter';
     font-weight: 700;
-    font-size: 24px;
-    line-height: 29px;
+    font-size: 19px;
+    line-height: 23px;
     color: #07B6D5;
     text-align: center;
-    border-radius: 7px;
-    padding: 5px;
+    border-radius: 6px;
+    padding: 4px;
 }
 
 .project-card-chevron {
     position: absolute;
-    right: 15px;
-    top: 32px;
+    right: 12px;
+    top: 26px;
+    height: 34px;
+    width: auto;
     opacity: 1;
     transition: transform  0.3s ease;
 }

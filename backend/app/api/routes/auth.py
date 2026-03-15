@@ -28,7 +28,7 @@ from app.schemas.auth import (
 )
 from app.services import auth_service
 from app.api import get_db
-from app.schemas.user import UserCreate, UserOut
+from app.schemas.user import UserCreate, UserOut, UserUpdate
 from app.db.models.user import User
 from app.core.security import get_current_user
 
@@ -52,6 +52,15 @@ async def get_me(user: Annotated[User, Depends(get_current_user)]) -> UserOut:
     Requires `Authorization: Bearer <access_token>`.
     """
     return UserOut.model_validate(user)
+
+@router.put("/me", response_model=UserOut)
+async def update_me(
+    data: UserUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db=Depends(get_db),
+) -> UserOut:
+    """Update the currently authenticated user's profile (full_name, image_url)."""
+    return await auth_service.update_me(db, current_user, data)
 
 @router.post("/register", response_model=UserOut)
 async def register(user_data: UserCreate, db=Depends(get_db)):

@@ -117,6 +117,15 @@ const authService = {
             current_password: currentPassword,
             new_password: newPassword
         });
+    },
+
+    // Update profile (full_name, image_url)
+    async updateProfile(data) {
+        const updated = await api.put('/auth/me', data);
+        if (updated) {
+            localStorage.setItem('user', JSON.stringify(updated));
+        }
+        return updated;
     }
 };
 
