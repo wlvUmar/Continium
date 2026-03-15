@@ -60,6 +60,12 @@ const statsManager = {
             this._goalDurations[goalId] = goalDurationMin;
         }
         
+        // Prevent fetching if unauthenticated
+        if (!localStorage.getItem('access_token')) {
+            console.log(`📊 STATS: Skipping fetch for goal ${goalId} (unauthenticated)`);
+            return { todayMinutes: 0, totalMinutes: 0, percentage: 0, stats: [] };
+        }
+
         const cached = this._cache[goalId];
 
         // Return cached if still fresh (< 3 seconds old)

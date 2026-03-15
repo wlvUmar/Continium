@@ -9,6 +9,13 @@ function checkAuth(routePath) {
     const publicRoutes = ['/login', '/register', '/forgot-password', '/verify'];
     const isPublicRoute = publicRoutes.includes(routePath);
     
+    // Stop polling when on public routes or unauthenticated
+    if (!isAuthenticated || isPublicRoute) {
+        if (window.statsManager && typeof window.statsManager.stopPolling === 'function') {
+            window.statsManager.stopPolling();
+        }
+    }
+
     // If not logged in and trying to access protected route
     if (!isAuthenticated && !isPublicRoute) {
         router.navigate('/login');

@@ -85,6 +85,12 @@ async function apiRequest(endpoint, options = {}) {
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 localStorage.removeItem('user');
+                
+                // Stop any background polling
+                if (window.statsManager && typeof window.statsManager.stopPolling === 'function') {
+                    window.statsManager.stopPolling();
+                }
+
                 if (window.router) {
                     window.router.navigate('/login');
                 }
