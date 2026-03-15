@@ -11,7 +11,7 @@ TODO:
 """
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update as sa_update
 from app.db.models.user import User
 
 async def get_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
@@ -29,7 +29,7 @@ async def create(db: AsyncSession,new_user: User) -> User:
     return new_user
 
 async def update(db: AsyncSession, user_id: int, fields: dict) -> Optional[User]:
-    await db.execute(update(User).where(User.id == user_id).values(**fields))
+    await db.execute(sa_update(User).where(User.id == user_id).values(**fields))
     await db.commit()
     return await get_by_id(db, user_id)
 
