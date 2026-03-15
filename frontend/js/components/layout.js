@@ -73,6 +73,10 @@ function createSidebar(currentRoute = "/projects") {
             </nav>
 
             <div class="sidebar-footer">
+                <button class="nav-item help-btn" onclick="openHelpCenter()">
+                    <span class="nav-icon help-icon-circle">?</span>
+                    <span class="nav-text">Help</span>
+                </button>
                 <button class="nav-item logout-btn" onclick="handleLogout()">
                     <span class="nav-icon">
                         <img src="assets/icons/exit_vector.svg" alt="Logout" class="icon">
