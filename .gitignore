@@ -1,2 +1,9 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+.env
+.github/copilot-instructions.md
+app.db
+*.pyc
+docs/LIVE_STATS_SYNC.md
+contribution_report.txt
+*.log
+merge_test.txt
+pyrightconfig.json

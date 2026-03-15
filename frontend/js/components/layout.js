@@ -70,6 +70,10 @@ function createSidebar() {
             </nav>
 
             <div class="sidebar-footer">
+                <a href="javascript:void(0)" onclick="openHelpCenter(); return false;" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; padding: 16px; color: #5B7B9E; text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.9; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.9'">
+                    <span style="display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border: 2px solid currentColor; border-radius: 50%; font-weight: bold; font-size: 12px; box-sizing: border-box; padding-top: 1px;">?</span>
+                    <span>Help Center</span>
+                </a>
             </div>
         </aside>
     `;

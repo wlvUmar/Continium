@@ -1,8 +1,4 @@
-/**
- * app.js — Main entry point
- * Replaces app-main.js
- * Issue #108 — reorganized into pages/, components/, services/, core/
- */
+
 
 // Core
 import './core/api.js';
@@ -45,6 +41,7 @@ import './pages/statistics.js';
 
 // Global components
 import './components/focus-modal.js'; // Global focus modal (can open from anywhere)
+import './components/help-center.js'; // Help Center modal
 
 // Expose app container
 const appContainer = document.getElementById('app');
