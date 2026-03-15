@@ -44,7 +44,6 @@ async def add_stat(db: AsyncSession, goal_id: int, stat_data: StatCreate, user :
 
 async def get_goal_stats(db: AsyncSession, goal_id: int,user : User) -> list[StatOut]:
     cur_user = user
-    print(user)
     if not cur_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     stats_list = await stats.get_stats_by_goal(db, user_id=cur_user.id, goal_id=goal_id)
@@ -54,10 +53,7 @@ async def overall(db: AsyncSession, user :User) -> OverallOut:
     cur_user = user
     if not cur_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    print(user)
-
     total_stats = await stats.aggregate_overall_for_user(db, user_id=cur_user.id)
-    print(total_stats)
     overall = OverallOut(total_stats=total_stats)
     return overall
 
