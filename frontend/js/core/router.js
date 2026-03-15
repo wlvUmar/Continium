@@ -26,7 +26,9 @@ class Router {
 
     handleRoute() {
         const hash = window.location.hash.slice(1) || '/';
-        const matchedRoute = this.matchRoute(hash);
+        // Strip query string for matching
+        const pathPart = hash.split('?')[0];
+        const matchedRoute = this.matchRoute(pathPart);
         
         if (matchedRoute) {
             this.currentRoute = hash;
