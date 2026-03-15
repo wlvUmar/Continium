@@ -117,7 +117,7 @@ const colorManager = {
 
     debug() {
         const stored = this.getStoredColors();
-        console.log('COLOR MAP:', stored);
+
     }
 };
 

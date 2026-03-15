@@ -20,7 +20,7 @@ const statsManager = {
      */
     subscribe(callback) {
         this._callbacks.push(callback);
-        console.log('📊 STATS: Registered callback, total subscribers:', this._callbacks.length);
+
     },
 
     /**
@@ -62,7 +62,7 @@ const statsManager = {
         
         // Prevent fetching if unauthenticated
         if (!localStorage.getItem('access_token')) {
-            console.log(`📊 STATS: Skipping fetch for goal ${goalId} (unauthenticated)`);
+
             return { todayMinutes: 0, totalMinutes: 0, percentage: 0, stats: [] };
         }
 
@@ -77,7 +77,7 @@ const statsManager = {
             const stats = await api.get(`/stats/goal/${goalId}`);
             const today = new Date().toISOString().split('T')[0];
             
-            console.log(`📊 STATS: API returned ${stats.length} records for goal ${goalId}:`, stats.map(s => ({date: s.occurred_at.split('T')[0], duration: s.duration_minutes})));
+
             
             const todayStats = stats.filter(s => s.occurred_at.split('T')[0] === today);
             const todayMinutes = todayStats.reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
@@ -96,7 +96,7 @@ const statsManager = {
             // Notify listeners
             this._notifyListeners(goalId, todayMinutes, totalMinutes);
 
-            console.log(`📊 STATS: Updated goal ${goalId}: ${totalMinutes}m total (${todayMinutes}m today), ${percentage}% of ${durationMin}m target`);
+
             return data;
         } catch (err) {
             console.error(`❌ STATS: Failed to fetch progress for goal ${goalId}:`, err);
@@ -109,7 +109,7 @@ const statsManager = {
      */
     invalidateCache(goalId) {
         delete this._cache[goalId];
-        console.log(`🔄 STATS: Cleared cache for goal ${goalId}`);
+
     },
 
     /**
@@ -117,21 +117,21 @@ const statsManager = {
      */
     startPolling(goalIds = []) {
         if (this._pollInterval) {
-            console.log('📊 STATS: Polling already active');
+
             return;
         }
 
         this._pollInterval = setInterval(() => {
             if (!goalIds.length) return;
             
-            console.log(`📊 STATS: Polling ${goalIds.length} goals...`);
+
             goalIds.forEach(goalId => {
                 // Just fetch without waiting - updates happen via callbacks
                 this.getTodayProgress(goalId, 0, true).catch(() => {});
             });
         }, this._pollIntervalMs);
 
-        console.log(`📊 STATS: Started polling every ${this._pollIntervalMs}ms`);
+
     },
 
     /**
@@ -141,7 +141,7 @@ const statsManager = {
         if (this._pollInterval) {
             clearInterval(this._pollInterval);
             this._pollInterval = null;
-            console.log('📊 STATS: Stopped polling');
+
         }
     },
 

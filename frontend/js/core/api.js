@@ -11,46 +11,46 @@ function getAuthToken() {
 let refreshPromise = null;
 
 async function refreshAccessToken() {
-    // Reuse an ongoing refresh rather than firing a duplicate request
-    if (refreshPromise) {
-        console.log('🔄 API: Reusing in-flight refresh request');
-        return refreshPromise;
-    }
-
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-        console.error('❌ API: No refresh token available');
-        throw new Error('No refresh token available');
-    }
-
-    console.log('🔄 API: Starting new token refresh...');
-    refreshPromise = fetch(buildUrl('/auth/refresh'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken })
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                console.error(`❌ API: Token refresh failed with status ${response.status}`);
-                throw new Error('Token refresh failed');
-            }
-            const data = await response.json();
-            localStorage.setItem('access_token', data.access_token);
-            if (data.refresh_token) {
-                localStorage.setItem('refresh_token', data.refresh_token);
-            }
-            console.log('✅ API: Token refresh successful');
-            return data.access_token;
-        })
-        .catch(err => {
-            console.error('❌ API: Token refresh error:', err);
-            throw err;
-        })
-        .finally(() => {
-            refreshPromise = null;
-        });
+  // Reuse an ongoing refresh rather than firing a duplicate request
+  if (refreshPromise) {
 
     return refreshPromise;
+  }
+
+  const refreshToken = localStorage.getItem('refresh_token');
+  if (!refreshToken) {
+    console.error('❌ API: No refresh token available');
+    throw new Error('No refresh token available');
+  }
+
+
+  refreshPromise = fetch(buildUrl('/auth/refresh'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: refreshToken })
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        console.error(`❌ API: Token refresh failed with status ${response.status}`);
+        throw new Error('Token refresh failed');
+      }
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
+
+      return data.access_token;
+    })
+    .catch(err => {
+      console.error('❌ API: Token refresh error:', err);
+      throw err;
+    })
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
 }
 
 async function apiRequest(endpoint, options = {}) {
@@ -69,57 +69,57 @@ async function apiRequest(endpoint, options = {}) {
     config.body = JSON.stringify(options.body);
   }
 
-    try {
-        const response = await fetch(buildUrl(endpoint), config);
+  try {
+    const response = await fetch(buildUrl(endpoint), config);
 
-        // On 401, attempt a single token refresh then retry the original request.
-        // The _isRetry flag prevents an infinite loop if the retry also gets a 401.
-        if (response.status === 401 && !options._isRetry) {
-            console.log(`🔄 API: Received 401, attempting token refresh for ${endpoint}`);
-            try {
-                const newToken = await refreshAccessToken();
-                console.log(`✅ API: Token refreshed, retrying ${endpoint}`);
-            } catch (_refreshError) {
-                // Refresh failed — clear session and redirect to login
-                console.error(`❌ API: Token refresh failed:`, _refreshError);
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                localStorage.removeItem('user');
-                
-                // Stop any background polling
-                if (window.statsManager && typeof window.statsManager.stopPolling === 'function') {
-                    window.statsManager.stopPolling();
-                }
+    // On 401, attempt a single token refresh then retry the original request.
+    // The _isRetry flag prevents an infinite loop if the retry also gets a 401.
+    if (response.status === 401 && !options._isRetry) {
 
-                if (window.router) {
-                    window.router.navigate('/login');
-                }
-                throw new Error('Session expired. Please log in again.');
-            }
+      try {
+        const newToken = await refreshAccessToken();
 
-            // Retry original request with the new access token
-            return apiRequest(endpoint, { ...options, _isRetry: true });
+      } catch (_refreshError) {
+        // Refresh failed — clear session and redirect to login
+        console.error(`❌ API: Token refresh failed:`, _refreshError);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+
+        // Stop any background polling
+        if (window.statsManager && typeof window.statsManager.stopPolling === 'function') {
+          window.statsManager.stopPolling();
         }
 
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            // FastAPI uses "detail", express-style APIs use "message"
-            const detail = error.detail || error.message;
-            const msg = Array.isArray(detail)
-                ? detail.map(e => e.msg || JSON.stringify(e)).join(', ')
-                : (detail || `HTTP ${response.status}`);
-            throw new Error(msg);
+        if (window.router) {
+          window.router.navigate('/login');
         }
+        throw new Error('Session expired. Please log in again.');
+      }
 
-        if (response.status === 204) {
-            return null;
-        }
-
-        return await response.json();
-    } catch (err) {
-        console.error("API Error:", err);
-        throw err;
+      // Retry original request with the new access token
+      return apiRequest(endpoint, { ...options, _isRetry: true });
     }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      // FastAPI uses "detail", express-style APIs use "message"
+      const detail = error.detail || error.message;
+      const msg = Array.isArray(detail)
+        ? detail.map(e => e.msg || JSON.stringify(e)).join(', ')
+        : (detail || `HTTP ${response.status}`);
+      throw new Error(msg);
+    }
+
+    if (response.status === 204) {
+      return null;
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("API Error:", err);
+    throw err;
+  }
 }
 
 const api = {

@@ -37,7 +37,7 @@ async function _focusSaveSession() {
     
     const minutes = Math.round(newElapsed / 60);
     try {
-        console.log(`💾 FOCUS: Saving session - Goal ID: ${_focusModalGoalId}, Duration: ${minutes}m (delta: ${newElapsed}s)`);
+
         await api.post(`/stats/goal/${_focusModalGoalId}`, { duration_minutes: minutes });
         Toast.show(`✅ Session saved: ${minutes} minutes`, 'success');
         _focusSessionStart = _focusTimerElapsed;  // Update baseline for next save
@@ -54,7 +54,7 @@ async function _focusSaveSession() {
 async function _focusLoadTodaySession() {
     if (!_focusModalGoalId) return;
     try {
-        console.log(`📥 FOCUS: Loading today's session for goal ${_focusModalGoalId}`);
+
         const stats = await api.get(`/stats/goal/${_focusModalGoalId}`);
         
         if (!Array.isArray(stats)) return;
@@ -71,7 +71,7 @@ async function _focusLoadTodaySession() {
         if (todayMinutes > 0) {
             _focusTimerElapsed = todayMinutes * 60;
             _focusSessionStart = _focusTimerElapsed;  // Set baseline so delta = 0 at start
-            console.log(`✅ FOCUS: Loaded ${todayMinutes}m from today's session`);
+
         }
     } catch (err) {
         console.error(`❌ FOCUS: Failed to load today's session`, err);
@@ -252,7 +252,7 @@ window.focusReset = function() {
         if (badge) badge.textContent = _focusSessionCount;
 
         const minutes = Math.round(elapsed / 60);
-        console.log(`💾 FOCUS: Reset - Saving ${minutes}m, session count: ${_focusSessionCount}`);
+
         api.post(`/stats/goal/${_focusModalGoalId}`, { duration_minutes: minutes })
             .then(() => Toast.show(`✅ Session saved: ${minutes} minutes`, 'success'))
             .catch(() => Toast.error('Failed to save session'));
@@ -319,7 +319,7 @@ window.addEventListener('beforeunload', (e) => {
         // Save any partial session (even < 60 seconds)
         if (_focusTimerElapsed > 0 && _focusModalGoalId) {
             const minutes = Math.round(_focusTimerElapsed / 60);
-            console.log(`⚠️ FOCUS: Page unload - Saving partial session ${minutes}m`);
+
             // Use synchronous beacon API for best effort save
             navigator.sendBeacon(
                 `/stats/goal/${_focusModalGoalId}`,

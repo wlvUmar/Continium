@@ -34,12 +34,12 @@ function renderProfileModal() {
                         <div class="profile-info-section">
                             <p class="profile-section-title">User information</p>
 
-                            <div class="form-group">
+                            <div class="form-group" style="display: flex;">
                                 <label class="form-label">Full Name</label>
                                 <input type="text" name="full_name" class="form-input" value="${userName}" placeholder="Enter your full name">
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" style="display: flex;">
                                 <label class="form-label">Email</label>
                                 <input type="email" name="email" class="form-input" value="${userEmail}" placeholder="your@email.com">
                             </div>

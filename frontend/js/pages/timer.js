@@ -42,9 +42,9 @@ async function _timerSaveSession() {
     
     const minutes = Math.round(newElapsed / 60);
     try {
-        console.log(`💾 TIMER: Saving session - Goal ID: ${_currentGoalId}, Duration: ${minutes}m (delta: ${newElapsed}s)`);
+
         const response = await api.post(`/stats/goal/${_currentGoalId}`, { duration_minutes: minutes });
-        console.log(`✅ TIMER: Session saved successfully`, response);
+
         Toast.show(`✅ Session saved: ${minutes} minutes`, 'success');
         _timerSessionStart = _timerElapsed;  // Update baseline for next save
         
@@ -60,7 +60,7 @@ async function _timerSaveSession() {
 async function _timerLoadTodaySession() {
     if (!_currentGoalId) return;
     try {
-        console.log(`📥 TIMER: Loading today's session for goal ${_currentGoalId}`);
+
         const stats = await api.get(`/stats/goal/${_currentGoalId}`);
         
         if (!Array.isArray(stats)) return;
@@ -77,7 +77,7 @@ async function _timerLoadTodaySession() {
         if (todayMinutes > 0) {
             _timerElapsed = todayMinutes * 60;
             _timerSessionStart = _timerElapsed;  // Set baseline so delta = 0 at start
-            console.log(`✅ TIMER: Loaded ${todayMinutes}m from today's session`);
+
         }
     } catch (err) {
         console.error(`❌ TIMER: Failed to load today's session`, err);
@@ -233,7 +233,7 @@ window.timerReset = function() {
         if (badge) badge.textContent = _sessionCount;
 
         const minutes = Math.round(elapsed / 60);
-        console.log(`💾 TIMER: Reset - Saving ${minutes}m, session count: ${_sessionCount}`);
+
         api.post(`/stats/goal/${_currentGoalId}`, { duration_minutes: minutes })
             .then(() => Toast.show(`✅ Session saved: ${minutes} minutes`, 'success'))
             .catch(() => Toast.error('Failed to save session'));
@@ -254,7 +254,7 @@ window.addEventListener('beforeunload', (e) => {
         // Save any partial session (even < 60 seconds)
         if (_timerElapsed > 0 && _currentGoalId) {
             const minutes = Math.round(_timerElapsed / 60);
-            console.log(`⚠️ TIMER: Page unload - Saving partial session ${minutes}m`);
+
             // Use synchronous beacon API for best effort save
             navigator.sendBeacon(
                 `/stats/goal/${_currentGoalId}`,

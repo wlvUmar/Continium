@@ -35,7 +35,6 @@ function renderAddGoalModal() {
 
                             <div class="freq-options" id="freqRepeating">
                                 <div class="form-group">
-                                    <label class="form-label">Repeat</label>
                                     <div class="repeat-group">
                                         <button type="button" class="repeat-btn active" onclick="selectRepeat('daily', this)">Daily</button>
                                         <button type="button" class="repeat-btn" onclick="selectRepeat('weekly', this)">Weekly</button>
@@ -46,7 +45,7 @@ function renderAddGoalModal() {
                             </div>
 
                             <div class="freq-options hidden" id="freqOnetime">
-                                <div class="form-group form-group-row">
+                                <div class="form-group form-group-row" style="display:flex;">
                                     <div class="form-group-half">
                                         <label class="form-label">Start Date</label>
                                         <input type="date" name="start_date" class="form-input">
@@ -56,10 +55,7 @@ function renderAddGoalModal() {
                                         <input type="date" name="end_date" class="form-input">
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Session Count</label>
-                                    <input type="number" name="session_count" class="form-input" placeholder="e.g. 10" min="1">
-                                </div>
+                                
                             </div>
 
                             <div class="form-group">

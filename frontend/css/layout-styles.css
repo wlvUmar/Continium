@@ -1111,10 +1111,8 @@
 }
 
 .add-goal-form {
-    background: #F4F2F2;
     border-radius: 18px;
-    padding: 16px 18px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    padding: 16px 5px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1187,9 +1185,9 @@
 
 .add-goal-form input[name="title"] {
     border: none;
-    border-radius: 15px;
+    border-radius: 7px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    height: 48px;
+    height: 38px;
     font-size: 15px;
 }
 

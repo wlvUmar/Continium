@@ -451,14 +451,13 @@ body.dark-mode .project-card-time {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
   border-bottom: none;
   flex-shrink: 0;
 }
 
 .profile-modal-title {
   font-family: 'Inter', sans-serif;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: #36465D;
   margin: 0;
@@ -506,7 +505,7 @@ body.dark-mode .project-card-time {
   overflow-y: auto;
   padding: 10px 7px;
   scrollbar-width: none;
-  box-shadow: 0px 0px 6px 3px #00000017;
+  box-shadow: 0px 2px 4px 1px #00000025;
   border-radius: inherit;
 }
 
@@ -584,7 +583,6 @@ body.dark-mode .project-card-time {
   background: #FFFFFF;
   border: 1px solid #D9D9D9;
   border-radius: 8px;
-  padding: 12px;
   margin-bottom: 12px;
   display: flex;
   justify-content: space-around;
@@ -632,7 +630,7 @@ body.dark-mode .project-card-time {
 }
 
 .profile-toggle-option {
-  padding: 6px 12px;
+  padding: 2px 12px;
   border: none;
   background: transparent;
   border-radius: 6px;
@@ -662,7 +660,6 @@ body.dark-mode .project-card-time {
 }
 
 .form-group {
-  display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
@@ -713,7 +710,7 @@ body.dark-mode .project-card-time {
 
 .btn-change-password {
   width: auto;
-  padding: 8px 24px;
+  padding: 13px 28px;
   height: auto;
   background: #07B6D5;
   border: 1px solid #D9D9D9;
@@ -742,7 +739,7 @@ body.dark-mode .project-card-time {
 }
 
 .btn-primary {
-  width: 140px;
+  width: 90px;
   height: 36px;
   background: #07B6D5;
   border: 1px solid #d9d9d900;
@@ -916,89 +913,6 @@ body.dark-mode .btn-secondary:hover {
   color: #07B6D5;
 }
 
-/* ============================================
-   ADD GOAL MODAL
-   ============================================ */
-
-.add-goal-modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(244, 244, 248, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-}
-
-.add-goal-modal {
-  position: relative;
-  width: 95vw;
-  max-width: 550px;
-  height: auto;
-  max-height: 85vh;
-  background: #FFFFFF;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.add-goal-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 25px 30px;
-  border-bottom: 1px solid #E0E0E0;
-  flex-shrink: 0;
-}
-
-.add-goal-modal-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: #36465D;
-  margin: 0;
-  line-height: 35px;
-}
-
-.add-goal-modal-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  color: #36465D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.add-goal-modal-close:hover {
-  color: #07B6D5;
-  transform: scale(1.1);
-}
-
-.add-goal-modal-content {
-  flex: 1;
-  overflow: hidden;
-  padding: 15px 20px;
-}
-
-.add-goal-modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px 30px;
-  border-top: 1px solid #E0E0E0;
-  flex-shrink: 0;
-  background: #FFFFFF;
-}
-
 /* Dark mode add-goal modal */
 body.dark-mode .add-goal-modal-backdrop {
   background: rgba(0, 0, 0, 0.7);
@@ -1115,8 +1029,7 @@ body.dark-mode .empty-state p {
    display: flex;
    align-items: center;
    justify-content: space-between;
-   padding: 20px 25px;
-   border-bottom: 1px solid #E0E0E0;
+   padding: 20px 25px 0px 25px;
    flex-shrink: 0;
 }
 
@@ -1158,15 +1071,12 @@ body.dark-mode .empty-state p {
 }
 
 .add-goal-modal-actions {
-   display: flex;
-   justify-content: center;
-   gap: 15px;
-   padding: 15px 20px;
-   border-top: 1px solid #E0E0E0;
-   flex-shrink: 0;
-   background: #FFFFFF;
+    display: flex;
+    justify-content: end;
+    gap: 9px;
+    padding: 15px 0px 0px 20px;
+    flex-shrink: 0;
 }
-
 /* Dark mode add-goal modal */
 body.dark-mode .add-goal-modal-backdrop {
    background: rgba(0, 0, 0, 0.7);
