@@ -7,17 +7,20 @@ const authService = {
     // Login user
     async login(email, password) {
         const response = await api.post('/auth/login', { email, password });
-        
+
         if (response.access_token) {
             localStorage.setItem('access_token', response.access_token);
             localStorage.setItem('refresh_token', response.refresh_token);
-            
+
             // Store user data if provided
             if (response.user) {
                 localStorage.setItem('user', JSON.stringify(response.user));
             }
+
+            // Always fetch latest profile so saved name/email are not lost
+            try { await this.fetchUser(); } catch (_) {}
         }
-        
+
         return response;
     },
 

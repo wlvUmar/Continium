@@ -48,11 +48,11 @@ function renderAddGoalModal() {
                                 <div class="form-group form-group-row" style="display:flex;">
                                     <div class="form-group-half">
                                         <label class="form-label">Start Date</label>
-                                        <input type="date" name="start_date" class="form-input" lang="en">
+                                        <input type="text" name="start_date" class="form-input" placeholder="YYYY-MM-DD" pattern="\\d{4}-\\d{2}-\\d{2}">
                                     </div>
                                     <div class="form-group-half">
                                         <label class="form-label">Deadline</label>
-                                        <input type="date" name="end_date" class="form-input" lang="en">
+                                        <input type="text" name="end_date" class="form-input" placeholder="YYYY-MM-DD" pattern="\\d{4}-\\d{2}-\\d{2}">
                                     </div>
                                 </div>
                                 
