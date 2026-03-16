@@ -368,6 +368,10 @@ body.dark-mode .sidebar-nav {
 body.dark-mode .sidebar-footer {
   background: #1a1631;
 }
+body.dark-mode .dropdown-icon {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
 
 /* Dark mode - project list cards */
 body.dark-mode .project-list-outer {
