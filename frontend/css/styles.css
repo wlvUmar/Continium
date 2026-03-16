@@ -862,8 +862,10 @@ body.dark-mode .profile-user-email {
   color: #bbb;
 }
 
-body.dark-mode .profile-section {
-  background: #1a1a2e;
+body.dark-mode .profile-section,
+body.dark-mode .profile-info-section,
+body.dark-mode .profile-settings-section {
+  background: #15122a;
   border-color: #2a2a4a;
 }
 
@@ -886,6 +888,7 @@ body.dark-mode .profile-toggle {
 }
 
 body.dark-mode .profile-toggle-option {
+  background: #1a1a2e;
   color: #bbb;
 }
 
