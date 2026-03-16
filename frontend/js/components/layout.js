@@ -108,13 +108,26 @@ window.loadSidebarProjects = async function () {
       listEl.innerHTML = `<div class="sidebar-projects-state">No projects yet</div>`;
       return;
     }
+
+    // Fetch all stats in parallel before rendering so bars show correct values immediately
+    const statsMap = {};
+    await Promise.all(active.map(async (g) => {
+      const progress = await statsManager.getTodayProgress(g.id, g.duration_min || 0, false);
+      statsMap[g.id] = progress;
+    }));
+
     listEl.innerHTML = active
       .map((g) => {
         const color = colorManager.getColor(g.id, g.title);
         const durationMin = g.duration_min || 0;
-        const h = Math.floor(durationMin / 60);
-        const m = durationMin % 60;
-        const timeStr = `0h 00m / ${h}h ${String(m).padStart(2, "0")}m`;
+        const stats = statsMap[g.id] || {};
+        const totalMinutes = stats.totalMinutes || 0;
+        const progressPercent = stats.percentage || 0;
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        const timeStr = durationMin > 0
+          ? `${h}h ${String(m).padStart(2, "0")}m / ${Math.floor(durationMin/60)}h ${String(durationMin%60).padStart(2, "0")}m`
+          : `${h}h ${String(m).padStart(2, "0")}m`;
         return `
                 <div class="project-item" data-goal-id="${g.id}" onclick="router.navigate('/goal/${g.id}')">
                     <div class="sidebar-project-button-container">
@@ -126,20 +139,15 @@ window.loadSidebarProjects = async function () {
                         <span class="project-name">${g.title || "Untitled"}</span>
                         <span class="project-progress-text">${timeStr}</span>
                         <div class="project-progress-bar">
-                            <div class="project-progress-fill" style="width:0; background:${color};"></div>
+                            <div class="project-progress-fill" style="width:${progressPercent}%; background:${color};"></div>
                         </div>
                     </div>
                 </div>
             `;
       })
       .join("");
-    
-    // Fetch and update progress for each sidebar project (initial load)
-    active.forEach(g => {
-      _fetchAndUpdateSidebarProgress(g.id, g.duration_min);
-    });
 
-    // Start polling for updates
+    // Start polling for live updates
     statsManager.startPolling(active.map(g => g.id));
   } catch (err) {
     if (listEl)

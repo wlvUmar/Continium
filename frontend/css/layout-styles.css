@@ -213,7 +213,7 @@
 }
 
 .project-item:hover {
-    background: #FAFAFA;
+    transform: translateY(-1px);
 }
 
 .sidebar-project-button-container {

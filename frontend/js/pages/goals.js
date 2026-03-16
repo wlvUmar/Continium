@@ -93,12 +93,12 @@ function _createErrorState(message) {
 // GOAL CARD (active goal)
 // ============================================
 
-function createGoalCard(goal) {
+function createGoalCard(goal, stats = null) {
     const color       = _getGoalColor(goal);
-    const progress    = goal.is_complete ? 100 : 0;  // Will be updated by renderGoalsPage after fetching stats
     const durationMin = goal.duration_min || 0;
-    const todayMinutes = 0;  // Will be updated
-    const timeDisplay = durationMin > 0 ? `${Math.floor(todayMinutes/60)}h ${todayMinutes%60}m / ${_fmtMin(durationMin)}` : '0h 00m';
+    const totalMinutes = stats?.totalMinutes || 0;
+    const progress    = goal.is_complete ? 100 : (stats?.percentage || 0);
+    const timeDisplay = durationMin > 0 ? `${Math.floor(totalMinutes/60)}h ${String(totalMinutes%60).padStart(2,'0')}m / ${_fmtMin(durationMin)}` : (totalMinutes > 0 ? `${Math.floor(totalMinutes/60)}h ${String(totalMinutes%60).padStart(2,'0')}m` : '0h 00m');
     const progressFill = Math.max(0, Math.min(100, progress));
 
     return `
@@ -124,7 +124,7 @@ function createGoalCard(goal) {
     `;
 }
 
-function createGoalsList(goals) {
+function createGoalsList(goals, statsMap = {}) {
     if (!goals || goals.length === 0) {
         return `
             <div class="empty-state">
@@ -137,34 +137,36 @@ function createGoalsList(goals) {
     }
     return `
         <div class="project-cards-container">
-            ${goals.map(g => createGoalCard(g)).join('')}
+            ${goals.map(g => createGoalCard(g, statsMap[g.id] || null)).join('')}
         </div>
     `;
 }
 
-// Update progress bars after rendering (fetches today's stats)
-async function _updateGoalsProgress(goals) {
-    // Register callback for live updates
+// Fetch stats for all goals in parallel, returns a statsMap { goalId: { percentage, totalMinutes, ... } }
+async function _fetchAllGoalStats(goals) {
+    const statsMap = {};
+    await Promise.all(goals.map(async (goal) => {
+        const durationMin = goal.duration_min || 0;
+        const progress = await statsManager.getTodayProgress(goal.id, durationMin, false);
+        statsMap[goal.id] = progress;
+    }));
+    return statsMap;
+}
+
+// Register live-update callback for progress bars (after initial render)
+function _updateGoalsProgress(goals) {
     statsManager.subscribe((goalId, todayMinutes, totalMinutes, percentage) => {
         const goal = goals.find(g => g.id === goalId);
         if (!goal) return;
-        
-        const color = _getGoalColor(goal);
-        
-        // Update card element
+
         const cardEl = document.querySelector(`[data-goal-id="${goalId}"]`);
         if (cardEl) {
-            // Update progress bar
             const fill = cardEl.querySelector('.project-card-progress-fill');
             if (fill) fill.style.width = percentage + '%';
-            
-            // Update percentage text (keep color #07B6D5, only progress bar changes)
+
             const percent = cardEl.querySelector('.project-card-percentage');
-            if (percent) {
-                percent.textContent = percentage + '%';
-            }
-            
-            // Update time display - show TOTAL time worked
+            if (percent) percent.textContent = percentage + '%';
+
             const durationMin = goal.duration_min || 0;
             const h = Math.floor(totalMinutes / 60);
             const m = totalMinutes % 60;
@@ -174,37 +176,6 @@ async function _updateGoalsProgress(goals) {
         }
     });
 
-    // Initial fetch for all goals using stats manager
-    for (const goal of goals) {
-        const durationMin = goal.duration_min || 0;
-        const color = _getGoalColor(goal);
-        const progress = await statsManager.getTodayProgress(goal.id, durationMin, false);
-        const progressPercent = progress.percentage;
-        const totalMinutes = progress.totalMinutes || 0;
-        
-        // Update card element
-        const cardEl = document.querySelector(`[data-goal-id="${goal.id}"]`);
-        if (cardEl) {
-            // Update progress bar
-            const fill = cardEl.querySelector('.project-card-progress-fill');
-            if (fill) fill.style.width = progressPercent + '%';
-            
-            // Update percentage text (keep color #07B6D5, only progress bar changes)
-            const percent = cardEl.querySelector('.project-card-percentage');
-            if (percent) {
-                percent.textContent = progressPercent + '%';
-            }
-            
-            // Update time display - show TOTAL time worked
-            const h = Math.floor(totalMinutes / 60);
-            const m = totalMinutes % 60;
-            const timeDisplay = durationMin > 0 ? `${h}h ${String(m).padStart(2, "0")}m / ${_fmtMin(durationMin)}` : `${h}h ${String(m).padStart(2, "0")}m`;
-            const timeEl = cardEl.querySelector('.project-card-time');
-            if (timeEl) timeEl.textContent = timeDisplay;
-        }
-    }
-
-    // Start polling for updates
     statsManager.startPolling(goals.map(g => g.id));
 }
 
@@ -258,11 +229,15 @@ async function renderProjectsPageWithGoals() {
     try {
         const goals   = await goalsService.fetchGoals();
         const active  = goals.filter(g => !g.is_complete && g.status !== 'completed');
-        const el      = document.getElementById('projectsContainer');
-        if (el) el.innerHTML = createGoalsList(active);
-        
-        // Load and update progress bars
-        await _updateGoalsProgress(active);
+
+        // Fetch all stats in parallel before rendering so cards show correct progress immediately
+        const statsMap = await _fetchAllGoalStats(active);
+
+        const el = document.getElementById('projectsContainer');
+        if (el) el.innerHTML = createGoalsList(active, statsMap);
+
+        // Register live-update callbacks and start polling
+        _updateGoalsProgress(active);
     } catch (err) {
         const el = document.getElementById('projectsContainer');
         if (el) el.innerHTML = _createErrorState(err.message);
