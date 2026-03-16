@@ -132,6 +132,18 @@ window.handleAddGoalSubmit = async function(event) {
         await goalsService.createGoal(goalData);
         Toast.success('Goal created successfully!');
         closeAddGoalModal();
+
+        // Refresh sidebar immediately
+        if (window.loadSidebarProjects) await window.loadSidebarProjects();
+
+        // Refresh projects page list if currently visible
+        const projectsContainer = document.getElementById('projectsContainer');
+        if (projectsContainer) {
+            const goals = await goalsService.fetchGoals();
+            const active = goals.filter(g => !g.is_complete && g.status !== 'completed');
+            projectsContainer.innerHTML = createGoalsList(active);
+            _updateGoalsProgress(active);
+        }
     } catch (err) {
         const message = err.message || 'Failed to create goal';
         const backdrop = document.querySelector('.add-goal-modal-backdrop');

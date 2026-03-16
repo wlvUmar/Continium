@@ -39,7 +39,6 @@ async function _focusSaveSession() {
     try {
 
         await api.post(`/stats/goal/${_focusModalGoalId}`, { duration_minutes: minutes });
-        Toast.show(`✅ Session saved: ${minutes} minutes`, 'success');
         _focusSessionStart = _focusTimerElapsed;  // Update baseline for next save
         
         // Invalidate cache so next fetch gets fresh data
@@ -273,7 +272,6 @@ window.focusReset = function() {
         const minutes = Math.round(elapsed / 60);
 
         api.post(`/stats/goal/${_focusModalGoalId}`, { duration_minutes: minutes })
-            .then(() => Toast.show(`✅ Session saved: ${minutes} minutes`, 'success'))
             .catch(() => Toast.error('Failed to save session'));
     }
 };
