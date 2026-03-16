@@ -403,16 +403,44 @@ body.dark-mode .project-progress-text {
 }
 
 /* Dark mode - main container project cards */
+body.dark-mode .project-cards-container {
+  background: #1e1a33;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.4);
+}
 body.dark-mode .project-card-main {
-  background: #1a1a2e;
+  background: #15122a;
   border-color: #2a2a3e;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
 }
 body.dark-mode .project-card-main:hover {
+  background: #1c1838;
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.5);
 }
 body.dark-mode .project-card-title,
 body.dark-mode .project-card-time {
   color: #e0e0e0;
+}
+body.dark-mode .project-card-progress-bar {
+  background: #2a2a4a;
+}
+body.dark-mode .project-card-percentage {
+  background: #2a2a3e;
+  color: #07B6D5;
+}
+body.dark-mode .search-input-pill {
+  background: #15122a;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>');
+  background-repeat: no-repeat;
+  background-position: 18px center;
+  border-color: #2a2a4a;
+  color: #e0e0e0;
+}
+body.dark-mode .search-input-pill::placeholder {
+  color: #666;
+}
+body.dark-mode .search-input-pill:focus {
+  border-color: #07B6D5;
+  box-shadow: 0 0 0 3px rgba(7, 182, 213, 0.12);
 }
 
 /* ============================================
