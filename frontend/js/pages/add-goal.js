@@ -48,19 +48,24 @@ function renderAddGoalModal() {
                                 <div class="form-group form-group-row" style="display:flex;">
                                     <div class="form-group-half">
                                         <label class="form-label">Start Date</label>
-                                        <input type="date" name="start_date" class="form-input">
+                                        <input type="date" name="start_date" class="form-input" lang="en">
                                     </div>
                                     <div class="form-group-half">
                                         <label class="form-label">Deadline</label>
-                                        <input type="date" name="end_date" class="form-input">
+                                        <input type="date" name="end_date" class="form-input" lang="en">
                                     </div>
                                 </div>
                                 
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Duration (hours)</label>
-                                <input type="number" name="daily_target_hours" class="form-input" placeholder="2h 00m" step="0.5" min="0.5" max="24">
+                                <label class="form-label">Duration</label>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <input type="number" name="duration_hours" class="form-input" placeholder="0" min="0" max="23" value="1" style="flex:1;text-align:center;">
+                                    <span style="font-weight:600;color:var(--text-color);">h</span>
+                                    <input type="number" name="duration_minutes" class="form-input" placeholder="0" min="0" max="59" value="0" style="flex:1;text-align:center;">
+                                    <span style="font-weight:600;color:var(--text-color);">m</span>
+                                </div>
                             </div>
                         </div>
 
@@ -120,7 +125,7 @@ window.handleAddGoalSubmit = async function(event) {
         start_date:  freqType === 'onetime' ? (form.start_date?.value || today) : today,
         deadline:    freqType === 'onetime' ? (form.end_date?.value || oneYearLater) : oneYearLater,
         frequency:   freqType === 'onetime' ? 'daily' : (form.frequency.value || 'daily'),
-        duration_min: Math.round((parseFloat(form.daily_target_hours.value) || 0) * 60),
+        duration_min: (parseInt(form.duration_hours.value) || 0) * 60 + (parseInt(form.duration_minutes.value) || 0),
     };
 
     try {

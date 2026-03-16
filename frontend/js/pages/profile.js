@@ -235,6 +235,10 @@ window.handleProfileSave = async function(event) {
         // Call the backend to persist the change
         await authService.updateProfile({ full_name, email });
 
+        // Update sidebar name without requiring a page reload
+        const usernameEl = document.querySelector('.username-header');
+        if (usernameEl) usernameEl.textContent = full_name;
+
         Toast.success('Profile saved!');
         closeProfileModal();
     } catch (err) {
