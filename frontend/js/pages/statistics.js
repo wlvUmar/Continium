@@ -194,9 +194,9 @@ function createStatisticsContentHTML(insightsData, breakdownData) {
                 
                 <!-- Period Tabs -->
                 <div class="stats-period-tabs">
-                    <button class="stats-tab-btn active" onclick="changeInsightsPeriod('week')">Week</button>
-                    <button class="stats-tab-btn" onclick="changeInsightsPeriod('4weeks')">4 Weeks</button>
-                    <button class="stats-tab-btn" onclick="changeInsightsPeriod('8weeks')">8 Weeks</button>
+                    <button class="stats-tab-btn ${_currentInsightsPeriod === 'week' ? 'active' : ''}" onclick="changeInsightsPeriod('week')">Week</button>
+                    <button class="stats-tab-btn ${_currentInsightsPeriod === '4weeks' ? 'active' : ''}" onclick="changeInsightsPeriod('4weeks')">4 Weeks</button>
+                    <button class="stats-tab-btn ${_currentInsightsPeriod === '8weeks' ? 'active' : ''}" onclick="changeInsightsPeriod('8weeks')">8 Weeks</button>
                 </div>
                 
                 <!-- Date Navigator -->
@@ -238,9 +238,9 @@ function createStatisticsContentHTML(insightsData, breakdownData) {
                 
                 <!-- Period Tabs -->
                 <div class="stats-period-tabs">
-                    <button class="stats-tab-btn active" onclick="changeBreakdownPeriod('day')">Day</button>
-                    <button class="stats-tab-btn" onclick="changeBreakdownPeriod('week')">Week</button>
-                    <button class="stats-tab-btn" onclick="changeBreakdownPeriod('month')">Month</button>
+                    <button class="stats-tab-btn ${_currentBreakdownPeriod === 'day' ? 'active' : ''}" onclick="changeBreakdownPeriod('day')">Day</button>
+                    <button class="stats-tab-btn ${_currentBreakdownPeriod === 'week' ? 'active' : ''}" onclick="changeBreakdownPeriod('week')">Week</button>
+                    <button class="stats-tab-btn ${_currentBreakdownPeriod === 'month' ? 'active' : ''}" onclick="changeBreakdownPeriod('month')">Month</button>
                 </div>
                 
                 <!-- Date Navigator -->
