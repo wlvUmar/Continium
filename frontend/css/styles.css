@@ -393,11 +393,10 @@ body.dark-mode .projects-dropdown {
   background: #1a1a2e;
 }
 body.dark-mode .project-item {
-  background: #1a1a2e;
   border-bottom-color: #2a2a3e;
 }
 body.dark-mode .project-item:hover {
-  background: #242438;
+  transform: translateY(-1px);
 }
 body.dark-mode .project-name {
   color: #e0e0e0;
