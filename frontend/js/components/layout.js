@@ -103,7 +103,7 @@ window.loadSidebarProjects = async function () {
     const goals = await goalsService.fetchGoals();
     const active = goals.filter(
       (g) => !g.is_complete && g.status !== "completed",
-    );
+    ).slice(0, 3);
     if (!active.length) {
       listEl.innerHTML = `<div class="sidebar-projects-state">No projects yet</div>`;
       return;

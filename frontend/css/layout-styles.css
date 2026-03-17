@@ -184,8 +184,7 @@
 
 /* Projects Dropdown */
 .projects-dropdown {
-    overflow-y: auto;
-    background: white;  
+    background: white;
     border-radius: 0 0 10px 10px;
     margin: 0;
     padding: 0;
@@ -291,8 +290,6 @@
     min-width: 0;
     min-height: 0;
     padding: clamp(16px, 3vw, 40px);
-    overflow-y: auto;
-    background: #F4F4F8;
 }
 
 .page-header {

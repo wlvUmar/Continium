@@ -90,12 +90,7 @@ function renderFocusModal() {
             <div class="focus-modal" id="focusModalWindow">
                 <!-- Top Controls -->
                 <div class="focus-modal-controls">
-                    <button class="focus-modal-btn timer-page-btn" id="focusTimerPageBtn" title="Go to Timer Page" onclick="window.closeFocusModalAndNavigate('/timer/${_focusModalGoalId}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                    </button>
-                    <button class="focus-modal-btn exit-btn" id="focusExitBtn" title="Close Focus Mode" onclick="window.closeFocusModal()">
+                    <button class="focus-modal-btn exit-btn" id="focusExitBtn" title="Close Focus Mode" onclick="window.closeFocusModalAndNavigate('/timer/${_focusModalGoalId}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
