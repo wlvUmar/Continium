@@ -35,6 +35,9 @@ async function refreshAccessToken() {
         throw new Error('Token refresh failed');
       }
       const data = await response.json();
+      if (!data.access_token || typeof data.access_token !== 'string') {
+        throw new Error('Invalid token received from refresh endpoint');
+      }
       localStorage.setItem('access_token', data.access_token);
       if (data.refresh_token) {
         localStorage.setItem('refresh_token', data.refresh_token);
@@ -102,6 +105,20 @@ async function apiRequest(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      // If a retried request still gets 401, the session is unrecoverable — log out
+      if (response.status === 401 && options._isRetry) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        if (window.statsManager && typeof window.statsManager.stopPolling === 'function') {
+          window.statsManager.stopPolling();
+        }
+        if (window.router) {
+          window.router.navigate('/login');
+        }
+        throw new Error('Session expired. Please log in again.');
+      }
+
       const error = await response.json().catch(() => ({}));
       // FastAPI uses "detail", express-style APIs use "message"
       const detail = error.detail || error.message;
