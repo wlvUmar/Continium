@@ -52,8 +52,8 @@ body.dark-mode .progress-card {
 .toggle-btn {
     flex: 1;
     border: 0;
-    background: transparent;
-    color: #FFFFFF;
+    background: #dfdee0;
+    color: #212728;
     font-size: 18px;
     font-weight: 500;
     cursor: pointer;
@@ -68,8 +68,8 @@ body.dark-mode .progress-card {
 
 .toggle-btn.active {
     background: rgba(0, 0, 0, 0.1);
-    border: 1.5px solid #FFFFFF;
     border-right: 1px solid #FFFFFF;
+    color: #fffffb;
 }
 
 .toggle-btn:hover:not(.active) {
@@ -137,8 +137,13 @@ body.dark-mode .percentage-label {
 }
 
 body.dark-mode .insights-card {
-    background: #2d3142;
-    border-color: #404556;
+    background: #1a1a2e;
+    border-color: #2a2a3e;
+}
+
+body.dark-mode .progress-row {
+    background: #1a1a2e;
+    border-color: #2a2a3e;
 }
 
 .card-title {
@@ -167,6 +172,7 @@ body.dark-mode .card-title {
     flex: 1;
     border: 0;
     border-right: 1px solid #07B6D5;
+    padding: 1px;
     background: transparent;
     color: #7D8594;
     font-size: 16px;
