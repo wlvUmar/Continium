@@ -16,7 +16,8 @@
 [![DigitalOcean](https://img.shields.io/badge/DigitalOcean-Droplet-0080FF?style=flat&logo=digitalocean&logoColor=white)](https://digitalocean.com)
 
 🔗 **[continium.uz](https://continium.uz)**
- **[Desktop App](https://github.com/wlvUmar/continium-desktop)**
+
+**[Desktop App](https://github.com/wlvUmar/continium-desktop)**
 
 [Architecture](docs/ARCHITECTURE.md) · [Technical](docs/TECHNICAL.md) · [Requirements](docs/REQUIREMENTS.md) · [Contributing](docs/CONTRIBUTING.md) · [Project Board](https://github.com/users/wlvUmar/projects/1)
 
