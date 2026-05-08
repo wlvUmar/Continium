@@ -2,7 +2,7 @@
 
 # Continium
 
-**A full-stack goal & time tracking web application**
+**A full-stack goal & time tracking application (MVP version)**
 
 [![Live](https://img.shields.io/badge/Live-continium.uz-4CAF50?style=flat)](https://continium.uz)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
