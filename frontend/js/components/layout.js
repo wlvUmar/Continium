@@ -242,13 +242,16 @@ function createLayout(content, currentRoute = "/projects") {
                 ${content}
             </main>
         </div>
-        <div class="theme-toggle-pill">
-            <button class="theme-opt theme-opt-light ${isDark ? "" : "active"}" onclick="toggleTheme()" title="Light mode">
-                <img src="assets/icons/Light.svg" alt="Light">
-            </button>
-            <button class="theme-opt theme-opt-dark ${isDark ? "active" : ""}" onclick="toggleTheme()" title="Dark mode">
-                <img src="assets/icons/Dark.svg" alt="Dark">
-            </button>
+        <div class="top-right-controls">
+            <a href="https://github.com/wlvUmar/Continium-Desktop/releases" target="_blank" class="btn-download-desktop">⬇ Download</a>
+            <div class="theme-toggle-pill">
+                <button class="theme-opt theme-opt-light ${isDark ? "" : "active"}" onclick="toggleTheme()" title="Light mode">
+                    <img src="assets/icons/Light.svg" alt="Light">
+                </button>
+                <button class="theme-opt theme-opt-dark ${isDark ? "active" : ""}" onclick="toggleTheme()" title="Dark mode">
+                    <img src="assets/icons/Dark.svg" alt="Dark">
+                </button>
+            </div>
         </div>
     `;
 }

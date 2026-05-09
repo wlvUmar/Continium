@@ -1382,16 +1382,43 @@
    THEME TOGGLE PILL - Figma Design (top-right)
    ============================================ */
 
-.theme-toggle-pill {
+.top-right-controls {
     position: fixed;
     top: 20px;
     right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 200;
+}
+
+.top-right-controls .btn-download-desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: 2px solid #07B6D5;
+    border-radius: 50px;
+    background: white;
+    color: #07B6D5;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: background 0.2s, color 0.2s;
+}
+
+.top-right-controls .btn-download-desktop:hover {
+    background: #07B6D5;
+    color: white;
+}
+
+.theme-toggle-pill {
     display: flex;
     background: white;
     border-radius: 50px;
     padding: 5px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    z-index: 200;
     gap: 2px;
 }
 
@@ -1825,7 +1852,7 @@
         overflow-y: visible;
     }
 
-    .theme-toggle-pill {
+    .top-right-controls {
         right: 12px;
         top: 12px;
     }
