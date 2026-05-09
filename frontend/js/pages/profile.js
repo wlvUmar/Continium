@@ -49,6 +49,11 @@ function renderProfileModal() {
                         <div class="profile-settings-section">
 
                             <div class="profile-setting-item">
+                                <span class="profile-setting-label">Desktop App</span>
+                                <a href="https://github.com/wlvUmar/Continium-Desktop/releases" target="_blank" class="btn-download-desktop">⬇ Download</a>
+                            </div>
+
+                            <div class="profile-setting-item">
                                 <span class="profile-setting-label">Theme</span>
                                 <div class="profile-toggle">
                                     <button type="button" class="profile-toggle-option ${!isDarkMode ? 'active' : ''}" onclick="handleThemeChange('light', event)"><img src="assets/icons/Light.svg" alt="Light"> Light mode</button>
