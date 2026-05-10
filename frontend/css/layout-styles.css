@@ -1397,10 +1397,10 @@
     align-items: center;
     gap: 6px;
     padding: 8px 18px;
-    border: 2px solid #07B6D5;
+    border: 2px solid #00BCD4;
     border-radius: 50px;
     background: white;
-    color: #07B6D5;
+    color: #00BCD4;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
@@ -1409,7 +1409,13 @@
 }
 
 .top-right-controls .btn-download-desktop:hover {
-    background: #07B6D5;
+    background: #00BCD4;
+    color: white;
+}
+
+
+body.dark-mode .top-right-controls .btn-download-desktop {
+    background: #15122A;
     color: white;
 }
 
