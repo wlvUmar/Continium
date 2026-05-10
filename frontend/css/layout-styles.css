@@ -1397,14 +1397,13 @@
     align-items: center;
     gap: 6px;
     padding: 8px 18px;
-    border: 2px solid #00BCD4;
     border-radius: 50px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     background: white;
     color: #00BCD4;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     transition: background 0.2s, color 0.2s;
 }
 
@@ -1415,9 +1414,18 @@
 
 
 body.dark-mode .top-right-controls .btn-download-desktop {
-    background: #15122A;
+    background: #292736;
+    color: white;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+
+}
+
+body.dark-mode .top-right-controls .btn-download-desktop:hover {
+    background: #00BCD4;
     color: white;
 }
+
+
 
 .theme-toggle-pill {
     display: flex;

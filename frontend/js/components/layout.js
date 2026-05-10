@@ -243,7 +243,13 @@ function createLayout(content, currentRoute = "/projects") {
             </main>
         </div>
         <div class="top-right-controls">
-            <a href="https://github.com/wlvUmar/Continium-Desktop/releases" target="_blank" class="btn-download-desktop">⬇ Download</a>
+            <a href="https://github.com/wlvUmar/Continium-Desktop/releases" target="_blank" class="btn-download-desktop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+             Download</a>
             <div class="theme-toggle-pill">
                 <button class="theme-opt theme-opt-light ${isDark ? "" : "active"}" onclick="toggleTheme()" title="Light mode">
                     <img src="assets/icons/Light.svg" alt="Light">
